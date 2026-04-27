@@ -1,0 +1,292 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #0d0d1a;
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 20%, rgba(99,102,241,0.10) 0%, transparent 50%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* ── CARD ───────────────────────────────────────── */
+.auth-card {
+    background: #13131f;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 44px 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    animation: cardIn 0.4s cubic-bezier(.22,1,.36,1);
+}
+
+.auth-card.wide {
+    max-width: 580px;
+    padding: 40px 48px 36px;
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── DIVISOR ────────────────────────────────────── */
+.auth-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin: 0 -48px 28px;
+}
+
+.auth-card.wide .auth-divider { margin: 0 -48px 24px; }
+
+/* ── LOGO ───────────────────────────────────────── */
+.auth-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.auth-logo img {
+    width: 100px;
+    height: auto;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+/* ── TÍTULOS ────────────────────────────────────── */
+.auth-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #f1f5f9;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+}
+
+.auth-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    font-style: normal;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+/* ── ALERT ──────────────────────────────────────── */
+.auth-alert {
+    padding: 11px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.auth-alert.error   { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.25);  color: #fca5a5; }
+.auth-alert.success { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.25);  color: #86efac; }
+
+/* ── FORM ───────────────────────────────────────── */
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 540px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .auth-card, .auth-card.wide { padding: 32px 24px 28px; }
+    .auth-divider { margin: 0 -24px 20px; }
+}
+
+/* ── CAMPO CON ÍCONO Y FONDO OSCURO ─────────────── */
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+}
+
+/* wrap que contiene ícono + input */
+.field-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.field-wrap:focus-within {
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+/* Ícono a la izquierda */
+.field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4b5563;
+    font-size: 15px;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+}
+
+/* Input sin bordes propios */
+.field-wrap input,
+.field-wrap select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 13px 14px 13px 42px;   /* espacio para el ícono */
+    width: 100%;
+}
+
+.field-wrap input::placeholder { color: #4b5563; }
+
+.field-wrap select { padding-left: 42px; appearance: none; -webkit-appearance: none; }
+.field-wrap select option { background: #1e1e2e; color: #e2e8f0; }
+
+/* select sin ícono extra (campo sin .field-icon usa padding normal) */
+.field-group.select-wrap .field-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    color: #4b5563;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* campos sin .field-wrap (para el registro sin ícono) */
+.field-group input:not(.field-wrap input),
+.field-group select:not(.field-wrap select) {
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 13px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+}
+
+.field-group input:not(.field-wrap input):focus,
+.field-group select:not(.field-wrap select):focus {
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.field-group input:not(.field-wrap input)::placeholder { color: #4b5563; }
+
+/* ── OJO (toggle contraseña) ─────────────────────── */
+.pass-wrap { position: relative; }
+
+.toggle-pass {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    font-size: 15px;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.toggle-pass:hover { color: #94a3b8; }
+
+/* ── LINK "Olvidé contraseña" ────────────────────── */
+.forgot-link {
+    font-size: 12.5px;
+    color: #4b5563;
+    text-decoration: underline;
+    cursor: pointer;
+    width: fit-content;
+    margin-top: -4px;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.forgot-link:hover { color: #94a3b8; }
+
+/* ── BOTÓN ───────────────────────────────────────── */
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+    margin-top: 4px;
+    box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+}
+
+.auth-btn:hover {
+    background: #1d4ed8;
+    box-shadow: 0 6px 20px rgba(37,99,235,0.5);
+}
+
+.auth-btn:active { transform: scale(0.98); }
+
+/* ── LINK INFERIOR ───────────────────────────────── */
+.auth-switch {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 13px;
+    color: #4b5563;
+}
+
+.auth-switch a {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+
+.auth-switch a:hover { color: #818cf8; }
+
+/* ── LABEL (registro) ────────────────────────────── */
+.field-group label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4b5563;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.req { color: #ef4444; }
