@@ -100,7 +100,6 @@ class EmpleadoModel {
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $stmt->close();
-
     
         if ($persona_id) {
             $stmt = $this->db->prepare("DELETE FROM persona WHERE id = ?");
