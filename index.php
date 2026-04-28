@@ -17,7 +17,6 @@ require_once 'controllers/VehiculoController.php';
 require_once 'controllers/ProductoController.php';
 require_once 'controllers/PedidoController.php';
 
-// ── Páginas públicas (sin sesión) ──────────────────
 $paginasPublicas = ['iniciar_sesion', 'registrar_usuario', 'logout', 'recuperar_clave', 'restablecer_clave'];
 
 if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
@@ -25,7 +24,7 @@ if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
     exit;
 }
 
-// ── Router ─────────────────────────────────────────
+//Router
 switch ($page) {
 
     // Sesión
