@@ -26,7 +26,7 @@ class SesionController {
                     $_SESSION['nombre']     = $user['nombre'] ?? $user['nombre_usuario'];
                     $_SESSION['email']      = $user['email'];
                     $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
-                    $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
+                    // estaba duplicado
 
                     header('Location: index.php?page=inicio');
                     exit;
