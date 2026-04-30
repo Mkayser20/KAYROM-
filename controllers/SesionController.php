@@ -46,6 +46,8 @@ class SesionController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombre  = trim($_POST['nombre']          ?? '');
+            $apellido = trim($_POST['apellido']       ?? '');
+            $domicilo = trim($_POST['domicilo']       ?? '');  //agregue apellido y domicilio ya que no estaban antes y eran necesarios
             $usuario = trim($_POST['nombre_usuario']  ?? '');
             $email   = trim($_POST['email']           ?? '');
             $pass    = $_POST['contrasena_usuario']   ?? '';
