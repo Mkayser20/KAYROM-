@@ -78,21 +78,7 @@
                 </div>
             </div>
             
-            <div class="field-group select-wrap">
-                <label>Rol</label>
-                <div class="field-wrap">
-                    <span class="field-icon">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                    </span>
-                    <select name="rol">
-                        <?php foreach ($data['roles'] as $r): ?>
-                        <option value="<?= $r['id'] ?>" <?= ($_POST['rol'] ?? 'empleado') == $r['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($r['descripcion']) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
+           //eliminado el bloque del campo rol para que los usuarios ya no puedan elegir su rol al registrarse (CAMBIOS DE TRELLO)
 
             <div class="field-group">
                 <label>Contraseña <span class="req">*</span></label>
