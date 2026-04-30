@@ -66,7 +66,16 @@ class SesionController {
             } elseif ($this->model->existeUsuario($usuario)) {
                 $error = "El usuario '$usuario' ya está en uso.";
             } else {
-                if ($this->model->create($_POST)) {
+                $datos = [
+                        'nombre'             => $nombre,
+                        'apellido'           => $apellido,
+                        'domicilio'          => $domicilio,
+                        'nombre_usuario'     => $usuario,
+                        'email'              => $email,
+                        'contrasena_usuario' => $pass,
+                        'rol'                => 'empleado',
+                    ]; //agregamos una lista de campos con el valor por defecto "empleado" en rol para los cambios del trello  
+                if ($this->model->create($datos)) {
                     $success = '¡Cuenta creada con éxito! Ya podés iniciar sesión.';
                     $_POST = [];
                 } else {
@@ -78,7 +87,7 @@ class SesionController {
         $data = [
             'error'   => $error,
             'success' => $success,
-            'roles'   => $this->model->getRoles(),
+            //se elimino porque no se necesitaba mas 
         ];
         require_once 'views/sesion/registrar_usuario.php';
     }
