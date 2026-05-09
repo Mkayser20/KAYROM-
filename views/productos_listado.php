@@ -41,7 +41,7 @@
                         <div class="action-icons">
                             <a href="index.php?page=productos&action=edit&id=<?= $p['id'] ?>" class="action-edit">✏️</a>
                             <a href="index.php?page=productos&action=delete&id=<?= $p['id'] ?>" class="action-delete"
-                               onclick="return confirm('¿Eliminar este producto?')">🗑️</a>
+                               onclick="return confirmarAccion(this.href, '¿Eliminar este producto?')"
                         </div>
                     </td>
                 </tr>
