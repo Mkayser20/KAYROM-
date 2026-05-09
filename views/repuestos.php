@@ -42,7 +42,7 @@ require_once 'views/encabezado.php';
                         <div class="action-icons">
                             <a href="index.php?page=repuestos&action=edit&id=<?= $r['id'] ?>" class="action-edit">✏️</a>
                             <a href="index.php?page=repuestos&action=delete&id=<?= $r['id'] ?>" class="action-delete"
-                               onclick="return confirm('¿Eliminar este repuesto?')">🗑️</a>
+                               onclick="return confirmarAccion(this.href, '¿Eliminar este repuesto?')"
                         </div>
                     </td>
                 </tr>
