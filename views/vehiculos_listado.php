@@ -28,7 +28,9 @@
                         <div class="action-icons">
                             <a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="action-edit">✏️</a>
                             <a href="index.php?page=vehiculos&action=delete&id=<?= $v['id'] ?>" class="action-delete"
-                               onclick="return confirm('¿Eliminar este vehículo?')">🗑️</a>
+                               onclick="return confirmarAccion(this.href, '¿Eliminar este vehículo?')" //reemplazar confirm() nativo por modal propio en vehículos
+
+                                
                         </div>
                     </td>
                 </tr>
