@@ -127,6 +127,15 @@ $rolUsuario    = $_SESSION['rol']    ?? '';
             Cerrar Sesión
         </a>
     </div>
+    <div id="modal-overlay" class="modal-overlay">
+    <div class="modal-box">
+        <p id="modal-mensaje" class="modal-mensaje"></p>
+        <div class="modal-botones">
+            <button type="button" id="btn-modal-cancelar" class="btn-cancelar">Cancelar</button>
+            <button type="button" id="btn-modal-aceptar" class="btn-aceptar">Aceptar</button>
+        </div>
+    </div>
+</div>
 </header>
     <script>
         document.querySelectorAll('.nav-icon-btn').forEach(btn => {
@@ -135,7 +144,28 @@ $rolUsuario    = $_SESSION['rol']    ?? '';
             btn.addEventListener('mouseenter', () => {
                 const rect = btn.getBoundingClientRect();
                 tooltip.style.top = (rect.top + rect.height / 2) + 'px';
+                
         });
     });
+    function confirmarAccion(urlDestino, mensaje) { //agregamos estilos del modal de confirmacion
+    const overlay = document.getElementById('modal-overlay');
+    const mensajeElemento = document.getElementById('modal-mensaje');
+    const btnAceptar = document.getElementById('btn-modal-aceptar');
+    const btnCancelar = document.getElementById('btn-modal-cancelar');
+
+    mensajeElemento.textContent = mensaje;
+
+    overlay.style.display = 'flex';
+
+    btnAceptar.onclick = function() {
+        window.location.href = urlDestino;
+    };
+
+    btnCancelar.onclick = function() {
+        overlay.style.display = 'none';
+    };
+
+    return false;
+}
     </script>
 <main class="main-content">
