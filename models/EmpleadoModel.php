@@ -78,7 +78,7 @@ class EmpleadoModel {
     );
     }
 
-    public function delete($id) {
+    public function delete($id) {  //arreglamos el borrado del empleado 
     $emp = $this->getById($id);
     if (!$emp) return false;
 
@@ -87,7 +87,6 @@ class EmpleadoModel {
     $this->db->begin_transaction();
 
     try {
-    
         if ($persona_id) {
             $stmt = $this->db->prepare("DELETE FROM usuario WHERE persona_id = ?");
             $stmt->bind_param("i", $persona_id);
@@ -95,12 +94,11 @@ class EmpleadoModel {
             $stmt->close();
         }
 
-    
         $stmt = $this->db->prepare("DELETE FROM empleado WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $stmt->close();
-    
+
         if ($persona_id) {
             $stmt = $this->db->prepare("DELETE FROM persona WHERE id = ?");
             $stmt->bind_param("i", $persona_id);
@@ -115,7 +113,7 @@ class EmpleadoModel {
         $this->db->rollback();
         return false;
     }
-        }
+}
 
     public function getTotal() {
         $result = $this->db->query("SELECT COUNT(*) as total FROM empleado");
