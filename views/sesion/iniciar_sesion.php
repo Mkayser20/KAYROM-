@@ -74,10 +74,7 @@
 
     </form>
 
-    <p class="auth-switch">
-        ¿No tienes una cuenta?
-        <a href="index.php?page=registrar_usuario&action=registrar_usuario">Crear cuenta</a>
-    </p>
+    
 
 </div>
 
