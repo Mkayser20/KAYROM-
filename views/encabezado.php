@@ -78,11 +78,7 @@ $rolUsuario    = $_SESSION['rol']    ?? '';
         <span class="tooltip">Empleados</span>
     </a>
 
-    <a href="index.php?page=asignaciones" class="nav-icon-btn <?= $activePage==='asignaciones'?'active':'' ?>">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        <span class="tooltip">Asignaciones</span>
-    </a>
-
+   
     <a href="index.php?page=registrar_usuario&action=registrar_usuario" class="nav-icon-btn <?= $activePage==='registrar_usuario'?'active':'' ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
         <span class="tooltip">Registrar Usuario</span>
@@ -122,11 +118,12 @@ $rolUsuario    = $_SESSION['rol']    ?? '';
             </div>
         </div>
         <a href="index.php?page=logout" class="btn-logout"
-           onclick="return confirm('¿Cerrar sesión?')">
+           onclick="return confirmarAccion(this.href, '¿Cerrar sesión?')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Cerrar Sesión
         </a>
     </div>
+
     <div id="modal-overlay" class="modal-overlay">
     <div class="modal-box">
         <p id="modal-mensaje" class="modal-mensaje"></p>
@@ -135,7 +132,7 @@ $rolUsuario    = $_SESSION['rol']    ?? '';
             <button type="button" id="btn-modal-aceptar" class="btn-aceptar">Aceptar</button>
         </div>
     </div>
-</div>
+    </div>
 </header>
     <script>
         document.querySelectorAll('.nav-icon-btn').forEach(btn => {
@@ -144,28 +141,27 @@ $rolUsuario    = $_SESSION['rol']    ?? '';
             btn.addEventListener('mouseenter', () => {
                 const rect = btn.getBoundingClientRect();
                 tooltip.style.top = (rect.top + rect.height / 2) + 'px';
-                
         });
     });
-    function confirmarAccion(urlDestino, mensaje) { //agregamos estilos del modal de confirmacion
+function confirmarAccion(urlDestino, mensaje) {
     const overlay = document.getElementById('modal-overlay');
     const mensajeElemento = document.getElementById('modal-mensaje');
     const btnAceptar = document.getElementById('btn-modal-aceptar');
     const btnCancelar = document.getElementById('btn-modal-cancelar');
-
+    
     mensajeElemento.textContent = mensaje;
-
+    
     overlay.style.display = 'flex';
-
+    
     btnAceptar.onclick = function() {
         window.location.href = urlDestino;
     };
-
+    
     btnCancelar.onclick = function() {
         overlay.style.display = 'none';
     };
-
+    
     return false;
-}
+    }
     </script>
 <main class="main-content">
