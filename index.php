@@ -17,17 +17,25 @@ require_once 'controllers/VehiculoController.php';
 require_once 'controllers/ProductoController.php';
 require_once 'controllers/PedidoController.php';
 
-$paginasPublicas = ['iniciar_sesion', 'registrar_usuario', 'logout', 'recuperar_clave', 'restablecer_clave'];
+$paginasPublicas = ['iniciar_sesion', 'logout', 'recuperar_clave', 'restablecer_clave'];
 
 if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
     header('Location: index.php?page=iniciar_sesion');
     exit;
 }
 
-//Router
+// Páginas que solo pueden usar los administradores
+$paginasAdmin = ['registrar_usuario'];
+
+if (in_array($page, $paginasAdmin) && ($_SESSION['rol'] ?? '') !== 'admin') {
+    header('Location: index.php?page=inicio');
+    exit;
+}
+
+
 switch ($page) {
 
-    // Sesión
+
     case 'iniciar_sesion':
         $action = 'iniciar_sesion';
         (new SesionController())->iniciarSesion();
@@ -50,7 +58,6 @@ switch ($page) {
         (new SesionController())->restablecerClave();
         break;
 
-    // Sistema
     case 'inicio':
         (new InicioController())->index();
         break;
@@ -88,7 +95,7 @@ switch ($page) {
     break;
 
     default:
-        // Si hay sesión va al inicio, si no al login
+    
         if (!empty($_SESSION['usuario_id'])) {
             (new InicioController())->index();
         } else {
