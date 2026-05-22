@@ -33,6 +33,11 @@ class EmpleadoController {
         $id = $_GET['id'] ?? 0;
         $error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($id == $_SESSION['usuario_id']) {
+                $empleadoActual = $this->model->getById($id);
+                $_POST['rol']    = $empleadoActual['rol'];
+                $_POST['activo'] = $empleadoActual['activo'];
+            }
             if ($this->model->update($id, $_POST)) {
                 header('Location: index.php?page=empleados&msg=updated');
                 exit;
