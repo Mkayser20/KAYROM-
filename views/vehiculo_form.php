@@ -1,6 +1,8 @@
 <?php
 require_once 'views/encabezado.php';
 $v = $data['vehiculo'] ?? null;
+$error = $data['error'] ?? null;
+$formData = $data['formData'] ?? null;
 $isEdit = !is_null($v);
 $action = $isEdit
     ? "index.php?page=vehiculos&action=edit&id={$v['id']}"
@@ -10,12 +12,17 @@ $action = $isEdit
     <h1><?= $isEdit ? '✏️ Editar Vehículo' : '＋ Nuevo Vehículo' ?></h1>
     <a href="index.php?page=vehiculos" class="btn btn-ghost">← Volver</a>
 </div>
+<?php if ($error): ?>
+<div style="background-color: #fee; border: 1px solid #fcc; color: #c00; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+    <strong>❌ Error:</strong> <?= htmlspecialchars($error) ?>
+</div>
+<?php endif; ?>
 <div class="form-card">
     <form method="POST" action="<?= $action ?>">
         <div class="form-row">
             <div class="form-group">
                 <label>Patente</label>
-                <input type="text" name="patente" value="<?= htmlspecialchars($v['patente'] ?? '') ?>" required placeholder="ABC123">
+                <input type="text" name="patente" value="<?= htmlspecialchars($formData['patente'] ?? $v['patente'] ?? '') ?>" required placeholder="ABC123">
             </div>
         
         <div class="form-group">
@@ -26,11 +33,11 @@ $action = $isEdit
         <div class="form-row">
             <div class="form-group">
                 <label>Número de Chasis</label>
-                <input type="text" name="numero_chasis" value="<?= htmlspecialchars($v['numero_chasis'] ?? '') ?>" placeholder="Nro. chasis">
+                <input type="text" name="numero_chasis" value="<?= htmlspecialchars($formData['numero_chasis'] ?? $v['numero_chasis'] ?? '') ?>" placeholder="Nro. chasis">
             </div>
             <div class="form-group">
                 <label>Número de Motor</label>
-                <input type="text" name="numero_motor" value="<?= htmlspecialchars($v['numero_motor'] ?? '') ?>" placeholder="Nro. motor">
+                <input type="text" name="numero_motor" value="<?= htmlspecialchars($formData['numero_motor'] ?? $v['numero_motor'] ?? '') ?>" placeholder="Nro. motor">
             </div>
         </div>
         <div class="form-row">
@@ -39,7 +46,7 @@ $action = $isEdit
                 <select name="modelo_vehiculo_id">
                     <option value="0">— Seleccionar —</option>
                     <?php foreach($data['modelos'] as $m): ?>
-                    <option value="<?= $m['id'] ?>" <?= ($v['modelo_vehiculo_id'] ?? 0)==$m['id']?'selected':'' ?>>
+                    <option value="<?= $m['id'] ?>" <?= ($formData['modelo_vehiculo_id'] ?? $v['modelo_vehiculo_id'] ?? 0)==$m['id']?'selected':'' ?>>
                         <?= htmlspecialchars($m['modelo_vehiculo']) ?> (<?= $m['anio_vehiculo'] ?>)
                     </option>
                     <?php endforeach; ?>
@@ -50,7 +57,7 @@ $action = $isEdit
                 <select name="tipo_vehiculo_id">
                     <option value="0">— Seleccionar —</option>
                     <?php foreach($data['tipos'] as $t): ?>
-                    <option value="<?= $t['id'] ?>" <?= ($v['tipo_vehiculo_id'] ?? 0)==$t['id']?'selected':'' ?>>
+                    <option value="<?= $t['id'] ?>" <?= ($formData['tipo_vehiculo_id'] ?? $v['tipo_vehiculo_id'] ?? 0)==$t['id']?'selected':'' ?>>
                         <?= htmlspecialchars($t['tipo_vehiculo']) ?>
                     </option>
                     <?php endforeach; ?>
@@ -59,7 +66,7 @@ $action = $isEdit
         </div>
         <div class="form-group">
             <label>Fecha de Ingreso</label>
-            <input type="date" name="fecha_ingreso" value="<?= isset($v['fecha_ingreso']) ? substr($v['fecha_ingreso'],0,10) : date('Y-m-d') ?>">
+            <input type="date" name="fecha_ingreso" value="<?= isset($formData['fecha_ingreso']) ? htmlspecialchars($formData['fecha_ingreso']) : (isset($v['fecha_ingreso']) ? substr($v['fecha_ingreso'],0,10) : date('Y-m-d')) ?>">
         </div>
         <button type="submit" class="btn btn-green"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
     </form>
