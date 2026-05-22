@@ -16,7 +16,18 @@ class VehiculoController {
 
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->model->create($_POST);
+            $result = $this->model->create($_POST);
+            if (isset($result['error'])) {
+                $data = [
+                    'modelos'    => $this->model->getModelos(),
+                    'tipos'      => $this->model->getTipos(),
+                    'activePage' => 'vehiculos',
+                    'error'      => $result['error'],
+                    'formData'   => $_POST
+                ];
+                require_once 'views/vehiculo_form.php';
+                return;
+            }
             header('Location: index.php?page=vehiculos&msg=created');
             exit;
         }
@@ -31,7 +42,19 @@ class VehiculoController {
     public function edit() {
         $id = (int)($_GET['id'] ?? 0);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->model->update($id, $_POST);
+            $result = $this->model->update($id, $_POST);
+            if (isset($result['error'])) {
+                $data = [
+                    'vehiculo'   => $this->model->getById($id),
+                    'modelos'    => $this->model->getModelos(),
+                    'tipos'      => $this->model->getTipos(),
+                    'activePage' => 'vehiculos',
+                    'error'      => $result['error'],
+                    'formData'   => $_POST
+                ];
+                require_once 'views/vehiculo_form.php';
+                return;
+            }
             header('Location: index.php?page=vehiculos&msg=updated');
             exit;
         }
