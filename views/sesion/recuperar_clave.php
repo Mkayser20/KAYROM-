@@ -31,6 +31,7 @@
 
     <?php if (empty($data['success'])): ?>
     <form method="POST" action="index.php?page=recuperar_clave" class="auth-form">
+        <div id="toast-error" class="toast-error"></div>
 
         <div class="field-group">
             <div class="field-wrap">
@@ -46,12 +47,28 @@
                     placeholder="Correo electrónico"
                     value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
                     autocomplete="email"
-                    required
+                    
                 >
             </div>
         </div>
 
         <button type="submit" class="auth-btn">Enviar enlace de recuperación</button>
+
+        <script>
+        function mostrarError(mensaje) {
+            const toast = document.getElementById('toast-error');
+            toast.textContent = mensaje;
+            setTimeout(() => { toast.textContent = ''; }, 3500);
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const email = document.querySelector('input[name="email"]').value.trim();
+            if (!email) {
+                e.preventDefault();
+                mostrarError('Ingresá tu correo electrónico');
+            }
+        });
+        </script>
 
     </form>
     <?php endif; ?>
