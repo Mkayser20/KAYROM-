@@ -290,3 +290,22 @@ body {
 }
 
 .req { color: #ef4444; }
+
+.toast-error {
+    position: fixed;
+    top: 70px;
+    right: 24px;
+    background: #ef4444;;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 999;
+    animation: slideIn 0.3s ease, fadeOut 0.4s ease 3s forwards;
+}
+.toast-error:empty {
+    display: none;
+}
+@keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(120%); } }
