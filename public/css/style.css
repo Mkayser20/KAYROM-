@@ -364,6 +364,22 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 
 /* ── TOAST ───────────────────────────────────────── */
 .toast { position: fixed; top: 70px; right: 24px; background: var(--accent-green); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 999; animation: slideIn 0.3s ease, fadeOut 0.4s ease 3s forwards; }
+.toast-error {
+    position: fixed;
+    top: 70px;
+    right: 24px;
+    background: #ef4444;;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 999;
+    animation: slideIn 0.3s ease, fadeOut 0.4s ease 3s forwards;
+}
+.toast-error:empty {
+    display: none;
+}
 @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(120%); } }
 
@@ -378,32 +394,36 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 /* ── RESPONSIVE ──────────────────────────────────── */
 @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .dashboard-grid { grid-template-columns: 1fr; } }
 @media (max-width: 768px)  { .stats-grid { grid-template-columns: 1fr 1fr; } }
+/* Tablas con scroll horizontal en mobile */
+@media (max-width: 768px) {
+    .panel-body {
+        overflow-x: auto;
+    }
+}
 
 /* ── SCROLLBAR ───────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* MODAL DE CONFIRMACION */
-#modal-overlay {  
+#modal-overlay  {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
     background: rgba(0, 0, 0, 0.6);
     z-index: 9999;
     align-items: center;
     justify-content: center;
+    width: 100vw;
+    height: 100vh;
 }
-
-.modal-box {
+.modal-box{
     background: var(--bg-card);
-    border-radius: var(--radius);
-    padding: 30px;
+    padding:30px;
     max-width: 400px;
-    border: 1px solid var(--border);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
 }
 
 .modal-mensaje {
@@ -413,15 +433,15 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
     text-align: center;
 }
 
-.modal-botones {
+.modal-botones{
     display: flex;
     gap: 10px;
     justify-content: flex-end;
 }
 
 .btn-cancelar,
-.btn-aceptar {
-    padding: 10px 20px;
+.btn-aceptar{
+    padding:10px 20px;
     border-radius: 6px;
     border: none;
     cursor: pointer;
@@ -432,9 +452,12 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text-muted);
+
 }
 
-.btn-aceptar {
+.btn-aceptar{
     background: var(--accent-red);
     color: white;
 }
+
+
