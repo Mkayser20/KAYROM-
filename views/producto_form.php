@@ -11,9 +11,11 @@ $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','C
 </div>
 <div class="form-card">
     <form method="POST" action="<?= $action ?>">
+        <div id="toast-error" class="toast-error"></div>
+
         <div class="form-group">
             <label>Nombre del Producto</label>
-            <input type="text" name="nombre_producto" value="<?= htmlspecialchars($p['nombre_producto'] ?? '') ?>" required placeholder="Ej: Frenos de Disco">
+            <input type="text" name="nombre_producto" value="<?= htmlspecialchars($p['nombre_producto'] ?? '') ?>"  placeholder="Ej: Frenos de Disco">
         </div>
         <div class="form-row">
             <div class="form-group">
@@ -26,13 +28,13 @@ $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','C
             </div>
             <div class="form-group">
                 <label>Costo ($)</label>
-                <input type="number" name="costo_producto" value="<?= $p['costo_producto'] ?? 0 ?>" min="0" step="0.01" required>
+                <input type="number" name="costo_producto" value="<?= $p['costo_producto'] ?? 0 ?>" min="0" step="0.01" >
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>Cantidad en producto</label>
-                <input type="number" name="cantidad_producto" value="<?= $p['cantidad_producto'] ?? 0 ?>" min="0" required>
+                <input type="number" name="cantidad_producto" value="<?= $p['cantidad_producto'] ?? 0 ?>" min="0" >
             </div>
             <div class="form-group">
                 <label>Stock disponible actual</label>
@@ -44,6 +46,26 @@ $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','C
             <input type="number" name="alerta_stockBajo" value="<?= $p['alerta_stockBajo'] ?? 5 ?>" min="0">
         </div>
         <button type="submit" class="btn btn-green"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+
+    <script>
+        function mostrarError(mensaje) {
+            const toast = document.getElementById('toast-error');
+            toast.textContent = mensaje;
+            setTimeout(() => { toast.textContent = ''; }, 3500);
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const inputs = document.querySelectorAll('form input[name], form select[name]');
+            for (const input of inputs) {
+                if (!input.value.trim()) {
+                    e.preventDefault();
+                    const label = input.closest('.form-group')?.querySelector('label')?.textContent.replace('*', '').trim() || 'Este campo';
+                    mostrarError('Completá: ' + label);
+                    return;
+                }
+            }
+        });
+    </script>
     </form>
 </div>
 <?php require_once 'views/pie_pagina.php'; ?>
