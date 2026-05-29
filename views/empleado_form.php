@@ -15,6 +15,7 @@ $action = $isEdit
 
 <div class="form-card">
     <form method="POST" action="<?= $action ?>">
+        <div id="toast-error" class="toast-error"></div>
 
         <?php if (!empty($data['error'])): ?>
         <div class="auth-alert error"><?= $data['error'] ?></div>
@@ -23,7 +24,7 @@ $action = $isEdit
 <div class="form-row">
     <div class="form-group">
         <label>Nombre</label>
-        <input type="text" name="nombre" value="<?= htmlspecialchars($e['nombre'] ?? '') ?>" required>
+        <input type="text" name="nombre" value="<?= htmlspecialchars($e['nombre'] ?? '') ?>">
     </div>
     <div class="form-group">
         <label>Apellido</label>
@@ -34,11 +35,11 @@ $action = $isEdit
 <div class="form-row">
     <div class="form-group">
         <label>Email</label>
-        <input type="email" name="email" value="<?= htmlspecialchars($e['email'] ?? '') ?>" required>
+        <input type="email" name="email" value="<?= htmlspecialchars($e['email'] ?? '') ?>">
     </div>
     <div class="form-group">
         <label>Usuario</label>
-        <input type="text" name="nombre_usuario" value="<?= htmlspecialchars($e['nombre_usuario'] ?? '') ?>" required>
+        <input type="text" name="nombre_usuario" value="<?= htmlspecialchars($e['nombre_usuario'] ?? '') ?>">
     </div>
 </div>
 
@@ -79,6 +80,26 @@ $action = $isEdit
 </div>
 
 <button type="submit" class="btn btn-green"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
+
+    <script>
+    function mostrarError(mensaje) {
+        const toast = document.getElementById('toast-error');
+        toast.textContent = mensaje;
+        setTimeout(() => { toast.textContent = ''; }, 3500);
+    }
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const inputs = document.querySelectorAll('form input[name], form select[name]');
+        for (const input of inputs) {
+            if (!input.value.trim()) {
+                e.preventDefault();
+                const label = input.closest('.form-group')?.querySelector('label')?.textContent.replace('*', '').trim() || 'Este campo';
+                mostrarError('Completá: ' + label);
+                return;
+            }
+        }
+    });
+    </script>
 
     </form>
 </div>
