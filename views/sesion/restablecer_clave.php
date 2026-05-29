@@ -39,6 +39,8 @@
               class="auth-form"
               id="resetForm">
 
+            <div id="toast-error" class="toast-error"></div>
+
             <!-- Nueva contraseña -->
             <div class="field-group">
                 <div class="field-wrap pass-wrap">
@@ -54,7 +56,7 @@
                         name="nueva_password"
                         placeholder="Nueva contraseña"
                         minlength="6"
-                        required
+                        
                     >
                     <button type="button" class="toggle-pass" onclick="togglePass('nueva_password', this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -80,7 +82,7 @@
                         name="confirmar_password"
                         placeholder="Confirmar contraseña"
                         minlength="6"
-                        required
+                        
                     >
                     <button type="button" class="toggle-pass" onclick="togglePass('confirmar_password', this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,6 +94,23 @@
             </div>
 
             <button type="submit" class="auth-btn">Cambiar contraseña</button>
+
+        <script>
+            function mostrarError(mensaje) {
+                const toast = document.getElementById('toast-error');
+                toast.textContent = mensaje;
+                setTimeout(() => { toast.textContent = ''; }, 3500);
+            }
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const pass  = document.querySelector('input[name="contrasena_usuario"]').value;
+                const pass2 = document.querySelector('input[name="contrasene_confirm"]').value;
+                
+                if (!pass)  { e.preventDefault(); mostrarError('Ingresá la nueva contraseña'); return; }
+                if (!pass2) { e.preventDefault(); mostrarError('Confirmá la nueva contraseña'); return; }
+                if (pass !== pass2) { e.preventDefault(); mostrarError('Las contraseñas no coinciden'); return; }
+            });
+        </script>
 
         </form>
 
