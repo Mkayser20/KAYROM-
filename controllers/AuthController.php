@@ -1,34 +1,41 @@
 <?php
-// controllers/AuthController.php
-
+//Controlador de autenticación (versión alternativa simplificada de SesionController)
+//Maneja login, registro y recuperación de contraseña
 class AuthController {
-    private $model;
+    private $model; //modelo de usuario
 
     public function __construct() {
         $this->model = new UsuarioModel();
     }
 
+    //iniciar sesión con email y contraseña
     public function login() {
         $error = '';
 
+        //si es formulario POST, validar credenciales
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');
-            $pass  = $_POST['contrasena_usuario'] ?? '';   // sin tilde
+            $pass  = $_POST['contrasena_usuario'] ?? '';
 
+            //validación 1: campos no vacíos
             if ($email === '' || $pass === '') {
                 $error = 'Completá todos los campos.';
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            } 
+            //validación 2: email válido
+            elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Ingresá un correo electrónico válido.';
             } else {
+                //buscar usuario y verificar contraseña
                 $user = $this->model->findByEmail($email);
                 if ($user && password_verify($pass, $user['contrasena_usuario'])) {
+                    //credenciales correctas: guardar datos en sesión
                     $_SESSION['usuario_id'] = $user['id'];
                     $_SESSION['nombre_usuario'] = $user['nombre_usuario'];
                     $_SESSION['nombre']     = $user['nombre'] ?? $user['nombre_usuario'];
                     $_SESSION['email']      = $user['email'];
                     $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
-                    $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
 
+                    //redirigir al dashboard
                     header('Location: index.php?page=dashboard');
                     exit;
                 } else {
@@ -37,34 +44,49 @@ class AuthController {
             }
         }
 
+        //cargar vista de login
         $data = ['error' => $error];
         require_once 'views/auth/login.php';
     }
 
+    //registrar nuevo usuario
     public function register() {
         $error   = '';
         $success = '';
 
+        //si es formulario POST, procesar registro
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombre  = trim($_POST['nombre']          ?? '');
             $usuario = trim($_POST['nombre_usuario']  ?? '');
             $email   = trim($_POST['email']           ?? '');
-            $pass    = $_POST['contrasena_usuario']   ?? '';   // sin tilde
+            $pass    = $_POST['contrasena_usuario']   ?? '';
             $pass2   = $_POST['contrasene_confirm']   ?? '';
 
+            //validar campos obligatorios
             if (empty($nombre) || empty($email) || empty($pass) || empty($usuario)) {
                 $error = 'Completá todos los campos obligatorios.';
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            } 
+            //validar formato de email
+            elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Ingresá un correo electrónico válido.';
-            } elseif ($pass !== $pass2) {
+            } 
+            //validar que las contraseñas coincidan
+            elseif ($pass !== $pass2) {
                 $error = 'Las contraseñas no coinciden.';
-            } elseif (strlen($pass) < 6) {
+            } 
+            //validar longitud mínima de contraseña
+            elseif (strlen($pass) < 6) {
                 $error = 'La contraseña debe tener al menos 6 caracteres.';
-            } elseif ($this->model->existeEmail($email)) {
+            } 
+            //validar que el email no esté registrado
+            elseif ($this->model->existeEmail($email)) {
                 $error = "El correo '$email' ya está registrado.";
-            } elseif ($this->model->existeUsuario($usuario)) {
+            } 
+            //validar que el usuario no esté en uso
+            elseif ($this->model->existeUsuario($usuario)) {
                 $error = "El usuario '$usuario' ya está en uso.";
             } else {
+                //todos los datos válidos: crear cuenta
                 if ($this->model->create($_POST)) {
                     $success = '¡Cuenta creada con éxito! Ya podés iniciar sesión.';
                     $_POST = [];
@@ -74,6 +96,7 @@ class AuthController {
             }
         }
 
+        //cargar vista de registro con opciones de roles
         $data = [
             'error'   => $error,
             'success' => $success,
@@ -82,21 +105,25 @@ class AuthController {
         require_once 'views/auth/register.php';
     }
 
+    //cerrar sesión del usuario
     public function logout() {
+        //destruir sesión
         session_destroy();
+        //redirigir a login
         header('Location: index.php?page=login');
         exit;
     }
 
-    // ── Recuperación de contraseña ─────────────────────────────
-
+    //recuperación de contraseña (pendiente de implementación completa)
     public function forgotPassword() {
         $error   = '';
         $success = '';
 
+        //si es POST, procesar solicitud de recuperación
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');
 
+            //validar email vacío
             if ($email === '') {
                 $error = 'Ingresá tu correo electrónico.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

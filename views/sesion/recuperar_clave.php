@@ -42,7 +42,7 @@
                     </svg>
                 </span>
                 <input
-                    type="email"
+                    type="text"
                     name="email"
                     placeholder="Correo electrónico"
                     value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
@@ -63,9 +63,15 @@
 
         document.querySelector('form').addEventListener('submit', function(e) {
             const email = document.querySelector('input[name="email"]').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email) {
                 e.preventDefault();
                 mostrarError('Ingresá tu correo electrónico');
+                return;
+            }
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                mostrarError('Ingresá un correo electrónico válido');
             }
         });
         </script>

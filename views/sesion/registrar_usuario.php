@@ -47,6 +47,20 @@
                     placeholder="Apellido">
             </div>
 
+            <div class="field-group">
+                <label>DNI</label>
+                <input type="text" name="dni"
+                value="<?= htmlspecialchars($_POST['dni'] ?? '') ?>"
+                placeholder="DNI">
+            </div>
+
+            <div class="field-group">
+                <label>Teléfono</label>
+                <input type="text" name="telefono_persona"
+                    value="<?= htmlspecialchars($_POST['telefono_persona'] ?? '') ?>"
+                    placeholder="Teléfono">
+            </div>
+
             <div class="field-group" style="grid-column: span 2;">
                 <label>Domicilio</label>
                 <input type="text" name="domicilio"
@@ -78,6 +92,46 @@
                         placeholder="nombre_usuario" >
                 </div>
             </div>
+
+            <div class="field-group">
+                <label>Rol <span class="req">*</span></label>
+                <?php
+                    $rolActual  = $_POST['rol'] ?? 'empleado';
+                    $rolesFijos = ['empleado', 'admin'];
+                    $esRolFijo  = in_array($rolActual, $rolesFijos);
+                ?>
+                <select id="rol-select" onchange="elegirRol(this.value)">
+                    <option value="empleado" <?= $rolActual === 'empleado' ? 'selected' : '' ?>>Empleado</option>
+                    <option value="admin" <?= $rolActual === 'admin' ? 'selected' : '' ?>>Administrador</option>
+                    <option value="otro" <?= !$esRolFijo ? 'selected' : '' ?>>Otro (escribir)…</option>
+                </select>
+                <input type="text" name="rol" id="rol-input"
+                    value="<?= htmlspecialchars($rolActual) ?>"
+                    placeholder="Escribí el rol"
+                    style="margin-top:8px; <?= $esRolFijo ? 'display:none;' : '' ?>">
+
+                <script>
+                function elegirRol(v) {
+                    const input = document.getElementById('rol-input');
+                    if (v === 'otro') {
+                        input.style.display = 'block';
+                        input.value = '';
+                        input.focus();
+                    } else {
+                        input.style.display = 'none';
+                        input.value = v;
+                    }
+                }
+                </script>
+            </div>
+
+            <div class="field-group">
+                <label>Estado</label>
+                <select name="activo">
+                    <option value="1" <?= (($_POST['activo'] ?? '1') == '1') ? 'selected' : '' ?>>Activo</option>
+                    <option value="0" <?= (($_POST['activo'] ?? '1') == '0') ? 'selected' : '' ?>>Inactivo</option>
+                </select>
+            </div>
             
            
 
@@ -108,7 +162,30 @@
                     </button>
                 </div>
             </div>
-
+                <div class="field-group" style="grid-column: span 2;" id="modulos-wrap">
+                    <label>Módulos permitidos</label>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; padding:14px; background:rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.12); border-radius:8px;">
+                    <?php
+                    // Lista de módulos que se le pueden asignar a un usuario
+                        $modulosDisponibles = [
+                            'vehiculos'   => 'Vehículos',
+                            'repuestos'   => 'Repuestos',
+                            'pedidos'     => 'Pedidos',
+                            'proveedores' => 'Proveedores',
+                            'empleados'   => 'Empleados',
+                    ];
+                    // Por si el form se recarga, recuerdo los que ya estaban marcados
+                    $modulosMarcados = $_POST['modulos'] ?? [];
+                    foreach ($modulosDisponibles as $key => $nombreMod):
+                        $checked = in_array($key, $modulosMarcados) ? 'checked' : '';
+                    ?>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" name="modulos[]" value="<?= $key ?>" <?= $checked ?>>
+                        <?= $nombreMod ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="auth-btn">Registrarme</button>

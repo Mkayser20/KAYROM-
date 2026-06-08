@@ -31,7 +31,7 @@ $isEdit = !empty($p);
             </div>
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" name="email" value="<?= htmlspecialchars($p['email'] ?? '') ?>">
+                <input type="text" name="email" value="<?= htmlspecialchars($p['email'] ?? '') ?>">
             </div>
         </div>
 
@@ -56,6 +56,9 @@ document.querySelector('form').addEventListener('submit', function(e) {
     if (!cuit)     { e.preventDefault(); mostrarError('Ingresá el CUIT'); return; }
     if (!telefono) { e.preventDefault(); mostrarError('Ingresá el teléfono'); return; }
     if (!email)    { e.preventDefault(); mostrarError('Ingresá el email'); return; }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) { e.preventDefault(); mostrarError('Ingresá un email válido'); return; }
 });
 </script>
 

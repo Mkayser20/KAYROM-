@@ -1,11 +1,13 @@
 <?php
+//Modelo para gestionar toda la lógica de pedidos en la base de datos
 class PedidoModel {
-    private $db;
+    private $db; //conexión a la base de datos
 
     public function __construct() {
         $this->db = Database::getInstance()->getConexion();
     }
 
+    //obtener todos los pedidos ordenados por fecha más reciente
     public function getAll() {
         $sql = "SELECT p.*, dp.detalle_pedido
                 FROM pedidos p
@@ -15,6 +17,7 @@ class PedidoModel {
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
+    //obtener los últimos X pedidos (por defecto 5)
     public function getRecent($limit = 5) {
         $limit = (int)$limit;
         $sql = "SELECT p.*, dp.detalle_pedido
@@ -25,6 +28,7 @@ class PedidoModel {
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
+    //obtener un pedido específico por su ID
     public function getById($id) {
         $id = (int)$id;
         $sql = "SELECT p.*, dp.detalle_pedido FROM pedidos p
@@ -34,6 +38,7 @@ class PedidoModel {
         return $result ? $result->fetch_assoc() : null;
     }
 
+    //crear un nuevo pedido con su detalle
     public function create($data) {
     $estado      = $this->db->real_escape_string($data['estado_pedido']     ?? 'Pendiente');
     $responsable = $this->db->real_escape_string($data['responsable_pedido'] ?? '');
@@ -54,16 +59,20 @@ class PedidoModel {
          VALUES (NOW(), '$estado', '$responsable', $numero, $cantidad, $detalle_id)"
     );
     }
+    
+    //eliminar un pedido por su ID
     public function delete($id) {
         $id = (int)$id;
         return $this->db->query("DELETE FROM pedidos WHERE id=$id");
     }
 
+    //contar el total de pedidos registrados
     public function getTotalPedidos() {
         $result = $this->db->query("SELECT COUNT(*) as total FROM pedidos");
         return $result ? $result->fetch_assoc()['total'] : 0;
     }
 
+    //obtener cantidad de pedidos agrupados por estado (Pendiente, Entregado, etc)
     public function getCountByEstado() {
         $result = $this->db->query(
             "SELECT estado_pedido as label, COUNT(*) as total FROM pedidos GROUP BY estado_pedido"
@@ -71,6 +80,7 @@ class PedidoModel {
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
+    //marcar un pedido como entregado
     public function entregar($id) {
         $id = (int)$id;
     return $this->db->query(
