@@ -2,7 +2,6 @@
 
 <div class="page-header">
     <h1>Empleados</h1>
-    <a href="index.php?page=empleados&action=create" class="btn btn-green">+ Nuevo Empleado</a>
 </div>
 
 <div class="panel">

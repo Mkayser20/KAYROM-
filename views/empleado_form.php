@@ -35,7 +35,7 @@ $action = $isEdit
 <div class="form-row">
     <div class="form-group">
         <label>Email</label>
-        <input type="email" name="email" value="<?= htmlspecialchars($e['email'] ?? '') ?>">
+        <input type="text" name="email" value="<?= htmlspecialchars($e['email'] ?? '') ?>">
     </div>
     <div class="form-group">
         <label>Usuario</label>
@@ -61,11 +61,34 @@ $action = $isEdit
     </div>
     <div class="form-group">
         <label>Rol</label>
-        <select name="rol">
-            <option value="empleado" <?= ($e['rol'] ?? '') == 'empleado' ? 'selected' : '' ?>>Empleado</option>
-            <option value="admin" <?= ($e['rol'] ?? '') == 'admin' ? 'selected' : '' ?>>Administrador</option>
-            <option value="encargado_repuesto" <?= ($e['rol'] ?? '') == 'encargado_repuesto' ? 'selected' : '' ?>>Encargado de Repuesto</option>
+        <?php
+            $rolActual  = $e['rol'] ?? 'empleado';
+            $rolesFijos = ['empleado', 'admin'];
+            $esRolFijo  = in_array($rolActual, $rolesFijos);
+        ?>
+        <select id="rol-select" onchange="elegirRol(this.value)">
+            <option value="empleado" <?= $rolActual === 'empleado' ? 'selected' : '' ?>>Empleado</option>
+            <option value="admin" <?= $rolActual === 'admin' ? 'selected' : '' ?>>Administrador</option>
+            <option value="__otro__" <?= !$esRolFijo ? 'selected' : '' ?>>Otro (escribir)…</option>
         </select>
+        <input type="text" name="rol" id="rol-input"
+            value="<?= htmlspecialchars($rolActual) ?>"
+            placeholder="Escribí el rol"
+            style="margin-top:8px; <?= $esRolFijo ? 'display:none;' : '' ?>">
+
+        <script>
+        function elegirRol(v) {
+            const input = document.getElementById('rol-input');
+            if (v === '__otro__') {
+                input.style.display = 'block';
+                input.value = '';
+                input.focus();
+            } else {
+                input.style.display = 'none';
+                input.value = v;
+            }
+        }
+        </script>
     </div>
 </div>
 
@@ -135,6 +158,14 @@ $action = $isEdit
                 mostrarError('Completá: ' + label);
                 return;
             }
+        }
+
+        const email = document.querySelector('input[name="email"]').value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            mostrarError('Ingresá un email válido');
+            return;
         }
     });
     </script>

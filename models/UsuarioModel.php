@@ -46,15 +46,26 @@ class UsuarioModel {
     }
 
     //chequea duplicados antes de registrar
-    public function existeEmail($email) {
+    public function existeEmail($email, $excluirId = 0) {
         $e = $this->db->real_escape_string($email);
-        $r = $this->db->query("SELECT id FROM usuario WHERE email='$e' LIMIT 1");
+        $excluirId = (int)$excluirId;
+        $r = $this->db->query("SELECT id FROM usuario WHERE email='$e' AND id != $excluirId LIMIT 1");
         return $r && $r->num_rows > 0;
     }
 
-    public function existeUsuario($nombre_usuario) {
+    public function existeUsuario($nombre_usuario, $excluirId = 0) {
         $u = $this->db->real_escape_string($nombre_usuario);
-        $r = $this->db->query("SELECT id FROM usuario WHERE nombre_usuario='$u' LIMIT 1");
+        $excluirId = (int)$excluirId;
+        $r = $this->db->query("SELECT id FROM usuario WHERE nombre_usuario='$u' AND id != $excluirId LIMIT 1");
+        return $r && $r->num_rows > 0;
+    }
+
+    // ¿existe el DNI en la tabla persona? Si pasás $excluirPersonaId, ignora a esa persona
+   
+    public function existeDni($dni, $excluirPersonaId = 0) {
+        $d = $this->db->real_escape_string($dni);
+        $excluirPersonaId = (int)$excluirPersonaId;
+        $r = $this->db->query("SELECT id FROM persona WHERE dni='$d' AND id != $excluirPersonaId LIMIT 1");
         return $r && $r->num_rows > 0;
     }
 
@@ -62,7 +73,6 @@ class UsuarioModel {
     return [
         ['id' => 'admin',              'descripcion' => 'Administrador'],
         ['id' => 'empleado',           'descripcion' => 'Empleado'],
-        ['id' => 'encargado_repuesto', 'descripcion' => 'Encargado de Repuesto'],
     ];
     }
 

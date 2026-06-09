@@ -35,15 +35,29 @@ class EmpleadoController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // Si el usuario está editando su propio perfil, no permitir
-            // que se cambie a sí mismo el rol ni el estado
-            if ($id == $_SESSION['usuario_id']) {
-                $empleadoActual = $this->model->getById($id);
-                $_POST['rol']    = $empleadoActual['rol'];
-                $_POST['activo'] = $empleadoActual['activo'];
+             // --- Validación de unicidad (excluyendo al propio usuario que se edita) ---
+            require_once 'models/UsuarioModel.php';
+            $usuarioModel = new UsuarioModel();
+
+            // Necesito el persona_id del usuario actual para excluirlo en la búsqueda de DNI
+            $actual    = $this->model->getById($id);
+            $personaId = $actual['persona_id'] ?? 0;
+
+            $email   = trim($_POST['email']          ?? '');
+            $usuario = trim($_POST['nombre_usuario'] ?? '');
+            $dni     = trim($_POST['dni']            ?? '');
+
+            if ($usuarioModel->existeEmail($email, $id)) {
+                $error = "El correo '$email' ya está en uso por otro usuario.";
+            }
+            elseif ($usuarioModel->existeUsuario($usuario, $id)) {
+                $error = "El usuario '$usuario' ya está en uso por otro usuario.";
+            }
+            elseif ($dni !== '' && $usuarioModel->existeDni($dni, $personaId)) {
+                $error = "El DNI '$dni' ya está registrado en otra persona.";
             }
 
-            if ($this->model->update($id, $_POST)) {
+            elseif ($this->model->update($id, $_POST)) {
 
                 // Guardar los permisos seleccionados en los checkboxes
                 $permisoModel = new PermisoModel();

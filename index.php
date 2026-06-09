@@ -31,7 +31,7 @@ if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
 }
 
 // Páginas que solo pueden usar los administradores
-$paginasAdmin = ['registrar_usuario'];
+$paginasAdmin = ['registrar_usuario', 'empleados'];
 
 //si intentan acceder a una pagina de admin sin ser admin, redirige al inicio
 if (in_array($page, $paginasAdmin) && ($_SESSION['rol'] ?? '') !== 'admin') {
@@ -47,7 +47,7 @@ if (!empty($_SESSION['usuario_id']) && ($_SESSION['rol'] ?? '') !== 'admin') {
     $paginasLibres = ['inicio', 'logout', 'iniciar_sesion'];
 
     // Módulos asignables por checkbox: si el page coincide, hay que chequear
-    $modulosAsignables = ['vehiculos', 'repuestos', 'pedidos', 'proveedores', 'empleados', 'productos', 'movimientos'];
+    $modulosAsignables = ['vehiculos', 'repuestos', 'pedidos', 'proveedores', 'productos', 'movimientos'];
 
     //si la pagina pedida es un modulo asignable, verifica si el usuario tiene permiso
     if (in_array($page, $modulosAsignables)) {
