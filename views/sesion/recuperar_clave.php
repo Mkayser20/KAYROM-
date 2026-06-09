@@ -42,7 +42,11 @@
                     </svg>
                 </span>
                 <input
+<<<<<<< HEAD
                     type="text"
+=======
+                    type="email"
+>>>>>>> fea3808941fb476d8d3bbd3da4140c9ba8ce84cc
                     name="email"
                     placeholder="Correo electrónico"
                     value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
@@ -63,6 +67,7 @@
 
         document.querySelector('form').addEventListener('submit', function(e) {
             const email = document.querySelector('input[name="email"]').value.trim();
+<<<<<<< HEAD
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email) {
                 e.preventDefault();
@@ -72,6 +77,11 @@
             if (!emailRegex.test(email)) {
                 e.preventDefault();
                 mostrarError('Ingresá un correo electrónico válido');
+=======
+            if (!email) {
+                e.preventDefault();
+                mostrarError('Ingresá tu correo electrónico');
+>>>>>>> fea3808941fb476d8d3bbd3da4140c9ba8ce84cc
             }
         });
         </script>

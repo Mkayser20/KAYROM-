@@ -56,7 +56,6 @@ class EmpleadoController {
                 $error = 'Error al actualizar.';
             }
         }
-
         $data = [
             'empleado' => $this->model->getById($id),
             'error' => $error,
