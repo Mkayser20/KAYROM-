@@ -20,30 +20,35 @@ class UsuarioModel {
     }
 
     //inserta en persona primero, despues en usuario con la contraseña hasheada 
-   public function create($data) {
-    $nombre    = $this->db->real_escape_string($data['nombre']    ?? '');
-    $apellido  = $this->db->real_escape_string($data['apellido']  ?? '');
-    $domicilio = $this->db->real_escape_string($data['domicilio'] ?? '');
+    public function create($data) {
+        $nombre    = $this->db->real_escape_string($data['nombre']    ?? '');
+        $apellido  = $this->db->real_escape_string($data['apellido']  ?? '');
+        $domicilio = $this->db->real_escape_string($data['domicilio'] ?? '');
+        $dni       = $this->db->real_escape_string($data['dni']              ?? '');
+        $telefono  = $this->db->real_escape_string($data['telefono_persona'] ?? '');
 
-    $this->db->query(
-        "INSERT INTO persona (nombre, apellido, domicilio)
-         VALUES ('$nombre', '$apellido', '$domicilio')"
-    );
-    $persona_id = $this->db->insert_id;
+        $this->db->query(
+            "INSERT INTO persona (nombre, apellido, domicilio, dni, telefono_persona)
+            VALUES ('$nombre', '$apellido', '$domicilio', '$dni', '$telefono')"
+        );
+        $persona_id = $this->db->insert_id;
 
-    //insertar usuario con rol
-    $nombre_usuario = $this->db->real_escape_string($data['nombre_usuario']    ?? '');
-    $email          = $this->db->real_escape_string($data['email']             ?? '');
-    $rol            = $this->db->real_escape_string($data['rol']               ?? 'empleado');
-    $hash           = $this->db->real_escape_string(
-                          password_hash($data['contrasena_usuario'] ?? '', PASSWORD_DEFAULT)
-                      );
+        //insertar usuario con rol
+        $nombre_usuario = $this->db->real_escape_string($data['nombre_usuario']    ?? '');
+        $email          = $this->db->real_escape_string($data['email']             ?? '');
+        $rol            = $this->db->real_escape_string($data['rol']               ?? 'empleado');
+        $hash           = $this->db->real_escape_string(
+                            password_hash($data['contrasena_usuario'] ?? '', PASSWORD_DEFAULT)
+                        );
+        $activo = (int)($data['activo'] ?? 1);
 
-    return $this->db->query(
-        "INSERT INTO usuario (nombre_usuario, contrasena_usuario, activo, persona_id, email, rol)
-         VALUES ('$nombre_usuario', '$hash', 1, $persona_id, '$email', '$rol')"
-    );
-    }
+        $ok = $this->db->query(
+            "INSERT INTO usuario (nombre_usuario, contrasena_usuario, activo, persona_id, email, rol)
+            VALUES ('$nombre_usuario', '$hash', $activo, $persona_id, '$email', '$rol')"
+        );
+        // Devuelve el id del usuario nuevo (para los permisos), o false si falló
+        return $ok ? $this->db->insert_id : false;
+        }
 
     //chequea duplicados antes de registrar
     public function existeEmail($email, $excluirId = 0) {

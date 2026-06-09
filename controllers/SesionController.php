@@ -39,17 +39,22 @@ class SesionController {
         require_once 'views/sesion/iniciar_sesion.php';
     }
 
-    //valida datos, chequea duplicados, registra el usuario y su persona, el rol siempre se asigna como empleadp
+    //valida datos, chequea duplicados, registra el usuario y su persona, el rol siempre se asigna como empleado
     public function registrarUsuario() {
         $error   = '';
         $success = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre  = trim($_POST['nombre']          ?? '');
+           $nombre  = trim($_POST['nombre']          ?? '');
             $apellido = trim($_POST['apellido']       ?? '');
             $domicilio = trim($_POST['domicilio']     ?? '');
+            $dni      = trim($_POST['dni']              ?? '');
+            $telefono = trim($_POST['telefono_persona'] ?? '');
             $usuario = trim($_POST['nombre_usuario']  ?? '');
             $email   = trim($_POST['email']           ?? '');
+            $rol     = trim($_POST['rol']             ?? 'empleado');
+            $activo  = (int)($_POST['activo'] ?? 1);
+            $modulos = $_POST['modulos'] ?? [];
             $pass    = $_POST['contrasena_usuario']   ?? '';
             $pass2   = $_POST['contrasene_confirm']   ?? '';
 
@@ -70,18 +75,29 @@ class SesionController {
                         'nombre'             => $nombre,
                         'apellido'           => $apellido,
                         'domicilio'          => $domicilio,
+                        'dni'                => $dni,
+                        'telefono_persona'   => $telefono,
                         'nombre_usuario'     => $usuario,
                         'email'              => $email,
                         'contrasena_usuario' => $pass,
-                        'rol'                => 'empleado',
+                        'rol'                => $rol ?: 'empleado',
+                        'activo'             => $activo,
                     ];
-                if ($this->model->create($datos)) {
-                    $success = '¡Cuenta creada con éxito! Ya podés iniciar sesión.';
+                // create() ahora devuelve el id del usuario nuevo (o false si falló)
+                $nuevoId = $this->model->create($datos);
+                if ($nuevoId) {
+                    // El admin tiene todos los módulos, los demas se asignan por el mismo
+                    if ($rol !== 'admin') {
+                        require_once 'models/PermisoModel.php';
+                        $permisoModel = new PermisoModel();
+                        $permisoModel->setForUsuario($nuevoId, $modulos);
+                    }
+                    $success = '¡Usuario creado con éxito!';
                     $_POST = [];
                 } else {
                     $error = 'Error al registrar. Revisá los datos e intentá de nuevo.';
-                }
-            }
+                  }
+             }
         }
 
         $data = [
@@ -91,7 +107,7 @@ class SesionController {
         require_once 'views/sesion/registrar_usuario.php';
     }
 
-    public function cerrarSesion() {
+     public function cerrarSesion() {
         session_destroy();
         header('Location: index.php?page=iniciar_sesion');
         exit;
