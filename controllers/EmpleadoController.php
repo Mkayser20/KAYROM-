@@ -29,6 +29,8 @@ class EmpleadoController {
         require_once 'views/empleado_form.php';
     }
 
+    // excluir al usuario al editar
+
     public function edit() {
         $id = $_GET['id'] ?? 0;
         $error = '';
@@ -39,7 +41,6 @@ class EmpleadoController {
             require_once 'models/UsuarioModel.php';
             $usuarioModel = new UsuarioModel();
 
-            // Necesito el persona_id del usuario actual para excluirlo en la búsqueda de DNI
             $actual    = $this->model->getById($id);
             $personaId = $actual['persona_id'] ?? 0;
 
