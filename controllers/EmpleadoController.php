@@ -29,6 +29,8 @@ class EmpleadoController {
         require_once 'views/empleado_form.php';
     }
 
+    // excluir al usuario al editar
+
     public function edit() {
         $id = $_GET['id'] ?? 0;
         $error = '';
