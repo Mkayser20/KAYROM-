@@ -74,6 +74,14 @@ class UsuarioModel {
         return $r && $r->num_rows > 0;
     }
 
+    // existe el teléfono en la tabla persona? 
+    public function existeTelefono($telefono, $excluirPersonaId = 0) {
+        $t = $this->db->real_escape_string($telefono);
+        $excluirPersonaId = (int)$excluirPersonaId;
+        $r = $this->db->query("SELECT id FROM persona WHERE telefono_persona='$t' AND id != $excluirPersonaId LIMIT 1");
+        return $r && $r->num_rows > 0;
+    }
+
     public function getRoles() {
     return [
         ['id' => 'admin',              'descripcion' => 'Administrador'],

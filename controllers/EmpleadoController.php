@@ -47,6 +47,7 @@ class EmpleadoController {
             $email   = trim($_POST['email']          ?? '');
             $usuario = trim($_POST['nombre_usuario'] ?? '');
             $dni     = trim($_POST['dni']            ?? '');
+            $telefono = trim($_POST['telefono_persona'] ?? '');
 
             if ($usuarioModel->existeEmail($email, $id)) {
                 $error = "El correo '$email' ya está en uso por otro usuario.";
@@ -56,6 +57,9 @@ class EmpleadoController {
             }
             elseif ($dni !== '' && $usuarioModel->existeDni($dni, $personaId)) {
                 $error = "El DNI '$dni' ya está registrado en otra persona.";
+            }
+            elseif ($telefono !== '' && $usuarioModel->existeTelefono($telefono, $personaId)) {
+                $error = "El teléfono '$telefono' ya está registrado en otra persona.";
             }
 
             elseif ($this->model->update($id, $_POST)) {

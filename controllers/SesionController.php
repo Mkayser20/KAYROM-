@@ -70,6 +70,10 @@ class SesionController {
                 $error = "El correo '$email' ya está registrado.";
             } elseif ($this->model->existeUsuario($usuario)) {
                 $error = "El usuario '$usuario' ya está en uso.";
+            } elseif ($dni !== '' && $this->model->existeDni($dni)) {
+                $error = "El DNI '$dni' ya está registrado.";
+            } elseif ($telefono !== '' && $this->model->existeTelefono($telefono)) {
+                $error = "El teléfono '$telefono' ya está registrado.";
             } else {
                     $datos = [
                         'nombre'             => $nombre,
