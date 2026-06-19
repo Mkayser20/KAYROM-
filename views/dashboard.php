@@ -1,5 +1,5 @@
 <?php
-require_once 'views/layout_header.php';
+require_once 'views/encabezado.php';
 
 // Gráfico: tipos de vehículo
 $statsV = $data['estadVehiculos'];

@@ -1,6 +1,6 @@
 <?php
 // views/vehiculos.php
-require_once 'views/layout_header.php';
+require_once 'views/encabezado.php';
 ?>
 
 <div class="page-header">

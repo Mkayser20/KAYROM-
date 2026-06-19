@@ -1,4 +1,5 @@
-<?php require_once 'views/layout_header.php'; ?>
+<?php 
+require_once 'views/encabezado.php'; ?>
 
 <div class="page-header">
     <h1>🚘 Vehículos</h1>
