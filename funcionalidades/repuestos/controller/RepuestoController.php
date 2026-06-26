@@ -15,7 +15,7 @@ class RepuestoController {
             'repuestos'  => $this->model->getAll(),  //obtener todos los repuestos
             'activePage' => 'repuestos'
         ];
-        require_once 'views/repuestos.php';
+        require_once 'funcionalidades/repuestos/views/repuestos.php';
     }
 
     //crear un nuevo repuesto
@@ -35,7 +35,7 @@ class RepuestoController {
         }
         //mostrar formulario vacío
         $data = ['activePage' => 'repuestos'];
-        require_once 'views/repuesto_form.php';
+        require_once 'funcionalidades/repuestos/views/repuesto_form.php';
     }
 
     //editar un repuesto existente
@@ -53,7 +53,7 @@ class RepuestoController {
             'repuesto'   => $this->model->getById($id),
             'activePage' => 'repuestos'
         ];
-        require_once 'views/repuesto_form.php';
+        require_once 'funcionalidades/repuestos/views/repuesto_form.php';
     }
 
     //eliminar un repuesto

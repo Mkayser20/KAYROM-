@@ -13,7 +13,7 @@ class ProveedorController {
             'proveedores' => $this->model->getAll(),  //obtener todos los proveedores
             'activePage'  => 'proveedores'
         ];
-        require_once 'views/proveedor.php';
+        require_once 'funcionalidades/proveedor/views/proveedor.php';
     }
 
     //crear un nuevo proveedor
@@ -31,7 +31,7 @@ class ProveedorController {
         }
         //mostrar formulario vacío con error si lo hay
         $data = ['error' => $error, 'activePage' => 'proveedores'];
-        require_once 'views/proveedor_form.php';
+        require_once 'funcionalidades/proveedor/views/proveedor_form.php';
     }
 
     //editar un proveedor existente
@@ -54,7 +54,7 @@ class ProveedorController {
             'error' => $error,
             'activePage' => 'proveedores'
         ];
-        require_once 'views/proveedor_form.php';
+        require_once 'funcionalidades/proveedor/views/proveedor_form.php';
     }
 
     //eliminar un proveedor

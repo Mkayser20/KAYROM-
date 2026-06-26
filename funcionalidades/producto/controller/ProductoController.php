@@ -13,7 +13,7 @@ class ProductoController {
             'productos'  => $this->model->getAll(),  //obtener todos los productos
             'activePage' => 'productos'
         ];
-        require_once 'views/productos_listado.php';
+        require_once 'funcionalidades/producto/views/productos_listado.php';
     }
 
     //crear un nuevo producto
@@ -27,7 +27,7 @@ class ProductoController {
         }
         //mostrar formulario vacío
         $data = ['activePage' => 'productos'];
-        require_once 'views/producto_form.php';
+        require_once 'funcionalidades/producto/views/producto_form.php';
     }
 
     //editar un producto existente
@@ -45,7 +45,7 @@ class ProductoController {
             'producto'   => $this->model->getById($id),
             'activePage' => 'productos'
         ];
-        require_once 'views/producto_form.php';
+        require_once 'funcionalidades/producto/views/producto_form.php';
     }
 
     //eliminar un producto

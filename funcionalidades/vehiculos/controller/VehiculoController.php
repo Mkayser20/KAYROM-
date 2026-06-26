@@ -14,7 +14,7 @@ class VehiculoController {
             'activePage' => 'vehiculos' //marcar página activa
         ];
         //cargar vista con lista de vehículos
-        require_once 'views/vehiculos_listado.php';
+        require_once 'funcionalidades/vehiculos/views/vehiculos_listado.php';
     }
 
     //crear un nuevo vehículo
@@ -31,7 +31,7 @@ class VehiculoController {
                     'error'      => $result['error'],
                     'formData'   => $_POST //retornar datos ingresados para que no se pierdan
                 ];
-                require_once 'views/vehiculo_form.php';
+                require_once 'funcionalidades/vehiculos/views/vehiculo_form.php';
                 return;
             }
             //éxito: redirigir a lista con mensaje
@@ -44,7 +44,7 @@ class VehiculoController {
             'tipos'      => $this->model->getTipos(),
             'activePage' => 'vehiculos'
         ];
-        require_once 'views/vehiculo_form.php';
+        require_once 'funcionalidades/vehiculos/views/vehiculo_form.php';
     }
 
     //editar un vehículo existente
@@ -63,7 +63,7 @@ class VehiculoController {
                     'error'      => $result['error'],
                     'formData'   => $_POST
                 ];
-                require_once 'views/vehiculo_form.php';
+                require_once 'funcionalidades/vehiculos/views/vehiculo_form.php';
                 return;
             }
             //éxito: redirigir a lista con mensaje
@@ -77,7 +77,7 @@ class VehiculoController {
             'tipos'      => $this->model->getTipos(),
             'activePage' => 'vehiculos'
         ];
-        require_once 'views/vehiculo_form.php';
+        require_once 'funcionalidades/vehiculos/views/vehiculo_form.php';
     }
 
     //eliminar un vehículo
