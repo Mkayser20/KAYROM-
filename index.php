@@ -8,18 +8,18 @@ $action = $_GET['action'] ?? 'index';
 //carga la conexion a la base de datos, los modelos y los controladores necesarios para cada pagina
 require_once 'config/base_datos.php';
 require_once 'models/UsuarioModel.php';
-require_once 'funcionalidades/vehiculos/model/VehiculoModel.php';
-require_once 'funcionalidades/producto/model/ProductoModel.php';
+require_once 'backend/vehiculos/model/VehiculoModel.php';
+require_once 'backend/producto/model/ProductoModel.php';
 require_once 'models/PedidoModel.php';
-require_once 'funcionalidades/empleado/models/EmpleadoModel.php';
-require_once 'funcionalidades/proveedor/models/ProveedorModel.php';
+require_once 'backend/empleado/models/EmpleadoModel.php';
+require_once 'backend/proveedor/models/ProveedorModel.php';
 require_once 'models/PermisoModel.php';
 require_once 'controllers/SesionController.php';
 require_once 'controllers/InicioController.php';
-require_once 'funcionalidades/vehiculos/controller/VehiculoController.php';
-require_once 'funcionalidades/producto/controller/ProductoController.php';
+require_once 'backend/vehiculos/controller/VehiculoController.php';
+require_once 'backend/producto/controller/ProductoController.php';
 require_once 'controllers/PedidoController.php';
-require_once 'funcionalidades/proveedor/controllers/ProveedorController.php';
+require_once 'backend/proveedor/controllers/ProveedorController.php';
 
 //paginas que se pueden ver sin estar logueado
 $paginasPublicas = ['iniciar_sesion', 'logout', 'recuperar_clave', 'restablecer_clave'];
@@ -107,9 +107,9 @@ switch ($page) {
         $c->$action();
         break;
     case 'repuestos':
-    require_once 'funcionalidades/repuestos/model/RepuestoModel.php';
+    require_once 'backend/repuestos/model/RepuestoModel.php';
     require_once 'models/MovimientoModel.php';
-    require_once 'funcionalidades/repuestos/controller/RepuestoController.php';
+    require_once 'backend/repuestos/controller/RepuestoController.php';
         $c = new RepuestoController();
         $c->$action();
     break;
@@ -120,7 +120,7 @@ switch ($page) {
     break;
 
     case 'empleados':
-    require_once 'funcionalidades/empleado/controller/EmpleadoController.php';
+    require_once 'backend/empleado/controller/EmpleadoController.php';
         $c = new EmpleadoController();
         $c->$action();
     break;

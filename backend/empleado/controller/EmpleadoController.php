@@ -12,7 +12,7 @@ class EmpleadoController {
             'empleados' => $this->model->getAll(),
             'activePage' => 'empleados'
         ];
-        require_once 'funcionalidades/empleado/views/empleados.php';
+        require_once 'backend/empleado/views/empleados.php';
     }
 
     public function create() {
@@ -26,7 +26,7 @@ class EmpleadoController {
             }
         }
         $data = ['error' => $error, 'activePage' => 'empleados'];
-        require_once 'funcionalidades/empleado/views/empleado_form.php';
+        require_once 'backend/empleado/views/empleado_form.php';
     }
 
     // excluir al usuario al editar
@@ -80,7 +80,7 @@ class EmpleadoController {
             'error' => $error,
             'activePage' => 'empleados'
         ];
-        require_once 'funcionalidades/empleado/views/empleado_form.php';
+        require_once 'backend/empleado/views/empleado_form.php';
     }
 
     public function delete() {
