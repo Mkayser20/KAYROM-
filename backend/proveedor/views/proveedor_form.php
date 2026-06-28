@@ -1,5 +1,5 @@
 <?php
-require_once 'views/encabezado.php';
+require_once 'compartidoCREO/views/encabezado.php';
 $p = $data['proveedor'] ?? [];
 $isEdit = !empty($p);
 ?>
@@ -62,4 +62,4 @@ document.querySelector('form').addEventListener('submit', function(e) {
 });
 </script>
 
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

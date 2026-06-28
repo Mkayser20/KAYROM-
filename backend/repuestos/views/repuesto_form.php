@@ -1,5 +1,5 @@
 <?php
-require_once 'views/encabezado.php';
+require_once 'compartidoCREO/views/encabezado.php';
 $r = $data['repuesto'] ?? null;
 $isEdit = !is_null($r);
 $action = $isEdit ? "index.php?page=repuestos&action=edit&id={$r['id']}" : "index.php?page=repuestos&action=create";
@@ -68,4 +68,4 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
     </form>
 </div>
 
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

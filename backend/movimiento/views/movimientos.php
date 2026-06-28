@@ -1,5 +1,5 @@
 <?php
-require_once 'views/encabezado.php';
+require_once 'compartidoCREO/views/encabezado.php';
 ?>
 
 <div class="page-header">
@@ -46,4 +46,4 @@ require_once 'views/encabezado.php';
     </div>
 </div>
 
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

@@ -7,18 +7,18 @@ $action = $_GET['action'] ?? 'index';
 
 //carga la conexion a la base de datos, los modelos y los controladores necesarios para cada pagina
 require_once 'config/base_datos.php';
-require_once 'models/UsuarioModel.php';
+require_once 'compartidoCREO/models/UsuarioModel.php';
 require_once 'backend/vehiculos/model/VehiculoModel.php';
 require_once 'backend/producto/model/ProductoModel.php';
-require_once 'models/PedidoModel.php';
+require_once 'backend/pedidos/model/PedidoModel.php';
 require_once 'backend/empleado/models/EmpleadoModel.php';
 require_once 'backend/proveedor/models/ProveedorModel.php';
-require_once 'models/PermisoModel.php';
-require_once 'controllers/SesionController.php';
-require_once 'controllers/InicioController.php';
+require_once 'compartidoCREO/models/PermisoModel.php';
+require_once 'backend/sesion/controller/SesionController.php';
+require_once 'backend/inicio/controllers/InicioController.php';
 require_once 'backend/vehiculos/controller/VehiculoController.php';
 require_once 'backend/producto/controller/ProductoController.php';
-require_once 'controllers/PedidoController.php';
+require_once 'backend/pedidos/controller/PedidoController.php';
 require_once 'backend/proveedor/controllers/ProveedorController.php';
 
 //paginas que se pueden ver sin estar logueado
@@ -51,7 +51,7 @@ if (!empty($_SESSION['usuario_id']) && ($_SESSION['rol'] ?? '') !== 'admin') {
 
     //si la pagina pedida es un modulo asignable, verifica si el usuario tiene permiso
     if (in_array($page, $modulosAsignables)) {
-        require_once 'models/PermisoModel.php';
+        require_once 'compartidoCREO/models/PermisoModel.php';
         $permisoModel = new PermisoModel();
 
         //si no tiene permiso, redirige al inicio
@@ -108,7 +108,7 @@ switch ($page) {
         break;
     case 'repuestos':
     require_once 'backend/repuestos/model/RepuestoModel.php';
-    require_once 'models/MovimientoModel.php';
+    require_once 'backend/movimiento/models/MovimientoModel.php';
     require_once 'backend/repuestos/controller/RepuestoController.php';
         $c = new RepuestoController();
         $c->$action();

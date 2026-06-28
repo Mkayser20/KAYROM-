@@ -1,5 +1,5 @@
 <?php
-require_once 'views/encabezado.php';
+require_once 'compartidoCREO/views/encabezado.php';
 $p = $data['producto'] ?? null;
 $isEdit = !is_null($p);
 $action = $isEdit ? "index.php?page=productos&action=edit&id={$p['id']}" : "index.php?page=productos&action=create";
@@ -68,4 +68,4 @@ $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','C
     </script>
     </form>
 </div>
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

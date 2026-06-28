@@ -1,6 +1,7 @@
 <?php
-require_once 'views/encabezado.php';
+require_once 'compartidoCREO/views/encabezado.php';
 
+// Gráfico: tipos de vehículo
 $statsV = $data['estadVehiculos'];
 $totalV = $data['totalVehiculos'] ?: 1;
 
@@ -31,6 +32,7 @@ foreach($statsV as $i=>$s){
 }
 ?>
 
+<!-- STAT CARDS -->
 <div class="stats-grid">
     <div class="stat-card blue">
         <div class="stat-icon">🚗</div>
@@ -62,8 +64,10 @@ foreach($statsV as $i=>$s){
     </div>
 </div>
 
+<!-- DASHBOARD GRID -->
 <div class="dashboard-grid">
 
+    <!-- Últimos Vehículos -->
     <div class="panel">
         <div class="panel-header">
             <div class="panel-title">🚘 Últimos Vehículos Añadidos</div>
@@ -92,6 +96,7 @@ foreach($statsV as $i=>$s){
         </div>
     </div>
 
+    <!-- Alertas Stock Bajo -->
     <div class="panel">
         <div class="panel-header">
             <div class="panel-title">⚠️ Alertas de Stock Bajo</div>
@@ -116,6 +121,7 @@ foreach($statsV as $i=>$s){
         </div>
     </div>
 
+    <!-- Gráfico por tipo de vehículo -->
     <div class="panel">
         <div class="panel-header">
             <div class="panel-title">📊 Vehículos por Tipo</div>
@@ -150,6 +156,7 @@ foreach($statsV as $i=>$s){
         </div>
     </div>
 
+    <!-- Pedidos Recientes -->
     <div class="panel">
         <div class="panel-header">
             <div class="panel-title">📦 Pedidos Recientes</div>
@@ -185,4 +192,4 @@ foreach($statsV as $i=>$s){
     </div>
 
 </div>
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/layout_footer.php'; ?>

@@ -1,4 +1,5 @@
-<?php require_once 'views/encabezado.php'; ?>
+<?php 
+require_once 'compartidoCREO/views/encabezado.php';
 
 <div class="page-header">
     <h1>📦 Pedidos</h1>
@@ -33,11 +34,15 @@
                     <td>
                         <div class="action-icons">
                             <?php if(strtolower($p['estado_pedido']) !== 'entregado'): ?>
-                            <a href="index.php?page=pedidos&action=delete&id=<?= $p['id'] ?>"
-                            onclick="return confirmarAccion(this.href, '¿Eliminar este pedido?')"
-                            style="color:var(--text-primary);"
-                            title="Eliminar">🗑️</a>
+                            <a href="index.php?page=pedidos&action=entregar&id=<?= $p['id'] ?>"
+                                onclick="return confirm('¿Confirmar entrega de este pedido?')"
+                                style="width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(34,197,94,0.15);color:var(--accent-green);text-decoration:none;"
+                                title="Confirmar entrega">✅</a>
                             <?php endif; ?>
+                            <a href="index.php?page=pedidos&action=delete&id=<?= $p['id'] ?>"
+                                onclick="return confirm('¿Eliminar este pedido?')"
+                                style="width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(239,68,68,0.15);color:var(--accent-red);text-decoration:none;"
+                                title="Eliminar">🗑️</a>
                         </div>
                     </td>
                 </tr>
@@ -46,4 +51,4 @@
         </table>
     </div>
 </div>
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/layout_footer.php'; ?>

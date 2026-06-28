@@ -1,4 +1,4 @@
-<?php require_once 'views/encabezado.php'; ?>
+<?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <?php
 $e = $data['empleado'] ?? null;
@@ -173,4 +173,4 @@ $action = $isEdit
     </form>
 </div>
 
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

@@ -13,7 +13,7 @@ class MovimientoController {
             'movimientos' => $this->model->getAll(), //obtener todos los movimientos
             'activePage'  => 'movimientos'
         ];
-        require_once 'views/movimientos.php';
+        require_once 'backend/movimiento/views/movimientos.php';
     }
 
     //crear un nuevo movimiento (entrada/salida)
@@ -27,7 +27,7 @@ class MovimientoController {
         }
         //mostrar formulario vacío
         $data = ['activePage' => 'movimientos'];
-        require_once 'views/movimiento_form.php';
+        require_once 'backend/movimiento/views/movimiento_form.php';
     }
 
     //eliminar un movimiento

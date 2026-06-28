@@ -13,7 +13,7 @@ class PedidoController {
             'pedidos'    => $this->model->getAll(),  //obtener todos los pedidos
             'activePage' => 'pedidos'
         ];
-        require_once 'views/pedidos_listado.php';
+        require_once 'backend/pedidos/views/pedidos_listado.php';
     }
 
     //crear un nuevo pedido
@@ -27,7 +27,7 @@ class PedidoController {
         }
         //mostrar formulario vacío
         $data = ['activePage' => 'pedidos'];
-        require_once 'views/pedido_form.php';
+        require_once 'backend/pedidos/views/pedido_form.php';
     }
 
     //eliminar un pedido

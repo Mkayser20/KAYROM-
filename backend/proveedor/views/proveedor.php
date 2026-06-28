@@ -1,4 +1,4 @@
-<?php require_once 'views/encabezado.php'; ?>
+<?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
     <h1>📦 Proveedores</h1>
@@ -42,4 +42,4 @@
     </div>
 </div>
 
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

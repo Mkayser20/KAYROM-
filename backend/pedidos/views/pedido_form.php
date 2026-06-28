@@ -1,5 +1,5 @@
 <?php
-require_once 'views/encabezado.php';
+require_once 'compartidoCREO/views/encabezado.php';
 ?>
 <div class="page-header">
     <h1>＋ Nuevo Pedido</h1>
@@ -63,4 +63,4 @@ require_once 'views/encabezado.php';
     </script>
     </form>
 </div>
-<?php require_once 'views/pie_pagina.php'; ?>
+<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>
