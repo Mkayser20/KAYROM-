@@ -5,7 +5,6 @@ $msgTexts      = [
     'created' => '✅ Registro creado exitosamente.',
     'updated' => '✅ Registro actualizado.',
     'deleted'  => '🗑️ Registro eliminado.',
-    'agregado' => '🛒 Repuesto añadido al carrito.',
 ];
 $nombreUsuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
 $rolUsuario    = $_SESSION['rol']    ?? '';
@@ -90,10 +89,6 @@ $esAdmin = ($rolUsuario === 'admin');
     </a>
      <?php endif; ?>
 
-    <a href="index.php?page=carrito" class="nav-icon-btn <?= $activePage==='carrito'?'active':'' ?>">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        <span class="tooltip">Carrito</span>
-    </a>
     <?php if ($esAdmin): ?>
     <a href="index.php?page=registrar_usuario&action=registrar_usuario" class="nav-icon-btn <?= $activePage==='registrar_usuario'?'active':'' ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>

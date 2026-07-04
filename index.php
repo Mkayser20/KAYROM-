@@ -20,6 +20,8 @@ require_once 'backend/vehiculos/controller/VehiculoController.php';
 require_once 'backend/producto/controller/ProductoController.php';
 require_once 'backend/pedidos/controller/PedidoController.php';
 require_once 'backend/proveedor/controllers/ProveedorController.php';
+require_once 'backend/carrito/models/CarritoModels.php';
+require_once 'backend/carrito/controllers/CarritoControllers.php';
 
 //paginas que se pueden ver sin estar logueado
 $paginasPublicas = ['iniciar_sesion', 'logout', 'recuperar_clave', 'restablecer_clave'];
@@ -124,6 +126,12 @@ switch ($page) {
         $c = new EmpleadoController();
         $c->$action();
     break;
+
+    case 'carrito':
+        require_once 'backend/carrito/controllers/CarritoControllers.php';
+        $c = new CarritoController();
+        $c->$action();
+        break;
 
     //si la pagina no coincide con ninguna de las anteriores, muestra el inicio o el login segun haya sesion o no
     default:

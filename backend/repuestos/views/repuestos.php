@@ -45,6 +45,13 @@ require_once 'compartidoCREO/views/encabezado.php';
                             onclick="return confirmarAccion(this.href, '¿Eliminar este repuesto?')">🗑️</a>
                         </div>
                     </td>
+                    <td>
+                        <div class="action-icons">
+                            <?php if ($r['stock'] > 0): ?>
+                            <a href="index.php?page=carrito&action=agregar&id=<?= $r['id'] ?>" class="action-edit" title="Agregar al carrito">🛒</a>
+                            <?php endif; ?>
+                        </div>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
