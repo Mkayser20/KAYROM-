@@ -53,7 +53,9 @@
                         id="nueva_password"
                         name="nueva_password"
                         placeholder="Nueva contraseña"
-                        minlength="6"
+                        minlength="8"
+                        pattern="(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}"
+                        title="La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial."
                         required
                     >
                     <button type="button" class="toggle-pass" onclick="togglePass('nueva_password', this)">
@@ -79,7 +81,9 @@
                         id="confirmar_password"
                         name="confirmar_password"
                         placeholder="Confirmar contraseña"
-                        minlength="6"
+                        minlength="8"
+                        pattern="(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}"
+                        title="La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial."
                         required
                     >
                     <button type="button" class="toggle-pass" onclick="togglePass('confirmar_password', this)">

@@ -142,7 +142,11 @@
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </span>
                     <input type="password" id="pass1" name="contrasena_usuario"
-                        placeholder="Mínimo 6 caracteres">
+                        placeholder="Mínimo 8 caracteres" 
+                        minlength="8"
+                        pattern="(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}"
+                        title="La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial."
+                        required>
                     <button type="button" class="toggle-pass" onclick="togglePass('pass1',this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
@@ -156,7 +160,11 @@
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </span>
                     <input type="password" id="pass2" name="contrasene_confirm"
-                        placeholder="Repetí la contraseña">
+                        placeholder="Repetí la contraseña"
+                        minlength="8"
+                        pattern="(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}"
+                        title="La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial."
+                        required>
                     <button type="button" class="toggle-pass" onclick="togglePass('pass2',this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>

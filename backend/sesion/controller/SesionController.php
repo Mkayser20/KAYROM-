@@ -64,8 +64,8 @@ class SesionController {
                 $error = 'Ingresá un correo electrónico válido.';
             } elseif ($pass !== $pass2) {
                 $error = 'Las contraseñas no coinciden.';
-            } elseif (strlen($pass) < 6) {
-                $error = 'La contraseña debe tener al menos 6 caracteres.';
+            } elseif (!preg_match('/^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/', $pass)) {
+                $error = 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.';
             } elseif ($this->model->existeEmail($email)) {
                 $error = "El correo '$email' ya está registrado.";
             } elseif ($this->model->existeUsuario($usuario)) {
@@ -92,7 +92,7 @@ class SesionController {
                 if ($nuevoId) {
                     // El admin tiene todos los módulos, los demas se asignan por el mismo
                     if ($rol !== 'admin') {
-                        require_once 'models/PermisoModel.php';
+                        require_once 'compartidoCREO/models/PermisoModel.php';
                         $permisoModel = new PermisoModel();
                         $permisoModel->setForUsuario($nuevoId, $modulos);
                     }
@@ -163,15 +163,14 @@ class SesionController {
                 $error = 'El enlace ya no es válido o ha expirado. Solicitá uno nuevo.';
             }
         }
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && $usuario) {
             $nueva    = $_POST['nueva_password']     ?? '';
             $confirma = $_POST['confirmar_password'] ?? '';
 
             if ($nueva !== $confirma) {
                 $error = 'Las contraseñas no coinciden.';
-            } elseif (strlen($nueva) < 6) {
-                $error = 'La contraseña debe tener al menos 6 caracteres.';
+            } elseif (!preg_match('/^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/', $nueva)) {
+                $error = 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial.';
             } else {
                 $this->model->resetPassword((int)$usuario['id'], $nueva);
                 header('Location: index.php?page=iniciar_sesion&msg=password_changed');
