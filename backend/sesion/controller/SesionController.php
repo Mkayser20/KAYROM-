@@ -1,10 +1,13 @@
 <?php
+require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
+
 
 class SesionController {
     private $model;
 
     public function __construct() {
         $this->model = new UsuarioModel();
+        $this->auditoria = new AuditoriaModel();
     }
 
     //valida mail y contraseña, inicia sesión y guarda datos en $_SESSION
@@ -27,6 +30,12 @@ class SesionController {
                     $_SESSION['nombre']     = $user['nombre'] ?? $user['nombre_usuario'];
                     $_SESSION['email']      = $user['email'];
                     $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
+
+                     $this->auditoria->registrar(
+                        'LOGIN',
+                        'Autenticación',
+                        'Inicio de sesión exitoso'
+                    );
                     header('Location: index.php?page=inicio');
                     exit;
                 } else {
