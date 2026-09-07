@@ -40,6 +40,12 @@ class SesionController {
                     exit;
                 } else {
                     $error = 'Correo o contraseña incorrectos.';
+                    // AUDITORÍA: Login fallido
+                    $this->auditoria->registrar(
+                        'LOGIN_FALLIDO',
+                        'Autenticación',
+                        "Intento fallido con email: $email"
+                    );
                 }
             }
         }
@@ -104,6 +110,14 @@ class SesionController {
                         require_once 'compartidoCREO/models/PermisoModel.php';
                         $permisoModel = new PermisoModel();
                         $permisoModel->setForUsuario($nuevoId, $modulos);
+
+                        // AUDITORÍA: Usuario creado
+                        $this->auditoria->registrar(
+                            'CREAR',
+                            'Usuarios',
+                            "Se creó el usuario '$usuario'",
+                            $nuevoId
+                        );
                     }
                     $success = '¡Usuario creado con éxito!';
                     $_POST = [];
@@ -121,6 +135,14 @@ class SesionController {
     }
 
      public function cerrarSesion() {
+        // AUDITORÍA: Logout (se registra ANTES de destruir la sesión)
+        if (isset($_SESSION['usuario_id'])) {
+            $this->auditoria->registrar(
+                'LOGOUT',
+                'Autenticación',
+                'Cierre de sesión del usuario'
+            );
+        }
         session_destroy();
         header('Location: index.php?page=iniciar_sesion');
         exit;

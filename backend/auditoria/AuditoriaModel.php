@@ -21,8 +21,6 @@ class AuditoriaModel
         $registro_id = null,
         $usuario_id = null
     ) {
-       die("LLEGÓ A AUDITORIA");
-
         if ($usuario_id === null) {
             $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
         }
@@ -53,7 +51,7 @@ class AuditoriaModel
             die("DIAGNÓSTICO ERROR EXECUTE: " . $stmt->error);
         }
 
-        // 4. Confirmación de éxito
-        die("DIAGNÓSTICO ÉXITO: ¡La auditoría se insertó correctamente en MySQL!");
+        $stmt->close();
+         return true;
     }
 }
