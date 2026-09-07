@@ -22,8 +22,8 @@ class EmpleadoController {
         $error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($this->model->create($_POST)) {
-                $nuevoId = $this->model->getLastInsertedId();
-                $nombre  = trim($_POST['nombre'] ?? '');
+                $nuevoId  = $this->model->getLastInsertedId();
+                $nombre   = trim($_POST['nombre'] ?? '');
                 $apellido = trim($_POST['apellido'] ?? '');
 
                 // AUDITORÍA: Crear
@@ -34,13 +34,17 @@ class EmpleadoController {
                     $nuevoId
                 );
 
+                if (!empty($_POST['modal'])) {
+                    require_once 'backend/empleado/views/guardado_modal.php';
+                    exit;
+                }
                 header('Location: index.php?page=empleados&msg=created');
                 exit;
             } else {
                 $error = 'Error al guardar el empleado.';
             }
         }
-        $data = ['error' => $error, 'activePage' => 'empleados'];
+        $data = ['error' => $error, 'modal' => isset($_GET['modal']), 'activePage' => 'empleados'];
         require_once 'backend/empleado/views/empleado_form.php';
     }
 
@@ -51,7 +55,7 @@ class EmpleadoController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // --- Validación de unicidad (excluyendo al propio usuario que se edita) ---
-            require_once 'models/UsuarioModel.php';
+            require_once 'compartidoCREO/models/UsuarioModel.php';
             $usuarioModel = new UsuarioModel();
 
             $actual    = $this->model->getById($id);
@@ -81,7 +85,7 @@ class EmpleadoController {
                 $modulos = $_POST['modulos'] ?? [];
                 $permisoModel->setForUsuario($id, $modulos);
 
-                $nombre  = trim($_POST['nombre'] ?? '');
+                $nombre   = trim($_POST['nombre'] ?? '');
                 $apellido = trim($_POST['apellido'] ?? '');
 
                 // AUDITORÍA: Editar
@@ -92,6 +96,10 @@ class EmpleadoController {
                     $id
                 );
 
+                if (!empty($_POST['modal'])) {
+                    require_once 'backend/empleado/views/guardado_modal.php';
+                    exit;
+                }
                 header('Location: index.php?page=empleados&msg=updated');
                 exit;
             } else {
@@ -101,6 +109,7 @@ class EmpleadoController {
         $data = [
             'empleado' => $this->model->getById($id),
             'error' => $error,
+            'modal' => isset($_GET['modal']),
             'activePage' => 'empleados'
         ];
         require_once 'backend/empleado/views/empleado_form.php';
@@ -108,7 +117,7 @@ class EmpleadoController {
 
     public function delete() {
         $id = $_GET['id'] ?? 0;
-        
+
         $empleado = $this->model->getById($id);
         if ($this->model->delete($id)) {
             $nombreCompleto = isset($empleado['nombre']) ? "{$empleado['nombre']} {$empleado['apellido']}" : "ID $id";

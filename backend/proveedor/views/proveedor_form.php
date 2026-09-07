@@ -35,7 +35,7 @@ $isEdit = !empty($p);
             </div>
         </div>
 
-        <button type="submit" class="btn btn-green"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
+        <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
     </form>
 </div>
 

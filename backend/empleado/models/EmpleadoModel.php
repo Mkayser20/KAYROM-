@@ -6,12 +6,19 @@ class EmpleadoModel {
         $this->db = Database::getInstance()->getConexion();
     }
 
+    // Devuelve el ID de la última fila insertada (lo necesita el módulo de auditoría)
+    public function getLastInsertedId() {
+        return $this->db->insert_id;
+    }
+
     public function getAll() {
     $result = $this->db->query(
         "SELECT u.id, u.nombre_usuario, u.email, u.rol, u.activo,
-                p.nombre, p.apellido, p.domicilio, p.dni, p.telefono_persona
+                p.nombre, p.apellido, p.domicilio, p.dni, p.telefono_persona,
+                emp.rango_trabajo, emp.especialidad
          FROM usuario u
          LEFT JOIN persona p ON p.id = u.persona_id
+         LEFT JOIN empleado emp ON emp.persona_id = p.id
          ORDER BY p.apellido ASC"
     );
     return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];

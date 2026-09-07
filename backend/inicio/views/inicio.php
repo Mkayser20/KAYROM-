@@ -4,7 +4,7 @@ require_once 'compartidoCREO/views/encabezado.php';
 $statsV = $data['estadVehiculos'];
 $totalV = $data['totalVehiculos'] ?: 1;
 
-$colors = ['#3b82f6','#22c55e','#f97316','#a855f7','#ef4444','#eab308'];
+$colors = ['#3B82F6','#60A5FA','#6366F1','#38BDF8','#10B981','#EF4444'];
 
 function pieSegment($cx,$cy,$r,$startAngle,$endAngle,$color){
     if($endAngle-$startAngle>=360) $endAngle=$startAngle+359.99;
@@ -33,28 +33,28 @@ foreach($statsV as $i=>$s){
 
 <div class="stats-grid">
     <div class="stat-card blue">
-        <div class="stat-icon">🚗</div>
+        <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
         <div class="stat-info">
             <div class="stat-label">Total Vehículos</div>
             <div class="stat-value"><?= $data['totalVehiculos'] ?></div>
         </div>
     </div>
     <div class="stat-card green">
-        <div class="stat-icon">📦</div>
+        <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V21H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
         <div class="stat-info">
             <div class="stat-label">Unidades en Stock</div>
             <div class="stat-value"><?= $data['totalStock'] ?></div>
         </div>
     </div>
     <div class="stat-card orange">
-        <div class="stat-icon">⚠️</div>
+        <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <div class="stat-info">
             <div class="stat-label">Productos Stock Bajo</div>
             <div class="stat-value"><?= $data['stockBajo'] ?></div>
         </div>
     </div>
     <div class="stat-card red">
-        <div class="stat-icon">📋</div>
+        <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
         <div class="stat-info">
             <div class="stat-label">Total Pedidos</div>
             <div class="stat-value"><?= $data['totalPedidos'] ?></div>
@@ -67,27 +67,32 @@ foreach($statsV as $i=>$s){
     <div class="panel">
         <div class="panel-header">
             <div class="panel-title">🚘 Últimos Vehículos Añadidos</div>
-            <a href="index.php?page=vehiculos&action=create" class="btn btn-green" style="font-size:11px;padding:5px 12px;">+ Nuevo</a>
+            <a href="index.php?page=vehiculos&action=create" class="btn btn-primary" style="font-size:11px;padding:5px 12px;">+ Nuevo</a>
         </div>
         <div class="panel-body">
             <table>
-                <thead><tr><th>Patente</th><th>Modelo</th><th>Tipo</th><th>Año</th><th></th></tr></thead>
+                <thead><tr><th>Patente</th><th>Modelo</th><th>Tipo</th><th>Año</th><th>Estado</th><th></th></tr></thead>
                 <tbody>
                 <?php if(empty($data['recentVehiculos'])): ?>
-                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Sin registros aún</td></tr>
+                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Sin registros aún</td></tr>
                 <?php else: foreach($data['recentVehiculos'] as $v): ?>
+                    <?php
+                        $estadoBadge = ['En Diagnóstico'=>'reparacion','En Reparación'=>'reparacion','Esperando Repuestos'=>'vendido','Listo para Entrega'=>'disponible','Entregado'=>'disponible'];
+                        $et = $v['estado_taller'] ?? 'En Diagnóstico';
+                    ?>
                     <tr>
                         <td><strong><?= htmlspecialchars($v['patente'] ?? '-') ?></strong></td>
                         <td><?= htmlspecialchars($v['modelo_vehiculo'] ?? '-') ?></td>
                         <td style="color:var(--text-muted);"><?= htmlspecialchars($v['tipo_vehiculo'] ?? '-') ?></td>
-                        <td style="color:var(--text-muted);"><?= $v['anio_vehiculo'] ?? '-' ?></td>
-                        <td><a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="action-edit" style="text-decoration:none;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:rgba(59,130,246,0.15);color:var(--accent-blue);">✏️</a></td>
+                        <td style="color:var(--text-muted);"><?= $v['anio'] ?? '-' ?></td>
+                        <td><span class="badge-status <?= $estadoBadge[$et] ?? 'reparacion' ?>" style="font-size:10px;"><?= htmlspecialchars($et) ?></span></td>
+                        <td><a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="action-edit" style="text-decoration:none;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></a></td>
                     </tr>
                 <?php endforeach; endif; ?>
                 </tbody>
             </table>
             <div style="padding:12px 16px;">
-                <a href="index.php?page=vehiculos" class="btn btn-green" style="font-size:12px;">Ver Todos &rsaquo;</a>
+                <a href="index.php?page=vehiculos" class="btn btn-ghost" style="font-size:12px;">Ver Todos &rsaquo;</a>
             </div>
         </div>
     </div>
@@ -104,14 +109,14 @@ foreach($statsV as $i=>$s){
                 <div class="alert-item">
                     <div style="display:flex;align-items:center;">
                         <div class="alert-dot"></div>
-                        <span><?= htmlspecialchars($item['nombre_producto']) ?></span>
+                        <span><?= htmlspecialchars($item['nombre']) ?></span>
                     </div>
-                    <span class="alert-stock"><?= $item['cantidad_disponible'] ?> en stock</span>
+                    <span class="alert-stock"><?= $item['stock'] ?> en stock</span>
                 </div>
             <?php endforeach; endif; ?>
             </div>
             <div style="padding:12px 16px;">
-                <a href="index.php?page=productos" class="btn btn-orange" style="font-size:12px;">Ver Detalles &rsaquo;</a>
+                <a href="index.php?page=repuestos" class="btn btn-ghost" style="font-size:12px;">Ver Detalles &rsaquo;</a>
             </div>
         </div>
     </div>

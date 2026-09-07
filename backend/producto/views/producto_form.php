@@ -45,7 +45,7 @@ $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','C
             <label>Alerta de stock bajo (mínimo)</label>
             <input type="number" name="alerta_stockBajo" value="<?= $p['alerta_stockBajo'] ?? 5 ?>" min="0">
         </div>
-        <button type="submit" class="btn btn-green"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+        <button type="submit" class="btn btn-primary"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
 
     <script>
         function mostrarError(mensaje) {

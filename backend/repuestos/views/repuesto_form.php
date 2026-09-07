@@ -36,15 +36,30 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
         </div>
         <div class="form-row">
             <div class="form-group">
+                <label>SKU (opcional)</label>
+                <input type="text" name="sku" data-optional="1" value="<?= htmlspecialchars($r['sku'] ?? '') ?>" placeholder="Código interno o del fabricante">
+            </div>
+            <div class="form-group">
+                <label>Proveedor habitual</label>
+                <select name="proveedor_id" data-optional="1">
+                    <option value="">— Sin especificar —</option>
+                    <?php foreach ($data['proveedores'] as $prov): ?>
+                    <option value="<?= $prov['id'] ?>" <?= (($r['proveedor_id']??null)==$prov['id'])?'selected':'' ?>><?= htmlspecialchars($prov['nombre_proveedor']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
                 <label>Stock Actual</label>
-                <input type="number" name="stock" value="<?= $r['stock'] ?? 0 ?>" min="0 >
+                <input type="number" name="stock" value="<?= $r['stock'] ?? 0 ?>" min="0">
             </div>
             <div class="form-group">
                 <label>Stock Mínimo</label>
                 <input type="number" name="stock_minimo" value="<?= $r['stock_minimo'] ?? 5 ?>" min="0">
             </div>
         </div>
-        <button type="submit" class="btn btn-green"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+        <button type="submit" class="btn btn-primary"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
 
     <script>
         function mostrarError(mensaje) {
@@ -54,7 +69,7 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
         }
 
         document.querySelector('form').addEventListener('submit', function(e) {
-            const inputs = document.querySelectorAll('form input[name], form select[name]');
+            const inputs = document.querySelectorAll('form input[name]:not([data-optional]), form select[name]:not([data-optional])');
             for (const input of inputs) {
                 if (!input.value.trim()) {
                     e.preventDefault();

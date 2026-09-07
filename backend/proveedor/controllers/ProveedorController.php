@@ -43,6 +43,11 @@ class ProveedorController {
                 exit;
             } else {
                 $error = 'Error al guardar el proveedor.';
+                if (!empty($_POST['ajax'])) {
+                    http_response_code(422);
+                    echo $error;
+                    exit;
+                }
             }
         }
         // mostrar formulario vacío con error si lo hay
@@ -72,6 +77,11 @@ class ProveedorController {
                 exit;
             } else {
                 $error = 'Error al actualizar.';
+                if (!empty($_POST['ajax'])) {
+                    http_response_code(422);
+                    echo $error;
+                    exit;
+                }
             }
         }
         // mostrar formulario con datos del proveedor

@@ -27,8 +27,10 @@ $action = $isEdit
         <div id="toast-error" class="toast-error"></div>
 
         <div class="form-group">
-            <label>Cantidad</label>
-            <input type="number" name="cantidad_vehiculo" value="1" min="1" max="1" readonly>
+            <label>Año</label>
+            <input type="number" name="anio" min="1950" max="2100" placeholder="2024"
+                   value="<?= htmlspecialchars($formData['anio'] ?? $v['anio'] ?? '') ?>">
+            <input type="hidden" name="cantidad_vehiculo" value="1">
         </div>
         </div>
         <div class="form-row">
@@ -44,34 +46,52 @@ $action = $isEdit
         <div class="form-row">
             <div class="form-group">
                 <label>Modelo</label>
-                <select name="modelo_vehiculo_id">
-                    <option value="0">— Seleccionar —</option>
-                    <?php foreach($data['modelos'] as $m): ?>
-                    <option value="<?= $m['id'] ?>" <?= ($formData['modelo_vehiculo_id'] ?? $v['modelo_vehiculo_id'] ?? 0)==$m['id']?'selected':'' ?>>
-                        <?= htmlspecialchars($m['modelo_vehiculo']) ?> (<?= $m['anio_vehiculo'] ?>)
-                    </option>
+                <div class="combo-search" id="combo-modelo">
+                    <input type="text" class="combo-input" placeholder="Buscar modelo..." autocomplete="off">
+                    <input type="hidden" name="modelo_vehiculo_id" class="combo-value">
+                    <div class="combo-dropdown"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tipo de Vehículo</label>
+                <div class="combo-search" id="combo-tipo">
+                    <input type="text" class="combo-input" placeholder="Buscar tipo..." autocomplete="off">
+                    <input type="hidden" name="tipo_vehiculo_id" class="combo-value">
+                    <div class="combo-dropdown"></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Estado en Taller</label>
+                <?php $estActual = $formData['estado_taller'] ?? $v['estado_taller'] ?? 'En Diagnóstico'; ?>
+                <select name="estado_taller">
+                    <?php foreach (['En Diagnóstico','En Reparación','Esperando Repuestos','Listo para Entrega'] as $est): ?>
+                    <option value="<?= $est ?>" <?= $estActual===$est?'selected':'' ?>><?= $est ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
-                <label>Tipo de Vehículo</label>
-                <select name="tipo_vehiculo_id">
-                    <option value="0">— Seleccionar —</option>
-                    <?php foreach($data['tipos'] as $t): ?>
-                    <option value="<?= $t['id'] ?>" <?= ($formData['tipo_vehiculo_id'] ?? $v['tipo_vehiculo_id'] ?? 0)==$t['id']?'selected':'' ?>>
-                        <?= htmlspecialchars($t['tipo_vehiculo']) ?>
-                    </option>
-                    <?php endforeach; ?>
-                </select>
+                <label>Kilometraje</label>
+                <input type="number" name="kilometraje" min="0" value="<?= htmlspecialchars($formData['kilometraje'] ?? $v['kilometraje'] ?? 0) ?>">
             </div>
         </div>
         <div class="form-group">
             <label>Fecha de Ingreso</label>
             <input type="date" name="fecha_ingreso" value="<?= isset($formData['fecha_ingreso']) ? htmlspecialchars($formData['fecha_ingreso']) : (isset($v['fecha_ingreso']) ? substr($v['fecha_ingreso'],0,10) : date('Y-m-d')) ?>">
         </div>
-        <button type="submit" class="btn btn-green"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+        <button type="submit" class="btn btn-primary"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
 
     <script>
+        // Opciones para los combos de Modelo y Tipo (vienen del backend)
+        const opcionesModelos = <?= json_encode(array_map(fn($m) => ['id' => $m['id'], 'label' => $m['modelo_vehiculo']], $data['modelos'])) ?>;
+        const opcionesTipos   = <?= json_encode(array_map(fn($t) => ['id' => $t['id'], 'label' => $t['tipo_vehiculo']], $data['tipos'])) ?>;
+        crearCombo('combo-modelo', opcionesModelos);
+        crearCombo('combo-tipo', opcionesTipos);
+        // Si estoy editando, precargo el modelo/tipo que ya tenía este vehículo
+        document.getElementById('combo-modelo')._setValor(<?= (int)($formData['modelo_vehiculo_id'] ?? $v['modelo_vehiculo_id'] ?? 0) ?>);
+        document.getElementById('combo-tipo')._setValor(<?= (int)($formData['tipo_vehiculo_id'] ?? $v['tipo_vehiculo_id'] ?? 0) ?>);
+
         function mostrarError(mensaje) {
             const toast = document.getElementById('toast-error');
             toast.textContent = mensaje;
@@ -82,8 +102,8 @@ $action = $isEdit
             const patente  = document.querySelector('input[name="patente"]').value.trim();
             const chasis   = document.querySelector('input[name="numero_chasis"]').value.trim();
             const motor    = document.querySelector('input[name="numero_motor"]').value.trim();
-            const modelo   = document.querySelector('select[name="modelo_vehiculo_id"]')?.value;
-            const tipo     = document.querySelector('select[name="tipo_vehiculo_id"]')?.value;
+            const modelo   = document.querySelector('input[name="modelo_vehiculo_id"]')?.value;
+            const tipo     = document.querySelector('input[name="tipo_vehiculo_id"]')?.value;
 
             if (!patente) { e.preventDefault(); mostrarError('Ingresá la patente'); return; }
             if (!chasis)  { e.preventDefault(); mostrarError('Ingresá el número de chasis'); return; }

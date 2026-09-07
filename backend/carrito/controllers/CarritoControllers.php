@@ -50,4 +50,49 @@ class CarritoController {
         header('Location: index.php?page=carrito');
         exit;
     }
+
+    // Genera un pedido de compra (uno por proveedor) con todo lo que hay en el carrito, y lo vacía
+    public function solicitar() {
+        $usuario_id = $_SESSION['usuario_id'] ?? 0;
+        $items = $this->model->getByUsuario($usuario_id);
+
+        if (empty($items)) {
+            header('Location: index.php?page=carrito');
+            exit;
+        }
+
+        $responsable = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
+        $pedidoModel = new PedidoModel();
+
+        // Agrupo los ítems del carrito por proveedor (cada proveedor = un pedido aparte)
+        $grupos = [];
+        foreach ($items as $item) {
+            $clave = $item['proveedor_id'] ?? 'sin_proveedor';
+            $grupos[$clave]['proveedor_id'] = $item['proveedor_id'] ?? null;
+            $grupos[$clave]['items'][] = $item;
+        }
+
+        foreach ($grupos as $grupo) {
+            $detalle = [];
+            $cantidadTotal = 0;
+            foreach ($grupo['items'] as $item) {
+                $detalle[] = $item['cantidad'] . 'x ' . $item['nombre'];
+                $cantidadTotal += $item['cantidad'];
+            }
+            $pedidoModel->create([
+                'estado_pedido'      => 'Pendiente',
+                'responsable_pedido' => $responsable,
+                'numero_unico'       => rand(1000, 9999),
+                'cantidad'           => $cantidadTotal,
+                'detalle_pedido'     => implode(', ', $detalle),
+                'proveedor_id'       => $grupo['proveedor_id'],
+            ]);
+        }
+
+        // Una vez generado el/los pedido(s), se vacía el carrito
+        $this->model->vaciar($usuario_id);
+
+        header('Location: index.php?page=pedidos&msg=created');
+        exit;
+    }
 }

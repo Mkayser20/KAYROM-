@@ -15,8 +15,11 @@ class RepuestoController {
 
     // mostrar lista de todos los repuestos
     public function index() {
+        $proveedorModel = new ProveedorModel();
         $data = [
-            'repuestos'  => $this->model->getAll(),
+            'repuestos'  => $this->model->getAll(),      //obtener todos los repuestos
+            'categorias' => $this->model->getCategorias(), //categorías reales, para el filtro
+            'proveedores'=> $proveedorModel->getAll(),    //para el select de proveedor en el alta rápida
             'activePage' => 'repuestos'
         ];
         require_once 'backend/repuestos/views/repuestos.php';
@@ -26,7 +29,7 @@ class RepuestoController {
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nuevoId = $this->model->create($_POST);
-            
+
             // registrar movimiento de entrada de repuesto
             $this->movimientoModel->create([
                 'tipo'        => 'Entrada',
@@ -47,9 +50,11 @@ class RepuestoController {
             header('Location: index.php?page=repuestos&msg=created');
             exit;
         }
-
-        // mostrar formulario vacío
-        $data = ['activePage' => 'repuestos'];
+        //mostrar formulario vacío
+        $data = [
+            'proveedores' => (new ProveedorModel())->getAll(),
+            'activePage'  => 'repuestos'
+        ];
         require_once 'backend/repuestos/views/repuesto_form.php';
     }
 
@@ -76,8 +81,9 @@ class RepuestoController {
 
         // mostrar formulario con datos del repuesto
         $data = [
-            'repuesto'   => $this->model->getById($id),
-            'activePage' => 'repuestos'
+            'repuesto'    => $this->model->getById($id),
+            'proveedores' => (new ProveedorModel())->getAll(),
+            'activePage'  => 'repuestos'
         ];
         require_once 'backend/repuestos/views/repuesto_form.php';
     }
@@ -85,7 +91,7 @@ class RepuestoController {
     // eliminar un repuesto
     public function delete() {
         $id = $_GET['id'] ?? 0;
-        
+
         // Obtenemos los datos antes de eliminar para registrar el nombre en la auditoría
         $repuesto = $this->model->getById($id);
         $nombreRepuesto = $repuesto['nombre'] ?? "ID $id";

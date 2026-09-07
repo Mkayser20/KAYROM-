@@ -8,6 +8,15 @@ require_once 'compartidoCREO/views/encabezado.php';
 <div class="form-card">
     <form method="POST" action="index.php?page=pedidos&action=create">
         <div id="toast-error" class="toast-error"></div>
+        <div class="form-group">
+            <label>Proveedor</label>
+            <select name="proveedor_id" data-optional="1">
+                <option value="">— Sin especificar —</option>
+                <?php foreach ($data['proveedores'] as $prov): ?>
+                <option value="<?= $prov['id'] ?>"><?= htmlspecialchars($prov['nombre_proveedor']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
         <div class="form-row">
             <div class="form-group">
                 <label>Estado del Pedido</label>
@@ -50,7 +59,7 @@ require_once 'compartidoCREO/views/encabezado.php';
         }
 
         document.querySelector('form').addEventListener('submit', function(e) {
-            const inputs = document.querySelectorAll('form input[name], form select[name]');
+            const inputs = document.querySelectorAll('form input[name]:not([data-optional]), form select[name]:not([data-optional])');
             for (const input of inputs) {
                 if (!input.value.trim()) {
                     e.preventDefault();

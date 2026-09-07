@@ -14,7 +14,8 @@ class PedidoController {
     // mostrar lista de todos los pedidos
     public function index() {
         $data = [
-            'pedidos'    => $this->model->getAll(),  // obtener todos los pedidos
+            'pedidos'    => $this->model->getAll(),  //obtener todos los pedidos
+            'proveedores'=> (new ProveedorModel())->getAll(), //para el select del alta rápida
             'activePage' => 'pedidos'
         ];
         require_once 'backend/pedidos/views/pedidos_listado.php';
@@ -25,7 +26,7 @@ class PedidoController {
         // si es POST, guardar nuevo pedido
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nuevoId = $this->model->create($_POST);
-            
+
             $proveedorId = $_POST['proveedor_id'] ?? $_POST['proveedor'] ?? 'N/A';
             $total       = $_POST['total'] ?? $_POST['monto'] ?? '';
 
@@ -42,15 +43,18 @@ class PedidoController {
             header('Location: index.php?page=pedidos&msg=created');
             exit;
         }
-        // mostrar formulario vacío
-        $data = ['activePage' => 'pedidos'];
+        //mostrar formulario vacío
+        $data = [
+            'proveedores' => (new ProveedorModel())->getAll(),
+            'activePage'  => 'pedidos'
+        ];
         require_once 'backend/pedidos/views/pedido_form.php';
     }
 
     // eliminar un pedido
     public function delete() {
         $id = (int)($_GET['id'] ?? 0);
-        
+
         $pedido = $this->model->getById($id);
 
         if ($this->model->delete($id)) {
@@ -71,7 +75,7 @@ class PedidoController {
     // marcar un pedido como entregado
     public function entregar() {
         $id = (int)($_GET['id'] ?? 0);
-        
+
         if ($this->model->entregar($id)) {
             // AUDITORÍA: Registro de cambio de estado
             $this->auditoria->registrar(

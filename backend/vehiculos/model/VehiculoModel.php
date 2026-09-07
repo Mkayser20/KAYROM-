@@ -6,6 +6,11 @@ class VehiculoModel {
         $this->db = Database::getInstance()->getConexion();
     }
 
+    // Devuelve el ID de la última fila insertada (lo necesita el módulo de auditoría)
+    public function getLastInsertedId() {
+        return $this->db->insert_id;
+    }
+
     public function getAll() {
         $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo
                 FROM vehiculo v
@@ -69,10 +74,14 @@ class VehiculoModel {
         $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
         $compat_id        = (int)($data['compatibilidad_repuestos_id'] ?? 0);
         $fecha            = $this->db->real_escape_string($data['fecha_ingreso'] ?? date('Y-m-d'));
+        $estado_taller    = $this->db->real_escape_string($data['estado_taller'] ?? 'En Diagnóstico');
+        $kilometraje      = (int)($data['kilometraje'] ?? 0);
+        $anio             = !empty($data['anio']) ? (int)$data['anio'] : 'NULL';
         $success = $this->db->query(
             "INSERT INTO vehiculo (cantidad_vehiculo, patente, numero_chasis, numero_motor,
-             fecha_ingreso, compatibilidad_repuestos_id, tipo_vehiculo_id, modelo_vehiculo_id)
-             VALUES ($cantidad,'$patente','$numero_chasis','$numero_motor','$fecha',$compat_id,$tipo_id,$modelo_id)"
+             fecha_ingreso, compatibilidad_repuestos_id, tipo_vehiculo_id, modelo_vehiculo_id,
+             estado_taller, kilometraje, anio)
+             VALUES ($cantidad,'$patente','$numero_chasis','$numero_motor','$fecha',$compat_id,$tipo_id,$modelo_id,'$estado_taller',$kilometraje,$anio)"
         );
         return $success ? ['success' => true] : ['error' => 'Error al crear el vehículo'];
     }
@@ -97,11 +106,15 @@ class VehiculoModel {
         $modelo_id        = (int)($data['modelo_vehiculo_id'] ?? 0);
         $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
         $fecha            = $this->db->real_escape_string($data['fecha_ingreso'] ?? date('Y-m-d'));
+        $estado_taller    = $this->db->real_escape_string($data['estado_taller'] ?? 'En Diagnóstico');
+        $kilometraje      = (int)($data['kilometraje'] ?? 0);
+        $anio             = !empty($data['anio']) ? (int)$data['anio'] : 'NULL';
         $success = $this->db->query(
             "UPDATE vehiculo SET cantidad_vehiculo=$cantidad, patente='$patente',
              numero_chasis='$numero_chasis', numero_motor='$numero_motor',
              fecha_ingreso='$fecha', tipo_vehiculo_id=$tipo_id,
-             modelo_vehiculo_id=$modelo_id WHERE id=$id"
+             modelo_vehiculo_id=$modelo_id, estado_taller='$estado_taller',
+             kilometraje=$kilometraje, anio=$anio WHERE id=$id"
         );
         return $success ? ['success' => true] : ['error' => 'Error al actualizar el vehículo'];
     }

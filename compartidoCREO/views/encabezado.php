@@ -21,7 +21,7 @@ $esAdmin = ($rolUsuario === 'admin');
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kayrom — Sistema de Inventario</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body>
@@ -31,14 +31,18 @@ $esAdmin = ($rolUsuario === 'admin');
 <?php endif; ?>
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
 
     <!-- Logo -->
     <div class="sidebar-logo">
         <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                 <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
             </svg>
+        </div>
+        <div class="sidebar-brand">
+            <span class="name">KayRom</span>
+            <span class="tag">Taller &amp; Repuestos</span>
         </div>
     </div>
 
@@ -88,6 +92,10 @@ $esAdmin = ($rolUsuario === 'admin');
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span class="tooltip">Empleados</span>
     </a>
+    <a href="index.php?page=complementos" class="nav-icon-btn <?= $activePage==='complementos'?'active':'' ?>">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="tooltip">Complementos</span>
+    </a>
      <?php endif; ?>
 
     <a href="index.php?page=carrito" class="nav-icon-btn <?= $activePage==='carrito'?'active':'' ?>">
@@ -109,11 +117,19 @@ $esAdmin = ($rolUsuario === 'admin');
 
 </nav>
 
-    <div class="sidebar-footer">v1.0</div>
+    <div class="sidebar-footer">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Azul Eléctrico · v2.0
+    </div>
 </aside>
 
 <!-- TOPBAR -->
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="cerrarSidebar()"></div>
+
 <header class="topbar">
+    <button type="button" class="menu-toggle" onclick="abrirSidebar()" aria-label="Abrir menú">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="topbar-title">Sistema de Inventario de Vehículos y Repuestos</div>
     <div class="topbar-right">
         <div class="topbar-user">
@@ -122,7 +138,7 @@ $esAdmin = ($rolUsuario === 'admin');
                     <?= htmlspecialchars($nombreUsuario) ?>
                 </div>
                 <?php if ($rolUsuario): ?>
-                <div style="font-size:11px; color:var(--text-muted);">
+                <div style="font-size:11px; color:var(--accent-blue-bright); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.04em;">
                     <?= htmlspecialchars($rolUsuario) ?>
                 </div>
                 <?php endif; ?>
@@ -152,14 +168,6 @@ $esAdmin = ($rolUsuario === 'admin');
     </div>
                     
     <script>
-        document.querySelectorAll('.nav-icon-btn').forEach(btn => {
-            const tooltip = btn.querySelector('.tooltip');
-            if (!tooltip) return;
-            btn.addEventListener('mouseenter', () => {
-                const rect = btn.getBoundingClientRect();
-                tooltip.style.top = (rect.top + rect.height / 2) + 'px';
-        });
-    });
 function confirmarAccion(urlDestino, mensaje) {
     const overlay = document.getElementById('modal-overlay');
     const mensajeElemento = document.getElementById('modal-mensaje');
@@ -180,5 +188,114 @@ function confirmarAccion(urlDestino, mensaje) {
     
     return false;
     }
+
+// Modales de alta rápida (Nuevo Vehículo / Repuesto / Pedido) desde el listado
+function abrirModal(id) {
+    document.getElementById(id).classList.add('open');
+}
+function cerrarModal(id) {
+    document.getElementById(id).classList.remove('open');
+}
+
+// Sidebar en mobile: se abre como un panel flotante encima del contenido, con fondo oscuro atrás
+function abrirSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-backdrop').classList.add('open');
+}
+function cerrarSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-backdrop').classList.remove('open');
+}
+// Si tocás un link del menú estando en mobile, se cierra solo (no hace falta cerrarlo a mano)
+document.querySelectorAll('.sidebar-nav a').forEach(link => link.addEventListener('click', cerrarSidebar));
+
+// Combo con buscador (autocompletar): arma un input + dropdown a partir de una lista cerrada
+// de opciones {id, label}. Sigue siendo "elegir de la lista", no texto libre: el valor real
+// que se manda al servidor queda guardado en un input oculto, no en lo que se escribe.
+function crearCombo(containerId, opciones) {
+    const cont     = document.getElementById(containerId);
+    const input    = cont.querySelector('.combo-input');
+    const oculto   = cont.querySelector('.combo-value');
+    const dropdown = cont.querySelector('.combo-dropdown');
+
+    function render(filtro) {
+        const texto = (filtro || '').toLowerCase();
+        const filtradas = opciones.filter(o => o.label.toLowerCase().includes(texto));
+        if (filtradas.length === 0) {
+            dropdown.innerHTML = '<div class="combo-empty">Sin resultados</div>';
+            return;
+        }
+        dropdown.innerHTML = filtradas.map(o =>
+            `<div class="combo-option" data-id="${o.id}">${o.label}</div>`
+        ).join('');
+        dropdown.querySelectorAll('.combo-option').forEach((op, i) => {
+            op.onclick = () => {
+                input.value  = filtradas[i].label;
+                oculto.value = filtradas[i].id;
+                dropdown.classList.remove('open');
+            };
+        });
+    }
+
+    input.addEventListener('focus', () => { render(input.value); dropdown.classList.add('open'); });
+    input.addEventListener('input', () => { oculto.value = ''; render(input.value); dropdown.classList.add('open'); });
+    document.addEventListener('click', (e) => { if (!cont.contains(e.target)) dropdown.classList.remove('open'); });
+
+    // Estas dos funciones quedan "colgadas" del contenedor para poder usarlas desde afuera
+    // (por ejemplo, al abrir el modal en modo edición, para precargar el valor actual)
+    cont._setValor = function (id) {
+        const encontrada = opciones.find(o => o.id == id);
+        input.value  = encontrada ? encontrada.label : '';
+        oculto.value = encontrada ? encontrada.id : '';
+    };
+    cont._limpiar = function () {
+        input.value = '';
+        oculto.value = '';
+    };
+}
+
+// Manda el formulario de un modal por AJAX en vez de como un POST normal del navegador.
+// Así, si el servidor devuelve un error (ej: "la patente ya existe"), se muestra ahí
+// mismo en el modal (en el toast indicado) en vez de sacarte a otra pantalla entera.
+// Si todo sale bien, recién ahí se recarga la página (para traer los datos actualizados).
+async function enviarModalForm(form, event, toastId) {
+    event.preventDefault();
+    const boton = form.querySelector('button[type="submit"]');
+    const textoOriginal = boton.textContent;
+    boton.disabled = true;
+    boton.textContent = 'Guardando...';
+
+    try {
+        const respuesta = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+
+        // Si el servidor redirigió (header('Location: ...')), fue éxito: recargo para ver los datos nuevos
+        if (respuesta.redirected) {
+            window.location.reload();
+            return false;
+        }
+
+        // Si no redirigió, el cuerpo de la respuesta es el mensaje de error en texto plano
+        const mensaje = (await respuesta.text()).trim();
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.textContent = '⚠️ ' + (mensaje || 'Ocurrió un error, probá de nuevo.');
+        } else {
+            alert(mensaje || 'Ocurrió un error, probá de nuevo.');
+        }
+    } catch (err) {
+        const toast = document.getElementById(toastId);
+        if (toast) toast.textContent = '⚠️ Error de conexión, probá de nuevo.';
+    } finally {
+        boton.disabled = false;
+        boton.textContent = textoOriginal;
+    }
+    return false;
+}
+// Cerrar el modal si se hace clic fuera de la tarjeta (en el fondo oscuro)
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('quick-modal-overlay')) {
+        e.target.classList.remove('open');
+    }
+});
     </script>
 <main class="main-content">

@@ -11,7 +11,7 @@ class CarritoModel {
     public function getByUsuario($usuario_id) {
         $usuario_id = (int)$usuario_id;
         $sql = "SELECT c.id, c.cantidad, c.repuesto_id,
-                       r.nombre, r.precio, r.stock
+                       r.nombre, r.precio, r.stock, r.proveedor_id
                 FROM carrito c
                 JOIN repuestos r ON r.id = c.repuesto_id
                 WHERE c.usuario_id = $usuario_id

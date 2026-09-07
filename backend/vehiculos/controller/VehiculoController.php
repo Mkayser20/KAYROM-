@@ -14,8 +14,10 @@ class VehiculoController {
     // mostrar lista de todos los vehículos
     public function index() {
         $data = [
-            'vehiculos'  => $this->model->getAll(),  // obtener todos los vehículos
-            'activePage' => 'vehiculos' // marcar página activa
+            'vehiculos'  => $this->model->getAll(),  //obtener todos los vehículos
+            'modelos'    => $this->model->getModelos(), //para el select del modal rápido
+            'tipos'      => $this->model->getTipos(),   //para el select del modal rápido
+            'activePage' => 'vehiculos' //marcar página activa
         ];
         // cargar vista con lista de vehículos
         require_once 'backend/vehiculos/views/vehiculos_listado.php';
@@ -29,6 +31,12 @@ class VehiculoController {
 
             // si hubo error, mostrar formulario con error
             if (isset($result['error'])) {
+                // Si el POST vino del modal rápido, solo devuelvo el mensaje (sin navegar de pantalla)
+                if (!empty($_POST['ajax'])) {
+                    http_response_code(422);
+                    echo $result['error'];
+                    exit;
+                }
                 $data = [
                     'modelos'    => $this->model->getModelos(),  // para llenar seleccionables del formulario
                     'tipos'      => $this->model->getTipos(),    // para llenar seleccionables del formulario
@@ -41,8 +49,8 @@ class VehiculoController {
             }
 
             // AUDITORÍA: Obtener ID e información del vehículo recién creado
-            $nuevoId = is_array($result) && isset($result['id']) 
-                ? $result['id'] 
+            $nuevoId = is_array($result) && isset($result['id'])
+                ? $result['id']
                 : $this->model->getLastInsertedId();
 
             $patente = trim($_POST['patente'] ?? $_POST['dominio'] ?? '');
@@ -79,6 +87,11 @@ class VehiculoController {
 
             // si hubo error, mostrar formulario con error
             if (isset($result['error'])) {
+                if (!empty($_POST['ajax'])) {
+                    http_response_code(422);
+                    echo $result['error'];
+                    exit;
+                }
                 $data = [
                     'vehiculo'   => $this->model->getById($id),  // cargar datos actuales
                     'modelos'    => $this->model->getModelos(),
@@ -117,7 +130,21 @@ class VehiculoController {
         require_once 'backend/vehiculos/views/vehiculo_form.php';
     }
 
-    // eliminar un vehículo
+    //mostrar ficha técnica de un solo vehículo (solo lectura + sus órdenes de trabajo)
+    public function verFicha() {
+        $id = (int)($_GET['id'] ?? 0);
+        $ordenModel = new OrdenTrabajoModel();
+        $data = [
+            'vehiculo'   => $this->model->getById($id),
+            'ordenes'    => $ordenModel->getByVehiculo($id),
+            'mecanicos'  => (new EmpleadoModel())->getAll(),
+            'repuestos'  => (new RepuestoModel())->getAll(),
+            'activePage' => 'vehiculos'
+        ];
+        require_once 'backend/vehiculos/views/vehiculo_ficha.php';
+    }
+
+    //eliminar un vehículo
     public function delete() {
         $id = (int)($_GET['id'] ?? 0); // obtener ID del vehículo a eliminar
 

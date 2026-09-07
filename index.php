@@ -13,11 +13,16 @@ require_once 'backend/producto/model/ProductoModel.php';
 require_once 'backend/pedidos/model/PedidoModel.php';
 require_once 'backend/empleado/models/EmpleadoModel.php';
 require_once 'backend/proveedor/models/ProveedorModel.php';
+require_once 'backend/repuestos/model/RepuestoModel.php';
+require_once 'backend/ordenes/models/OrdenTrabajoModel.php';
+require_once 'backend/complementos/models/ComplementoModel.php';
 require_once 'compartidoCREO/models/PermisoModel.php';
 require_once 'backend/sesion/controller/SesionController.php';
 require_once 'backend/inicio/controllers/InicioController.php';
 require_once 'backend/vehiculos/controller/VehiculoController.php';
 require_once 'backend/producto/controller/ProductoController.php';
+require_once 'backend/ordenes/controllers/OrdenTrabajoController.php';
+require_once 'backend/complementos/controllers/ComplementoController.php';
 require_once 'backend/pedidos/controller/PedidoController.php';
 require_once 'backend/proveedor/controllers/ProveedorController.php';
 require_once 'backend/carrito/models/CarritoModels.php';
@@ -33,7 +38,7 @@ if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
 }
 
 // Páginas que solo pueden usar los administradores
-$paginasAdmin = ['registrar_usuario', 'empleados'];
+$paginasAdmin = ['registrar_usuario', 'empleados', 'complementos'];
 
 //si intentan acceder a una pagina de admin sin ser admin, redirige al inicio
 if (in_array($page, $paginasAdmin) && ($_SESSION['rol'] ?? '') !== 'admin') {
@@ -130,6 +135,16 @@ switch ($page) {
     case 'carrito':
         require_once 'backend/carrito/controllers/CarritoControllers.php';
         $c = new CarritoController();
+        $c->$action();
+        break;
+
+    case 'ordenes':
+        $c = new OrdenTrabajoController();
+        $c->$action();
+        break;
+
+    case 'complementos':
+        $c = new ComplementoController();
         $c->$action();
         break;
 

@@ -9,9 +9,10 @@ class PedidoModel {
 
     //obtener todos los pedidos ordenados por fecha más reciente
     public function getAll() {
-        $sql = "SELECT p.*, dp.detalle_pedido
+        $sql = "SELECT p.*, dp.detalle_pedido, pr.nombre_proveedor
                 FROM pedidos p
                 LEFT JOIN detalle_pedido dp ON dp.id = p.detalle_pedido_id
+                LEFT JOIN proveedor pr ON pr.id = p.proveedor_id
                 ORDER BY p.fecha_pedidos DESC";
         $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
@@ -45,6 +46,7 @@ class PedidoModel {
     $numero      = (int)($data['numero_unico'] ?? rand(1000,9999));
     $cantidad    = (int)($data['cantidad'] ?? 1);
     $detalle     = $this->db->real_escape_string($data['detalle_pedido']    ?? 'Sin detalle');
+    $proveedor_id = !empty($data['proveedor_id']) ? (int)$data['proveedor_id'] : 'NULL';
 
     //detalle de pedido primero
     $this->db->query(
@@ -54,10 +56,12 @@ class PedidoModel {
     $detalle_id = $this->db->insert_id;
 
     //despues el pedido con el id del detalle
-    return $this->db->query(
-        "INSERT INTO pedidos (fecha_pedidos, estado_pedido, responsable_pedido, numero_unico, cantidad, detalle_pedido_id)
-         VALUES (NOW(), '$estado', '$responsable', $numero, $cantidad, $detalle_id)"
+    $exito = $this->db->query(
+        "INSERT INTO pedidos (fecha_pedidos, estado_pedido, responsable_pedido, numero_unico, cantidad, detalle_pedido_id, proveedor_id)
+         VALUES (NOW(), '$estado', '$responsable', $numero, $cantidad, $detalle_id, $proveedor_id)"
     );
+    // Devuelvo el ID real del pedido recién creado (lo necesita la auditoría), no true/false
+    return $exito ? $this->db->insert_id : false;
     }
     
     //eliminar un pedido por su ID
