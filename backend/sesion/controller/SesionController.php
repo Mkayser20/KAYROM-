@@ -222,8 +222,8 @@ class SesionController {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'maquitosk05@gmail.com';
-            $mail->Password   = 'qgeo bdds cmui rlyn';     
+            $mail->Username   = '';
+            $mail->Password   = '';     
             $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
