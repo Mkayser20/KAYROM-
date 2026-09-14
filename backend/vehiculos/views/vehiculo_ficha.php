@@ -12,11 +12,33 @@ $v = $data['vehiculo'];
     <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;">⚠️ <?= htmlspecialchars($_GET['ot_error']) ?></div>
 <?php endif; ?>
 
+<?php if (!empty($_GET['ot_aviso'])): ?>
+    <div style="position:static;display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent-blue);color:var(--text-primary);padding:13px 20px;border-radius:10px;margin-bottom:16px;font-size:13.5px;">
+        📦 <?= htmlspecialchars(str_replace(' | ', ' — ', $_GET['ot_aviso'])) ?>
+    </div>
+<?php endif; ?>
+
 <?php if (!$v): ?>
     <div class="panel"><div class="panel-body" style="padding:30px;text-align:center;color:var(--text-muted);">
         Vehículo no encontrado.
     </div></div>
 <?php else: ?>
+
+<div class="panel" style="margin-bottom:20px;">
+    <div class="panel-header"><div class="panel-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Cliente</div></div>
+    <div class="panel-body" style="padding:20px;">
+        <?php if (!empty($v['cliente_nombre'])): ?>
+        <div class="spec-grid">
+            <div class="spec-item"><div class="spec-label">Nombre</div><div class="spec-value"><?= htmlspecialchars($v['cliente_nombre'] . ' ' . $v['cliente_apellido']) ?></div></div>
+            <div class="spec-item"><div class="spec-label">DNI</div><div class="spec-value"><?= htmlspecialchars($v['cliente_dni'] ?? '-') ?></div></div>
+            <div class="spec-item"><div class="spec-label">Teléfono</div><div class="spec-value"><?= htmlspecialchars($v['cliente_telefono'] ?: '—') ?></div></div>
+        </div>
+        <a href="index.php?page=clientes&action=verFicha&id=<?= $v['cliente_id'] ?>" class="btn btn-ghost" style="margin-top:14px;font-size:12px;">Ver ficha del cliente &rsaquo;</a>
+        <?php else: ?>
+            <div style="color:var(--text-muted);">Este vehículo no tiene un cliente asociado.</div>
+        <?php endif; ?>
+    </div>
+</div>
 
 <div class="panel" style="margin-bottom:20px;">
     <div class="panel-header"><div class="panel-title">Datos del vehículo</div></div>
@@ -163,10 +185,11 @@ function agregarFilaRepuesto() {
 // Arranca con una fila ya cargada, para no obligar a apretar "Agregar repuesto" la primera vez
 agregarFilaRepuesto();
 
-// Antes de mandar el formulario, aviso en el momento si alguna cantidad pedida supera el stock actual
-// (la validación real y definitiva es del lado del servidor, esto es solo para avisar más rápido)
+// Antes de mandar, si alguna cantidad supera el stock actual, aviso que se va a generar
+// un pedido automático al proveedor por la diferencia — pero NO bloqueo el envío.
 document.querySelector('#modal-nueva-orden form').addEventListener('submit', function (e) {
     const filas = document.querySelectorAll('#filas-repuestos .form-row');
+    const faltantes = [];
     for (const fila of filas) {
         const select   = fila.querySelector('select[name="repuesto_id[]"]');
         const cantidad = parseInt(fila.querySelector('input[name="cantidad_usada[]"]').value || '0', 10);
@@ -175,9 +198,12 @@ document.querySelector('#modal-nueva-orden form').addEventListener('submit', fun
 
         const stockDisponible = parseInt(opcion.dataset.stock || '0', 10);
         if (cantidad > stockDisponible) {
+            faltantes.push(`${opcion.textContent.split(' (stock:')[0]} (faltan ${cantidad - stockDisponible})`);
+        }
+    }
+    if (faltantes.length > 0) {
+        if (!confirm(`Falta stock de: ${faltantes.join(', ')}. Se va a generar un pedido automático al proveedor por la diferencia. ¿Confirmás?`)) {
             e.preventDefault();
-            alert(`No hay stock suficiente de "${opcion.textContent.split(' (stock:')[0]}" (pediste ${cantidad}, quedan ${stockDisponible}).`);
-            return;
         }
     }
 });

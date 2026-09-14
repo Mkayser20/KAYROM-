@@ -27,6 +27,15 @@ class VehiculoController {
     public function create() {
         // si es formulario POST, guardar nuevo vehículo
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Busco o creo el cliente dueño según el DNI cargado, antes de guardar el vehículo
+            $clienteModel = new ClienteModel();
+            $_POST['cliente_id'] = $clienteModel->crearOEncontrar(
+                $_POST['cliente_nombre']   ?? '',
+                $_POST['cliente_apellido'] ?? '',
+                $_POST['cliente_dni']      ?? '',
+                $_POST['cliente_telefono'] ?? ''
+            );
+
             $result = $this->model->create($_POST);
 
             // si hubo error, mostrar formulario con error
@@ -83,6 +92,14 @@ class VehiculoController {
 
         // si es formulario POST, actualizar vehículo
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $clienteModel = new ClienteModel();
+            $_POST['cliente_id'] = $clienteModel->crearOEncontrar(
+                $_POST['cliente_nombre']   ?? '',
+                $_POST['cliente_apellido'] ?? '',
+                $_POST['cliente_dni']      ?? '',
+                $_POST['cliente_telefono'] ?? ''
+            );
+
             $result = $this->model->update($id, $_POST);
 
             // si hubo error, mostrar formulario con error

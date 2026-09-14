@@ -4,7 +4,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #0A0E17;
+    background: #000000;
     background-image:
         radial-gradient(ellipse at 20% 30%, rgba(59,130,246,0.12) 0%, transparent 55%),
         radial-gradient(ellipse at 80% 70%, rgba(99,102,241,0.10) 0%, transparent 50%);
@@ -17,7 +17,7 @@ body {
 
 /* ── CARD ───────────────────────────────────────── */
 .auth-card {
-    background: #141923;
+    background: #121316;
     border: 1px solid #232B3E;
     border-radius: 16px;
     padding: 44px 48px 40px;
@@ -121,7 +121,7 @@ body {
     position: relative;
     display: flex;
     align-items: center;
-    background: #0A0E17;
+    background: #000000;
     border: 1px solid #232B3E;
     border-radius: 10px;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -163,7 +163,7 @@ body {
 .field-wrap input::placeholder { color: #64748B; }
 
 .field-wrap select { padding-left: 42px; appearance: none; -webkit-appearance: none; }
-.field-wrap select option { background: #141923; color: #F8FAFC; }
+.field-wrap select option { background: #121316; color: #F8FAFC; }
 
 /* select sin ícono extra (campo sin .field-icon usa padding normal) */
 .field-group.select-wrap .field-wrap::after {
@@ -178,7 +178,7 @@ body {
 /* campos sin .field-wrap (para el registro sin ícono) */
 .field-group input:not(.field-wrap input),
 .field-group select:not(.field-wrap select) {
-    background: #0A0E17;
+    background: #000000;
     border: 1px solid #232B3E;
     border-radius: 10px;
     color: #F8FAFC;
@@ -304,7 +304,7 @@ body {
     align-items: center;
     gap: 8px;
     padding: 11px 12px;
-    background: #0A0E17;
+    background: #000000;
     border: 1px solid #232B3E;
     border-radius: 10px;
     cursor: pointer;
@@ -342,7 +342,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #141923;
+    background: #121316;
     border: 1px solid #232B3E;
     border-left: 3px solid #EF4444;
     color: #F8FAFC;

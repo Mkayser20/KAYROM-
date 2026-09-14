@@ -2,7 +2,7 @@
 require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>🚘 Vehículos</h1>
+    <h1>Vehículos</h1>
     <a href="index.php?page=vehiculos&action=create" class="btn btn-green">＋ Nuevo Vehículo</a>
 </div>
 

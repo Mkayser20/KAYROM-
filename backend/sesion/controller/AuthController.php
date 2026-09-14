@@ -192,13 +192,13 @@ class AuthController {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'maquitosk05@gmail.com';   // ← tu cuenta Gmail
-            $mail->Password   = 'qgeo bdds cmui rlyn';     // ← app password de Gmail
+            $mail->Username   = '';   // ← tu cuenta Gmail
+            $mail->Password   = '';     // ← app password de Gmail
             $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
 
-            $mail->setFrom('maquitosk05@gmail.com', 'Kayrom — Sistema');
+            $mail->setFrom('', 'Kayrom — Sistema');
             $mail->addAddress($email, $nombre);
 
             $link = (isset($_SERVER['HTTPS']) ? 'https' : 'http')

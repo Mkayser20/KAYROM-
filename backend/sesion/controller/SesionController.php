@@ -1,13 +1,10 @@
 <?php
-require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
-
 
 class SesionController {
     private $model;
 
     public function __construct() {
         $this->model = new UsuarioModel();
-        $this->auditoria = new AuditoriaModel();
     }
 
     //valida mail y contraseña, inicia sesión y guarda datos en $_SESSION
@@ -30,22 +27,10 @@ class SesionController {
                     $_SESSION['nombre']     = $user['nombre'] ?? $user['nombre_usuario'];
                     $_SESSION['email']      = $user['email'];
                     $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
-
-                     $this->auditoria->registrar(
-                        'LOGIN',
-                        'Autenticación',
-                        'Inicio de sesión exitoso'
-                    );
                     header('Location: index.php?page=inicio');
                     exit;
                 } else {
                     $error = 'Correo o contraseña incorrectos.';
-                    // AUDITORÍA: Login fallido
-                    $this->auditoria->registrar(
-                        'LOGIN_FALLIDO',
-                        'Autenticación',
-                        "Intento fallido con email: $email"
-                    );
                 }
             }
         }
@@ -110,14 +95,6 @@ class SesionController {
                         require_once 'compartidoCREO/models/PermisoModel.php';
                         $permisoModel = new PermisoModel();
                         $permisoModel->setForUsuario($nuevoId, $modulos);
-
-                        // AUDITORÍA: Usuario creado
-                        $this->auditoria->registrar(
-                            'CREAR',
-                            'Usuarios',
-                            "Se creó el usuario '$usuario'",
-                            $nuevoId
-                        );
                     }
                     $success = '¡Usuario creado con éxito!';
                     $_POST = [];
@@ -135,14 +112,6 @@ class SesionController {
     }
 
      public function cerrarSesion() {
-        // AUDITORÍA: Logout (se registra ANTES de destruir la sesión)
-        if (isset($_SESSION['usuario_id'])) {
-            $this->auditoria->registrar(
-                'LOGOUT',
-                'Autenticación',
-                'Cierre de sesión del usuario'
-            );
-        }
         session_destroy();
         header('Location: index.php?page=iniciar_sesion');
         exit;
@@ -228,7 +197,7 @@ class SesionController {
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
 
-            $mail->setFrom('maquitosk05@gmail.com', 'Kayrom — Sistema');
+            $mail->setFrom('', 'Kayrom — Sistema');
             $mail->addAddress($email, $nombre);
 
             $link = (isset($_SERVER['HTTPS']) ? 'https' : 'http')

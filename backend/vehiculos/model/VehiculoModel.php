@@ -12,10 +12,12 @@ class VehiculoModel {
     }
 
     public function getAll() {
-        $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo
+        $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo,
+                       cl.nombre AS cliente_nombre, cl.apellido AS cliente_apellido, cl.dni AS cliente_dni, cl.telefono AS cliente_telefono
                 FROM vehiculo v
                 LEFT JOIN modelo_vehiculo mv ON v.modelo_vehiculo_id = mv.id
                 LEFT JOIN tipo_vehiculo tv   ON v.tipo_vehiculo_id   = tv.id
+                LEFT JOIN cliente cl         ON v.cliente_id        = cl.id
                 ORDER BY v.id DESC";
         $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
@@ -23,10 +25,12 @@ class VehiculoModel {
 
     public function getRecent($limit = 5) {
         $limit = (int)$limit;
-        $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo
+        $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo,
+                       cl.nombre AS cliente_nombre, cl.apellido AS cliente_apellido, cl.dni AS cliente_dni, cl.telefono AS cliente_telefono
                 FROM vehiculo v
                 LEFT JOIN modelo_vehiculo mv ON v.modelo_vehiculo_id = mv.id
                 LEFT JOIN tipo_vehiculo tv   ON v.tipo_vehiculo_id   = tv.id
+                LEFT JOIN cliente cl         ON v.cliente_id        = cl.id
                 ORDER BY v.id DESC LIMIT $limit";
         $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
@@ -34,10 +38,12 @@ class VehiculoModel {
 
     public function getById($id) {
         $id = (int)$id;
-        $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo
+        $sql = "SELECT v.*, mv.modelo_vehiculo, mv.anio_vehiculo, tv.tipo_vehiculo,
+                       cl.id AS cliente_id, cl.nombre AS cliente_nombre, cl.apellido AS cliente_apellido, cl.dni AS cliente_dni, cl.telefono AS cliente_telefono
                 FROM vehiculo v
                 LEFT JOIN modelo_vehiculo mv ON v.modelo_vehiculo_id = mv.id
                 LEFT JOIN tipo_vehiculo tv   ON v.tipo_vehiculo_id   = tv.id
+                LEFT JOIN cliente cl         ON v.cliente_id        = cl.id
                 WHERE v.id = $id";
         $result = $this->db->query($sql);
         return $result ? $result->fetch_assoc() : null;
@@ -67,21 +73,31 @@ class VehiculoModel {
             return ['error' => 'Ya existe un vehículo con la patente "' . htmlspecialchars($patente) . '"'];
         }
         
+        $modelo_id        = (int)($data['modelo_vehiculo_id'] ?? 0);
+        $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
+
+        // Validar que se haya elegido un modelo y un tipo reales (si no, la FK explota)
+        if ($modelo_id <= 0) {
+            return ['error' => 'Seleccioná un modelo de la lista'];
+        }
+        if ($tipo_id <= 0) {
+            return ['error' => 'Seleccioná un tipo de vehículo de la lista'];
+        }
+
         $numero_chasis    = $this->db->real_escape_string($data['numero_chasis'] ?? '');
         $numero_motor     = $this->db->real_escape_string($data['numero_motor'] ?? '');
         $cantidad         = (int)($data['cantidad_vehiculo'] ?? 0);
-        $modelo_id        = (int)($data['modelo_vehiculo_id'] ?? 0);
-        $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
         $compat_id        = (int)($data['compatibilidad_repuestos_id'] ?? 0);
         $fecha            = $this->db->real_escape_string($data['fecha_ingreso'] ?? date('Y-m-d'));
         $estado_taller    = $this->db->real_escape_string($data['estado_taller'] ?? 'En Diagnóstico');
         $kilometraje      = (int)($data['kilometraje'] ?? 0);
         $anio             = !empty($data['anio']) ? (int)$data['anio'] : 'NULL';
+        $cliente_id       = !empty($data['cliente_id']) ? (int)$data['cliente_id'] : 'NULL';
         $success = $this->db->query(
             "INSERT INTO vehiculo (cantidad_vehiculo, patente, numero_chasis, numero_motor,
              fecha_ingreso, compatibilidad_repuestos_id, tipo_vehiculo_id, modelo_vehiculo_id,
-             estado_taller, kilometraje, anio)
-             VALUES ($cantidad,'$patente','$numero_chasis','$numero_motor','$fecha',$compat_id,$tipo_id,$modelo_id,'$estado_taller',$kilometraje,$anio)"
+             estado_taller, kilometraje, anio, cliente_id)
+             VALUES ($cantidad,'$patente','$numero_chasis','$numero_motor','$fecha',$compat_id,$tipo_id,$modelo_id,'$estado_taller',$kilometraje,$anio,$cliente_id)"
         );
         return $success ? ['success' => true] : ['error' => 'Error al crear el vehículo'];
     }
@@ -105,16 +121,26 @@ class VehiculoModel {
         $cantidad         = (int)($data['cantidad_vehiculo'] ?? 0);
         $modelo_id        = (int)($data['modelo_vehiculo_id'] ?? 0);
         $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
+
+        // Validar que se haya elegido un modelo y un tipo reales (si no, la FK explota)
+        if ($modelo_id <= 0) {
+            return ['error' => 'Seleccioná un modelo de la lista'];
+        }
+        if ($tipo_id <= 0) {
+            return ['error' => 'Seleccioná un tipo de vehículo de la lista'];
+        }
+
         $fecha            = $this->db->real_escape_string($data['fecha_ingreso'] ?? date('Y-m-d'));
         $estado_taller    = $this->db->real_escape_string($data['estado_taller'] ?? 'En Diagnóstico');
         $kilometraje      = (int)($data['kilometraje'] ?? 0);
         $anio             = !empty($data['anio']) ? (int)$data['anio'] : 'NULL';
+        $cliente_id       = !empty($data['cliente_id']) ? (int)$data['cliente_id'] : 'NULL';
         $success = $this->db->query(
             "UPDATE vehiculo SET cantidad_vehiculo=$cantidad, patente='$patente',
              numero_chasis='$numero_chasis', numero_motor='$numero_motor',
              fecha_ingreso='$fecha', tipo_vehiculo_id=$tipo_id,
              modelo_vehiculo_id=$modelo_id, estado_taller='$estado_taller',
-             kilometraje=$kilometraje, anio=$anio WHERE id=$id"
+             kilometraje=$kilometraje, anio=$anio, cliente_id=$cliente_id WHERE id=$id"
         );
         return $success ? ['success' => true] : ['error' => 'Error al actualizar el vehículo'];
     }

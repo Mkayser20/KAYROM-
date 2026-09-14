@@ -16,6 +16,7 @@ require_once 'backend/proveedor/models/ProveedorModel.php';
 require_once 'backend/repuestos/model/RepuestoModel.php';
 require_once 'backend/ordenes/models/OrdenTrabajoModel.php';
 require_once 'backend/complementos/models/ComplementoModel.php';
+require_once 'backend/clientes/models/ClienteModel.php';
 require_once 'compartidoCREO/models/PermisoModel.php';
 require_once 'backend/sesion/controller/SesionController.php';
 require_once 'backend/inicio/controllers/InicioController.php';
@@ -23,6 +24,7 @@ require_once 'backend/vehiculos/controller/VehiculoController.php';
 require_once 'backend/producto/controller/ProductoController.php';
 require_once 'backend/ordenes/controllers/OrdenTrabajoController.php';
 require_once 'backend/complementos/controllers/ComplementoController.php';
+require_once 'backend/clientes/controllers/ClienteController.php';
 require_once 'backend/pedidos/controller/PedidoController.php';
 require_once 'backend/proveedor/controllers/ProveedorController.php';
 require_once 'backend/carrito/models/CarritoModels.php';
@@ -54,7 +56,7 @@ if (!empty($_SESSION['usuario_id']) && ($_SESSION['rol'] ?? '') !== 'admin') {
     $paginasLibres = ['inicio', 'logout', 'iniciar_sesion'];
 
     // Módulos asignables por checkbox: si el page coincide, hay que chequear
-    $modulosAsignables = ['vehiculos', 'repuestos', 'pedidos', 'proveedores', 'productos', 'movimientos'];
+    $modulosAsignables = ['vehiculos', 'repuestos', 'pedidos', 'proveedores', 'productos', 'movimientos', 'clientes'];
 
     //si la pagina pedida es un modulo asignable, verifica si el usuario tiene permiso
     if (in_array($page, $modulosAsignables)) {
@@ -145,6 +147,11 @@ switch ($page) {
 
     case 'complementos':
         $c = new ComplementoController();
+        $c->$action();
+        break;
+
+    case 'clientes':
+        $c = new ClienteController();
         $c->$action();
         break;
 

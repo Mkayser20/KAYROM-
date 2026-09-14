@@ -2,7 +2,7 @@
 require_once 'compartidoCREO/views/encabezado.php';
 
 <div class="page-header">
-    <h1>📦 Pedidos</h1>
+    <h1>Pedidos</h1>
     <a href="index.php?page=pedidos&action=create" class="btn btn-primary">＋ Nuevo Pedido</a>
 </div>
 

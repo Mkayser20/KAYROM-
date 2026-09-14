@@ -24,9 +24,10 @@ class OrdenTrabajoController {
 
         $resultado = $this->model->create($vehiculo_id, $mecanico_id, $descripcion, $items);
 
-        if (isset($resultado['error'])) {
-            // Si falta stock, vuelvo a la ficha técnica mostrando el motivo (sin crear nada)
-            header('Location: index.php?page=vehiculos&action=verFicha&id=' . $vehiculo_id . '&ot_error=' . urlencode($resultado['error']));
+        if (!empty($resultado['avisos'])) {
+            // Hubo faltantes: se generaron pedidos automáticos, se lo aviso al mecánico
+            $mensaje = implode(' | ', $resultado['avisos']);
+            header('Location: index.php?page=vehiculos&action=verFicha&id=' . $vehiculo_id . '&ot_aviso=' . urlencode($mensaje));
             exit;
         }
 

@@ -9,15 +9,22 @@
     <div class="panel-body">
         <table>
             <thead>
-                <tr><th>#</th><th>Patente</th><th>N° Chasis</th><th>N° Motor</th><th>Modelo</th><th>Tipo</th><th>Año</th><th>Km</th><th>Estado Taller</th><th>Fecha Ingreso</th><th>Acciones</th></tr>
+                <tr><th>#</th><th>Patente</th><th>Cliente</th><th>N° Chasis</th><th>N° Motor</th><th>Modelo</th><th>Tipo</th><th>Año</th><th>Km</th><th>Estado Taller</th><th>Fecha Ingreso</th><th>Acciones</th></tr>
             </thead>
             <tbody>
             <?php if(empty($data['vehiculos'])): ?>
-                <tr><td colspan="11" style="text-align:center;color:var(--text-muted);padding:30px;">No hay vehículos registrados</td></tr>
+                <tr><td colspan="12" style="text-align:center;color:var(--text-muted);padding:30px;">No hay vehículos registrados</td></tr>
             <?php else: foreach($data['vehiculos'] as $v): ?>
                 <tr>
                     <td style="color:var(--text-muted);"><?= $v['id'] ?></td>
                     <td><strong><?= htmlspecialchars($v['patente'] ?? '-') ?></strong></td>
+                    <td style="color:var(--text-muted);">
+                        <?php if (!empty($v['cliente_nombre'])): ?>
+                            <?= htmlspecialchars($v['cliente_nombre'] . ' ' . $v['cliente_apellido']) ?>
+                        <?php else: ?>
+                            —
+                        <?php endif; ?>
+                    </td>
                     <td style="color:var(--text-muted);"><?= htmlspecialchars($v['numero_chasis'] ?? '-') ?></td>
                     <td style="color:var(--text-muted);"><?= htmlspecialchars($v['numero_motor'] ?? '-') ?></td>
                     <td><?= htmlspecialchars($v['modelo_vehiculo'] ?? '-') ?></td>
@@ -44,6 +51,10 @@
                                     modelo_vehiculo_id: <?= (int)($v['modelo_vehiculo_id'] ?? 0) ?>,
                                     tipo_vehiculo_id: <?= (int)($v['tipo_vehiculo_id'] ?? 0) ?>,
                                     estado_taller: <?= htmlspecialchars(json_encode($v['estado_taller'] ?? 'En Diagnóstico'), ENT_QUOTES, 'UTF-8') ?>,
+                                    cliente_nombre: <?= htmlspecialchars(json_encode($v['cliente_nombre']), ENT_QUOTES, 'UTF-8') ?>,
+                                    cliente_apellido: <?= htmlspecialchars(json_encode($v['cliente_apellido']), ENT_QUOTES, 'UTF-8') ?>,
+                                    cliente_dni: <?= htmlspecialchars(json_encode($v['cliente_dni']), ENT_QUOTES, 'UTF-8') ?>,
+                                    cliente_telefono: <?= htmlspecialchars(json_encode($v['cliente_telefono']), ENT_QUOTES, 'UTF-8') ?>,
                                     anio: <?= (int)($v['anio'] ?? 0) ?>,
                                     kilometraje: <?= (int)($v['kilometraje'] ?? 0) ?>,
                                     fecha_ingreso: <?= htmlspecialchars(json_encode(substr($v['fecha_ingreso'] ?? '', 0, 10)), ENT_QUOTES, 'UTF-8') ?>
@@ -124,6 +135,26 @@
                         <input type="number" name="kilometraje" id="veh-km" value="0" min="0">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre del Cliente</label>
+                        <input type="text" name="cliente_nombre" id="veh-cliente-nombre" placeholder="Nombre">
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido del Cliente</label>
+                        <input type="text" name="cliente_apellido" id="veh-cliente-apellido" placeholder="Apellido">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>DNI del Cliente</label>
+                        <input type="text" name="cliente_dni" id="veh-cliente-dni" placeholder="DNI">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono del Cliente</label>
+                        <input type="text" name="cliente_telefono" id="veh-cliente-telefono" placeholder="Teléfono">
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary" id="veh-submit">✅ Guardar</button>
             </form>
         </div>
@@ -156,6 +187,10 @@ function abrirVehiculo(v) {
         document.getElementById('veh-estado').value  = v.estado_taller || 'En Diagnóstico';
         document.getElementById('veh-km').value      = v.kilometraje || 0;
         document.getElementById('veh-fecha').value   = v.fecha_ingreso || '';
+        document.getElementById('veh-cliente-nombre').value   = v.cliente_nombre || '';
+        document.getElementById('veh-cliente-apellido').value = v.cliente_apellido || '';
+        document.getElementById('veh-cliente-dni').value      = v.cliente_dni || '';
+        document.getElementById('veh-cliente-telefono').value = v.cliente_telefono || '';
     } else {
         form.reset();
         form.action = 'index.php?page=vehiculos&action=create';
@@ -164,6 +199,10 @@ function abrirVehiculo(v) {
         document.getElementById('veh-anio').value = '';
         document.getElementById('combo-modelo')._limpiar();
         document.getElementById('combo-tipo')._limpiar();
+        document.getElementById('veh-cliente-nombre').value = '';
+        document.getElementById('veh-cliente-apellido').value = '';
+        document.getElementById('veh-cliente-dni').value = '';
+        document.getElementById('veh-cliente-telefono').value = '';
         document.getElementById('veh-fecha').value = new Date().toISOString().slice(0,10);
     }
     abrirModal('modal-nuevo-vehiculo');
