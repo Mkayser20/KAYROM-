@@ -28,7 +28,7 @@
     <div class="auth-alert success"><?= htmlspecialchars($data['success']) ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="index.php?page=registrar_usuario&action=registrar_usuario" class="auth-form">
+    <form method="POST" action="index.php?page=registrar_usuario&action=registrar_usuario" class="auth-form" novalidate>
         <div id="toast-error" class="toast-error"></div>
 
         <div class="form-grid">
@@ -225,11 +225,19 @@
             const email    = document.querySelector('input[name="email"]').value.trim();
             const pass     = document.querySelector('input[name="contrasena_usuario"]').value;
             const pass2    = document.querySelector('input[name="contrasene_confirm"]').value;
+            const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            const passwordValida = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(pass);
 
             if (!nombre)  { e.preventDefault(); mostrarError('Ingresá el nombre'); return; }
             if (!usuario) { e.preventDefault(); mostrarError('Ingresá el nombre de usuario'); return; }
             if (!email)   { e.preventDefault(); mostrarError('Ingresá el correo electrónico'); return; }
+            if (!emailValido) { e.preventDefault(); mostrarError('Ingresá un correo electrónico válido'); return; }
             if (!pass)    { e.preventDefault(); mostrarError('Ingresá la contraseña'); return; }
+            if (!passwordValida) {
+                e.preventDefault();
+                mostrarError('La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial');
+                return;
+            }
             if (!pass2)   { e.preventDefault(); mostrarError('Confirmá la contraseña'); return; }
             if (pass !== pass2) { e.preventDefault(); mostrarError('Las contraseñas no coinciden'); return; }
         });
