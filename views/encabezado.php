@@ -96,6 +96,13 @@ $esAdmin = ($rolUsuario === 'admin');
     </a>
     <?php endif; ?>
 
+    <?php if ($esAdmin): ?>
+    <a href="index.php?page=auditorias" class="nav-icon-btn <?= $activePage==='auditorias'?'active':'' ?>">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10"/><path d="M7 12h10"/><path d="M7 18h10"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+        <span class="tooltip">Auditoría</span>
+    </a>
+    <?php endif; ?>
+
     <!-- 6. Ayuda - lo ven todos -->
     <a href="#" class="nav-icon-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>

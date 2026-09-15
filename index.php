@@ -18,6 +18,8 @@ require_once 'backend/ordenes/models/OrdenTrabajoModel.php';
 require_once 'backend/complementos/models/ComplementoModel.php';
 require_once 'backend/clientes/models/ClienteModel.php';
 require_once 'compartidoCREO/models/PermisoModel.php';
+require_once 'backend/auditoria/AuditoriaModel.php';
+require_once 'backend/auditoria/controllers/AuditoriaController.php';
 require_once 'backend/sesion/controller/SesionController.php';
 require_once 'backend/inicio/controllers/InicioController.php';
 require_once 'backend/vehiculos/controller/VehiculoController.php';
@@ -40,7 +42,7 @@ if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
 }
 
 // Páginas que solo pueden usar los administradores
-$paginasAdmin = ['registrar_usuario', 'empleados', 'complementos'];
+$paginasAdmin = ['registrar_usuario', 'empleados', 'complementos', 'auditorias'];
 
 //si intentan acceder a una pagina de admin sin ser admin, redirige al inicio
 if (in_array($page, $paginasAdmin) && ($_SESSION['rol'] ?? '') !== 'admin') {
@@ -153,6 +155,10 @@ switch ($page) {
     case 'clientes':
         $c = new ClienteController();
         $c->$action();
+        break;
+
+    case 'auditorias':
+        (new AuditoriaController())->index();
         break;
 
     //si la pagina no coincide con ninguna de las anteriores, muestra el inicio o el login segun haya sesion o no

@@ -1,10 +1,14 @@
 <?php
+require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
+
 // Controlador de Clientes: ABM + ficha con los vehículos de cada uno
 class ClienteController {
     private $model;
+    private $auditoria;
 
     public function __construct() {
         $this->model = new ClienteModel();
+        $this->auditoria = new AuditoriaModel();
     }
 
     // Listado de clientes
@@ -30,6 +34,21 @@ class ClienteController {
     // Crear cliente (desde el modal del listado de Clientes)
     public function create() {
         $resultado = $this->model->create($_POST);
+
+        if (!isset($resultado['error'])) {
+            $nuevoId = $resultado['id'] ?? null;
+            $nombre = trim($_POST['nombre'] ?? '');
+            $apellido = trim($_POST['apellido'] ?? '');
+            $dni = trim($_POST['dni'] ?? '');
+
+            $this->auditoria->registrar(
+                'CREAR',
+                'Clientes',
+                "Alta de cliente: $nombre $apellido (DNI: $dni)",
+                $nuevoId
+            );
+        }
+
         $this->responder($resultado, 'index.php?page=clientes');
     }
 
@@ -37,12 +56,40 @@ class ClienteController {
     public function edit() {
         $id = (int)($_POST['id'] ?? 0);
         $resultado = $this->model->update($id, $_POST);
+
+        if (!isset($resultado['error'])) {
+            $nombre = trim($_POST['nombre'] ?? '');
+            $apellido = trim($_POST['apellido'] ?? '');
+
+            $this->auditoria->registrar(
+                'EDITAR',
+                'Clientes',
+                "Modificación de cliente ID $id: $nombre $apellido",
+                $id
+            );
+        }
+
         $this->responder($resultado, 'index.php?page=clientes');
     }
 
     // Eliminar cliente
     public function delete() {
-        $resultado = $this->model->delete($_GET['id'] ?? 0);
+        $id = (int)($_GET['id'] ?? 0);
+        $cliente = $this->model->getById($id);
+        $resultado = $this->model->delete($id);
+
+        if (!isset($resultado['error'])) {
+            $nombreCompleto = trim((($cliente['nombre'] ?? '') . ' ' . ($cliente['apellido'] ?? '')));
+            $descripcion = $nombreCompleto !== '' ? "Baja de cliente: $nombreCompleto" : "Baja de cliente ID $id";
+
+            $this->auditoria->registrar(
+                'ELIMINAR',
+                'Clientes',
+                $descripcion,
+                $id
+            );
+        }
+
         if (isset($resultado['error'])) {
             header('Location: index.php?page=clientes&error=' . urlencode($resultado['error']));
         } else {

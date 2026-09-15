@@ -1,11 +1,15 @@
 <?php
+require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
+
 // Controlador de Complementos: pantalla de configuración con los ABM de catálogos
 // (por ahora Modelos y Tipos de vehículo; a futuro se pueden sumar más acá)
 class ComplementoController {
     private $model;
+    private $auditoria;
 
     public function __construct() {
         $this->model = new ComplementoModel();
+        $this->auditoria = new AuditoriaModel();
     }
 
     // Muestra la pantalla con las dos listas (Modelos y Tipos)
@@ -22,16 +26,49 @@ class ComplementoController {
 
     public function crearModelo() {
         $resultado = $this->model->crearModelo($_POST['nombre'] ?? '');
+
+        if (!isset($resultado['error'])) {
+            $nombre = trim($_POST['nombre'] ?? '');
+            $this->auditoria->registrar(
+                'CREAR',
+                'Complementos',
+                "Alta de modelo de vehículo: $nombre"
+            );
+        }
+
         $this->volver($resultado);
     }
 
     public function editarModelo() {
         $resultado = $this->model->editarModelo($_POST['id'] ?? 0, $_POST['nombre'] ?? '');
+
+        if (!isset($resultado['error'])) {
+            $id = (int)($_POST['id'] ?? 0);
+            $nombre = trim($_POST['nombre'] ?? '');
+            $this->auditoria->registrar(
+                'EDITAR',
+                'Complementos',
+                "Modificación de modelo de vehículo ID $id: $nombre",
+                $id
+            );
+        }
+
         $this->volver($resultado);
     }
 
     public function eliminarModelo() {
-        $resultado = $this->model->eliminarModelo($_GET['id'] ?? 0);
+        $id = (int)($_GET['id'] ?? 0);
+        $resultado = $this->model->eliminarModelo($id);
+
+        if (!isset($resultado['error'])) {
+            $this->auditoria->registrar(
+                'ELIMINAR',
+                'Complementos',
+                "Baja de modelo de vehículo ID $id",
+                $id
+            );
+        }
+
         $this->volver($resultado);
     }
 
@@ -39,16 +76,49 @@ class ComplementoController {
 
     public function crearTipo() {
         $resultado = $this->model->crearTipo($_POST['nombre'] ?? '');
+
+        if (!isset($resultado['error'])) {
+            $nombre = trim($_POST['nombre'] ?? '');
+            $this->auditoria->registrar(
+                'CREAR',
+                'Complementos',
+                "Alta de tipo de vehículo: $nombre"
+            );
+        }
+
         $this->volver($resultado);
     }
 
     public function editarTipo() {
         $resultado = $this->model->editarTipo($_POST['id'] ?? 0, $_POST['nombre'] ?? '');
+
+        if (!isset($resultado['error'])) {
+            $id = (int)($_POST['id'] ?? 0);
+            $nombre = trim($_POST['nombre'] ?? '');
+            $this->auditoria->registrar(
+                'EDITAR',
+                'Complementos',
+                "Modificación de tipo de vehículo ID $id: $nombre",
+                $id
+            );
+        }
+
         $this->volver($resultado);
     }
 
     public function eliminarTipo() {
-        $resultado = $this->model->eliminarTipo($_GET['id'] ?? 0);
+        $id = (int)($_GET['id'] ?? 0);
+        $resultado = $this->model->eliminarTipo($id);
+
+        if (!isset($resultado['error'])) {
+            $this->auditoria->registrar(
+                'ELIMINAR',
+                'Complementos',
+                "Baja de tipo de vehículo ID $id",
+                $id
+            );
+        }
+
         $this->volver($resultado);
     }
 

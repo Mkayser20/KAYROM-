@@ -54,4 +54,14 @@ class AuditoriaModel
         $stmt->close();
          return true;
     }
+
+    public function getAll() {
+        $sql = "SELECT a.*, u.nombre_usuario
+                FROM auditorias a
+                LEFT JOIN usuario u ON u.id = a.usuario_id
+                ORDER BY a.fecha DESC, a.id DESC";
+
+        $result = $this->db->query($sql);
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    }
 }

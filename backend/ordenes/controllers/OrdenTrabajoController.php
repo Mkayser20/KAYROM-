@@ -1,10 +1,14 @@
 <?php
+require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
+
 // Controlador de Órdenes de Trabajo: se crean y cierran desde la Ficha Técnica del vehículo
 class OrdenTrabajoController {
     private $model;
+    private $auditoria;
 
     public function __construct() {
         $this->model = new OrdenTrabajoModel();
+        $this->auditoria = new AuditoriaModel();
     }
 
     // Crear una nueva orden de trabajo (mecánico + repuestos usados) para un vehículo
@@ -24,6 +28,15 @@ class OrdenTrabajoController {
 
         $resultado = $this->model->create($vehiculo_id, $mecanico_id, $descripcion, $items);
 
+        if (!empty($resultado['id'])) {
+            $this->auditoria->registrar(
+                'CREAR',
+                'Órdenes de Trabajo',
+                "Alta de orden de trabajo #{$resultado['id']} para vehículo ID $vehiculo_id",
+                $resultado['id']
+            );
+        }
+
         if (!empty($resultado['avisos'])) {
             // Hubo faltantes: se generaron pedidos automáticos, se lo aviso al mecánico
             $mensaje = implode(' | ', $resultado['avisos']);
@@ -39,7 +52,16 @@ class OrdenTrabajoController {
     public function cerrar() {
         $id = (int)($_GET['id'] ?? 0);
         $vehiculo_id = (int)($_GET['vehiculo_id'] ?? 0);
-        $this->model->cambiarEstado($id, 'Cerrada');
+
+        if ($this->model->cambiarEstado($id, 'Cerrada')) {
+            $this->auditoria->registrar(
+                'EDITAR',
+                'Órdenes de Trabajo',
+                "Cierre de orden de trabajo #$id",
+                $id
+            );
+        }
+
         header('Location: index.php?page=vehiculos&action=verFicha&id=' . $vehiculo_id . '&msg=updated');
         exit;
     }

@@ -1,10 +1,14 @@
 <?php
+require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
+
 //Controlador del módulo de proveedores - maneja CRUD de proveedores
 class ProveedorController {
     private $model; //modelo de proveedores
+    private $auditoria;
 
     public function __construct() {
         $this->model = new ProveedorModel();
+        $this->auditoria = new AuditoriaModel();
     }
 
     //mostrar lista de todos los proveedores
@@ -22,6 +26,12 @@ class ProveedorController {
         //si es POST, guardar nuevo proveedor
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($this->model->create($_POST)) {
+                $nombreProveedor = trim($_POST['nombre_proveedor'] ?? '');
+                $this->auditoria->registrar(
+                    'CREAR',
+                    'Proveedores',
+                    "Alta de proveedor: $nombreProveedor"
+                );
                 //éxito: redirigir a lista con mensaje
                 header('Location: index.php?page=proveedores&msg=created');
                 exit;
@@ -46,6 +56,13 @@ class ProveedorController {
         //si es POST, actualizar proveedor
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($this->model->update($id, $_POST)) {
+                $nombreProveedor = trim($_POST['nombre_proveedor'] ?? '');
+                $this->auditoria->registrar(
+                    'EDITAR',
+                    'Proveedores',
+                    "Modificación de proveedor ID $id: $nombreProveedor",
+                    $id
+                );
                 //éxito: redirigir a lista con mensaje
                 header('Location: index.php?page=proveedores&msg=updated');
                 exit;
@@ -70,7 +87,19 @@ class ProveedorController {
     //eliminar un proveedor
     public function delete() {
         $id = $_GET['id'] ?? 0;
+        $proveedor = $this->model->getById($id);
         $this->model->delete($id);
+
+        if ($proveedor) {
+            $nombreProveedor = $proveedor['nombre_proveedor'] ?? "ID $id";
+            $this->auditoria->registrar(
+                'ELIMINAR',
+                'Proveedores',
+                "Baja de proveedor: $nombreProveedor",
+                $id
+            );
+        }
+
         //redirigir a lista con mensaje de éxito
         header('Location: index.php?page=proveedores&msg=deleted');
         exit;
