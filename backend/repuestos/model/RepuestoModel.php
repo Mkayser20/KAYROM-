@@ -59,6 +59,15 @@ class RepuestoModel {
         return $result ? array_column($result->fetch_all(MYSQLI_ASSOC), 'categoria') : [];
     }
 
+    //obtener cantidad de repuestos agrupados por categoría (para el gráfico del dashboard)
+    public function getCountByCategoria() {
+        $result = $this->db->query(
+            "SELECT categoria as label, COUNT(*) as total
+             FROM repuestos GROUP BY categoria"
+        );
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
     //obtener cantidad total de stock de todos los repuestos
     public function getTotalStock() {
         $result = $this->db->query("SELECT SUM(stock) as total FROM repuestos");

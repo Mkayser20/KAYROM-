@@ -28,6 +28,8 @@ class InicioController {
             'recentPedidos'     => $this->pedidoModel->getRecent(5),           //últimos 5 pedidos
             'estadVehiculos'    => $this->vehiculoModel->getCountByTipo(),     //estadísticas de vehículos por tipo
             'estadPedidos'      => $this->pedidoModel->getCountByEstado(),     //estadísticas de pedidos por estado
+            'estadEstadoTaller' => $this->vehiculoModel->getCountByEstadoTaller(), //vehículos agrupados por estado de taller
+            'estadRepuestos'    => $this->repuestoModel->getCountByCategoria(),    //repuestos agrupados por categoría
             'activePage'        => 'inicio' //marcar página activa en menú
         ];
         //cargar vista del dashboard

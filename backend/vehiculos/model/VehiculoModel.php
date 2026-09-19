@@ -174,4 +174,13 @@ class VehiculoModel {
         );
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
+
+    //obtener cantidad de vehículos agrupados por estado de taller (para el gráfico del dashboard)
+    public function getCountByEstadoTaller() {
+        $result = $this->db->query(
+            "SELECT estado_taller as label, COUNT(*) as total
+             FROM vehiculo GROUP BY estado_taller"
+        );
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    }
 }
