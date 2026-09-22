@@ -3,9 +3,9 @@
 :root {
     /* Superficies — Deep Slate */
     --bg-dark:      #000000;   /* canvas base — negro total */
-    --bg-panel:     #0A0A0C;   /* sidebar / topbar */
-    --bg-card:      #121316;   /* cards, paneles */
-    --bg-hover:     #1B1D22;   /* hover, elevado */
+    --bg-panel:     #000000;   /* sidebar / topbar */
+    --bg-card:      #000000;   /* cards, paneles */
+    --bg-hover:     #121316;   /* hover, elevado (el único tono que se despega del negro) */
     --sidebar-w:    264px;
 
     /* Acentos — mismos nombres de siempre, valores Azul Eléctrico */
@@ -168,7 +168,7 @@ body {
     left: var(--sidebar-w);
     right: 0;
     height: 64px;
-    background: rgba(15,19,28,0.92);
+    background: rgba(0,0,0,0.92);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -271,10 +271,17 @@ body {
 /* ── PANELS ──────────────────────────────────────── */
 .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-/* Zona operativa del Dashboard: columna ancha (tabla con más columnas) + columna angosta apilada */
-.ops-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
-.ops-grid-stack { display: flex; flex-direction: column; gap: 20px; }
-@media (max-width: 1100px) { .ops-grid { grid-template-columns: 1fr; } }
+/* Franja de alerta compacta (Stock Bajo), arriba del todo, en vez de un panel entero */
+.alert-strip {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent-orange);
+    border-radius: var(--radius); padding: 12px 18px; margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.alert-strip .alert-strip-icon { color: var(--accent-orange); flex-shrink: 0; display: flex; }
+.alert-strip .alert-strip-text { color: var(--text-primary); font-size: 13px; flex: 1; min-width: 200px; }
+.alert-strip .alert-strip-text b { color: var(--accent-orange); font-family: var(--font-mono); }
+.alert-strip .alert-strip-text .item-sep { color: var(--text-dim); }
 
 .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
 
