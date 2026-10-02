@@ -141,14 +141,19 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
 
 </div>
 
+<section id="reportes-dashboard">
 <!-- Separador de sección: acá termina lo operativo y arranca la parte de Informes y Gráficos -->
 <div class="section-divider">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     <span>Informes y Gráficos</span>
     <div class="line"></div>
+    <div class="chart-export-actions">
+        <button type="button" class="btn btn-ghost" onclick="exportarGraficosXls()">Descargar XLS</button>
+        <button type="button" class="btn btn-primary" onclick="exportarGraficosPdf()">Exportar PDF</button>
+    </div>
 </div>
 
-<div class="dashboard-grid">
+<div id="graficos-dashboard" class="dashboard-grid">
 
     <!-- Informe 1: Vehículos por Tipo (torta) -->
     <div class="panel">
@@ -269,5 +274,51 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
     </div>
 
 </div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+function exportarGraficosXls() {
+    const libro = XLSX.utils.book_new();
+    const paneles = document.querySelectorAll('#graficos-dashboard > .panel');
+
+    paneles.forEach((panel, indice) => {
+        const filas = [
+            [panel.querySelector('.panel-title').textContent.trim()],
+            [],
+            ['Categoría', 'Cantidad']
+        ];
+
+        panel.querySelectorAll('.legend-item, .bar-row').forEach(elemento => {
+            const categoria = elemento.querySelector(
+                '.legend-item span, .bar-row-top span'
+            ).textContent.trim();
+
+            const cantidad = Number(elemento.querySelector(
+                '.legend-item strong, .bar-row-top b'
+            ).textContent.trim());
+
+            filas.push([categoria, cantidad]);
+        });
+
+        if (filas.length === 3) {
+            filas.push(['Sin datos', '']);
+        }
+
+        const hoja = XLSX.utils.aoa_to_sheet(filas);
+        hoja['!cols'] = [{ wch: 36 }, { wch: 14 }];
+
+        XLSX.utils.book_append_sheet(libro, hoja, `Grafico ${indice + 1}`);
+    });
+
+    XLSX.writeFile(libro, `Kayrom-graficos-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    
+}
+function exportarGraficosPdf() {
+    window.print();
+}
+
+</script>
 
 <?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

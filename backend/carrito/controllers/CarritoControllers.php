@@ -1,20 +1,25 @@
 <?php
-// Controlador del carrito: agregar, ver, quitar y confirmar
+require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
+
+// Controlador de "Realizar pedido a proveedores" (antes llamado "Carrito"):
+// agregar repuestos, ver la lista, quitar y generar los pedidos
 class CarritoController {
     private $model;
+    private $auditoria;
 
     public function __construct() {
         $this->model = new CarritoModel();
+        $this->auditoria = new AuditoriaModel();
     }
 
-    // Ver el carrito del usuario logueado
+    // Ver la lista de repuestos a pedir del usuario logueado
     public function index() {
         $usuario_id = $_SESSION['usuario_id'] ?? 0;
         $items = $this->model->getByUsuario($usuario_id);
         require_once 'backend/carrito/views/carrito.php';
     }
 
-    // Agregar un repuesto al carrito
+    // Agregar un repuesto a la lista
     public function agregar() {
         $usuario_id  = $_SESSION['usuario_id'] ?? 0;
         $repuesto_id = $_POST['repuesto_id'] ?? $_GET['id'] ?? 0;
@@ -23,12 +28,12 @@ class CarritoController {
 
         $this->model->agregar($usuario_id, $repuesto_id, $cantidad);
 
-        // Vuelve al carrito después de agregar
+        // Vuelve al listado de repuestos para seguir agregando
         header('Location: index.php?page=repuestos&msg=agregado');
         exit;
     }
 
-    // Quitar un ítem del carrito
+    // Quitar un ítem de la lista
     public function quitar() {
         $usuario_id = $_SESSION['usuario_id'] ?? 0;
         $id = $_GET['id'] ?? 0;
@@ -51,7 +56,8 @@ class CarritoController {
         exit;
     }
 
-    // Genera un pedido de compra (uno por proveedor) con todo lo que hay en el carrito, y lo vacía
+    // Genera los pedidos (uno por proveedor) con lo que hay en la lista, y la vacía.
+    // Ahora cada pedido guarda sus RENGLONES (repuesto + cantidad + precio), no solo un texto.
     public function solicitar() {
         $usuario_id = $_SESSION['usuario_id'] ?? 0;
         $items = $this->model->getByUsuario($usuario_id);
@@ -64,7 +70,7 @@ class CarritoController {
         $responsable = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
         $pedidoModel = new PedidoModel();
 
-        // Agrupo los ítems del carrito por proveedor (cada proveedor = un pedido aparte)
+        // Agrupo los ítems por proveedor (cada proveedor = un pedido aparte)
         $grupos = [];
         foreach ($items as $item) {
             $clave = $item['proveedor_id'] ?? 'sin_proveedor';
@@ -72,25 +78,42 @@ class CarritoController {
             $grupos[$clave]['items'][] = $item;
         }
 
+        // Si algo falla, no se crea ningún pedido y la lista NO se vacía
+        $db = Database::getInstance()->getConexion();
+        Tx::iniciar($db);
+
+        $creados = [];
         foreach ($grupos as $grupo) {
-            $detalle = [];
-            $cantidadTotal = 0;
+            $renglones = [];
             foreach ($grupo['items'] as $item) {
-                $detalle[] = $item['cantidad'] . 'x ' . $item['nombre'];
-                $cantidadTotal += $item['cantidad'];
+                $renglones[] = [
+                    'repuesto_id' => $item['repuesto_id'],
+                    'cantidad'    => $item['cantidad'],
+                    'precio'      => $item['precio'],
+                ];
             }
-            $pedidoModel->create([
-                'estado_pedido'      => 'Pendiente',
+
+            $pedidoId = $pedidoModel->create([
                 'responsable_pedido' => $responsable,
                 'numero_unico'       => rand(1000, 9999),
-                'cantidad'           => $cantidadTotal,
-                'detalle_pedido'     => implode(', ', $detalle),
                 'proveedor_id'       => $grupo['proveedor_id'],
-            ]);
+            ], $renglones);
+
+            if (!$pedidoId) {
+                Tx::terminar($db, false); // deshace todo
+                header('Location: index.php?page=carrito&msg=error');
+                exit;
+            }
+            $creados[] = $pedidoId;
         }
 
-        // Una vez generado el/los pedido(s), se vacía el carrito
         $this->model->vaciar($usuario_id);
+        Tx::terminar($db, true);
+
+        // Auditoría: queda registrado quién generó qué pedidos
+        foreach ($creados as $pid) {
+            $this->auditoria->registrar('CREAR', 'Pedidos', "Pedido #$pid generado desde Realizar pedido a proveedores", $pid);
+        }
 
         header('Location: index.php?page=pedidos&msg=created');
         exit;

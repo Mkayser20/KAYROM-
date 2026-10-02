@@ -1,5 +1,8 @@
 <?php
-//Modelo para gestionar movimientos de inventario (entradas, salidas, etc)
+// Modelo de Movimientos: SOLO LEE el historial de stock.
+// Los movimientos ya no se crean ni se borran a mano desde acá:
+// los escribe el StockService cada vez que cambia el stock.
+// (Un historial que se puede borrar no sirve como prueba de lo que pasó.)
 class MovimientoModel {
     private $db; //conexión a la base de datos
 
@@ -7,31 +10,36 @@ class MovimientoModel {
         $this->db = Database::getInstance()->getConexion();
     }
 
-    //obtener todos los movimientos ordenados por fecha descendente (más recientes primero)
+    // Todos los movimientos, del más nuevo al más viejo,
+    // con el nombre del repuesto y del usuario que lo hizo
     public function getAll() {
-        $result = $this->db->query("SELECT * FROM movimientos ORDER BY fecha DESC");
+        $sql = "SELECT m.*, r.nombre AS repuesto_nombre, u.nombre_usuario
+                FROM movimientos m
+                LEFT JOIN repuestos r ON r.id = m.repuesto_id
+                LEFT JOIN usuario u   ON u.id = m.usuario_id
+                ORDER BY m.fecha DESC, m.id DESC";
+        $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    //obtener los últimos X movimientos (por defecto 5)
+    // Los últimos X movimientos (por defecto 5)
     public function getRecent($limit = 5) {
-        $stmt = $this->db->prepare("SELECT * FROM movimientos ORDER BY fecha DESC LIMIT ?");
+        $stmt = $this->db->prepare(
+            "SELECT m.*, r.nombre AS repuesto_nombre
+             FROM movimientos m
+             LEFT JOIN repuestos r ON r.id = m.repuesto_id
+             ORDER BY m.fecha DESC, m.id DESC LIMIT ?"
+        );
         $stmt->bind_param('i', $limit);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    //crear un nuevo movimiento (entrada/salida de inventario)
-    public function create($data) {
-        $stmt = $this->db->prepare("INSERT INTO movimientos (tipo, descripcion, cantidad) VALUES (?, ?, ?)");
-        $stmt->bind_param('ssi', $data['tipo'], $data['descripcion'], $data['cantidad']);
-        return $stmt->execute();
-    }
-
-    //eliminar un movimiento por su ID
-    public function delete($id) {
-        $stmt = $this->db->prepare("DELETE FROM movimientos WHERE id=?");
+    // Un movimiento puntual (este método faltaba y rompía el controlador)
+    public function getById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM movimientos WHERE id = ?");
         $stmt->bind_param('i', $id);
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 }

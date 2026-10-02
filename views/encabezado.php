@@ -5,6 +5,13 @@ $msgTexts      = [
     'created' => '✅ Registro creado exitosamente.',
     'updated' => '✅ Registro actualizado.',
     'deleted'  => '🗑️ Registro eliminado.',
+    'agregado' => '📤 Repuesto agregado a tu pedido a proveedores.',
+    // NUEVO: mensajes del ciclo de pedidos y stock
+    'recibido'           => '📥 Pedido recibido: el stock fue actualizado.',
+    'recibido_sin_items' => '⚠️ Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
+    'no_recibible'       => '⚠️ Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
+    'no_borrable'        => '⚠️ No se puede eliminar un pedido ya recibido.',
+    'error'              => '⚠️ No se pudo completar la operación. No se guardó ningún cambio.',
 ];
 $nombreUsuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
 $rolUsuario    = $_SESSION['rol']    ?? '';
@@ -73,11 +80,19 @@ $esAdmin = ($rolUsuario === 'admin');
     </a>
     <?php endif; ?>
 
+     <!-- NUEVO: Movimientos de stock -->
+    <?php if ($esAdmin || in_array('movimientos', $permisos)): ?>
+    <a href="index.php?page=movimientos" class="nav-icon-btn <?= $activePage==='movimientos'?'active':'' ?>">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        <span class="tooltip">Movimientos</span>
+    </a>
+    <?php endif; ?>
+
     <!-- 5. Proveedores - solo admin -->
     <?php if ($esAdmin || in_array('proveedores', $permisos)): ?>
    <a href="index.php?page=proveedores" class="nav-icon-btn <?= $activePage==='proveedores'?'active':'' ?>">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-handshake-icon lucide-handshake"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>
-        <span class="tooltip">Proveedores</span>
+        <span class="tooltip">Realizar pedido</span>
     </a>
     <?php endif; ?>
 

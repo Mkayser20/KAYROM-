@@ -75,7 +75,7 @@
                     <td>
                         <div class="action-icons">
                             <?php if ($r['stock'] > 0): ?>
-                            <a href="index.php?page=carrito&action=agregar&id=<?= $r['id'] ?>" class="action-edit" title="Agregar al carrito">
+                             <a href="index.php?page=carrito&action=agregar&id=<?= $r['id'] ?>" class="action-edit" title="Agregar al pedido a proveedores">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                             </a>
                             <?php endif; ?>

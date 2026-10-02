@@ -33,14 +33,14 @@ function cargarEnv($rutaArchivo)
 
 cargarEnv(__DIR__ . '/.env');
 
-define('APP_ENV', getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'production'));
-define('DB_HOST', getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? 'localhost'));
-define('DB_NAME', getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? 'soft_kayrom'));
-define('DB_USER', getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? 'root'));
-define('DB_PASS', getenv('DB_PASS') ?: ($_ENV['DB_PASS'] ?? ''));
-define('DB_CHARSET', getenv('DB_CHARSET') ?: ($_ENV['DB_CHARSET'] ?? 'utf8'));
+define('APP_ENV', $_ENV['APP_ENV'] ?? 'production');
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'soft_kayrom');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_CHARSET', $_ENV['DB_CHARSET'] ?? 'utf8');
 
-define('MAIL_HOST', getenv('MAIL_HOST') ?: ($_ENV['MAIL_HOST'] ?? ''));
-define('MAIL_PORT', getenv('MAIL_PORT') ?: ($_ENV['MAIL_PORT'] ?? 587));
-define('MAIL_USER', getenv('MAIL_USER') ?: ($_ENV['MAIL_USER'] ?? ''));
-define('MAIL_PASS', getenv('MAIL_PASS') ?: ($_ENV['MAIL_PASS'] ?? ''));
+define('MAIL_HOST', $_ENV['MAIL_HOST'] ?? '');
+define('MAIL_PORT', $_ENV['MAIL_PORT'] ?? 587);
+define('MAIL_USER', $_ENV['MAIL_USER'] ?? '');
+define('MAIL_PASS', $_ENV['MAIL_PASS'] ?? '');

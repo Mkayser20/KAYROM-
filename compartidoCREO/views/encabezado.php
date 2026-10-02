@@ -5,7 +5,14 @@ $msgTexts      = [
     'created' => '✅ Registro creado exitosamente.',
     'updated' => '✅ Registro actualizado.',
     'deleted'  => '🗑️ Registro eliminado.',
-    'agregado' => '🛒 Repuesto añadido al carrito.',
+    'agregado' => '📤 Repuesto agregado a tu pedido a proveedores.',
+    // NUEVO: mensajes del ciclo de pedidos y stock
+    'recibido'           => '📥 Pedido recibido: el stock fue actualizado.',
+    'recibido_sin_items' => '⚠️ Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
+    'no_recibible'       => '⚠️ Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
+    'repuesto_en_uso'    => '⚠️ No se puede eliminar: ese repuesto ya se usó en órdenes de trabajo o está en pedidos.',
+    'no_borrable'        => '⚠️ No se puede eliminar un pedido ya recibido.',
+    'error'              => '⚠️ No se pudo completar la operación. No se guardó ningún cambio.',
 ];
 $nombreUsuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
 $rolUsuario    = $_SESSION['rol']    ?? '';
@@ -85,6 +92,14 @@ $esAdmin = ($rolUsuario === 'admin');
     </a>
     <?php endif; ?>
 
+    <!-- NUEVO: Movimientos de stock -->
+    <?php if ($esAdmin || in_array('movimientos', $permisos)): ?>
+    <a href="index.php?page=movimientos" class="nav-icon-btn <?= $activePage==='movimientos'?'active':'' ?>">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        <span class="tooltip">Movimientos</span>
+    </a>
+    <?php endif; ?>
+
     <!-- 5. Proveedores - solo admin -->
     <?php if ($esAdmin || in_array('proveedores', $permisos)): ?>
    <a href="index.php?page=proveedores" class="nav-icon-btn <?= $activePage==='proveedores'?'active':'' ?>">
@@ -107,7 +122,7 @@ $esAdmin = ($rolUsuario === 'admin');
 
     <a href="index.php?page=carrito" class="nav-icon-btn <?= $activePage==='carrito'?'active':'' ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        <span class="tooltip">Carrito</span>
+        <span class="tooltip">Realizar pedido</span>
     </a>
     <?php if ($esAdmin): ?>
     <a href="index.php?page=registrar_usuario&action=registrar_usuario" class="nav-icon-btn <?= $activePage==='registrar_usuario'?'active':'' ?>">

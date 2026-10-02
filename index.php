@@ -7,6 +7,7 @@ $action = $_GET['action'] ?? 'index';
 
 //carga la conexion a la base de datos, los modelos y los controladores necesarios para cada pagina
 require_once 'config/base_datos.php';
+require_once 'compartidoCREO/models/StockService.php';
 require_once 'compartidoCREO/models/UsuarioModel.php';
 require_once 'backend/vehiculos/model/VehiculoModel.php';
 require_once 'backend/producto/model/ProductoModel.php';
@@ -14,6 +15,7 @@ require_once 'backend/pedidos/model/PedidoModel.php';
 require_once 'backend/empleado/models/EmpleadoModel.php';
 require_once 'backend/proveedor/models/ProveedorModel.php';
 require_once 'backend/repuestos/model/RepuestoModel.php';
+require_once 'backend/movimiento/models/MovimientoModel.php';
 require_once 'backend/ordenes/models/OrdenTrabajoModel.php';
 require_once 'backend/complementos/models/ComplementoModel.php';
 require_once 'backend/clientes/models/ClienteModel.php';
@@ -124,6 +126,12 @@ switch ($page) {
         $c = new RepuestoController();
         $c->$action();
     break;
+
+    case 'movimientos':
+        require_once 'backend/movimiento/controllers/MovimientoController.php';
+        if (!in_array($action, ['index', 'create'])) $action = 'index'; // solo estas acciones están permitidas
+       (new MovimientoController())->$action();
+        break;
 
     case 'proveedores':
     $action = $_GET['action'] ?? 'index';

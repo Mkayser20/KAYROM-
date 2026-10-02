@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
 
-// Controlador del módulo de pedidos - maneja CRUD de pedidos y cambios de estado
+// Controlador de Pedidos a proveedores: listar, crear, recibir y eliminar
 class PedidoController {
     private $model;     // modelo de pedidos
     private $auditoria; // modelo de auditoría
@@ -11,83 +11,80 @@ class PedidoController {
         $this->auditoria = new AuditoriaModel();
     }
 
-    // mostrar lista de todos los pedidos
+    // Lista de pedidos (más el formulario rápido para crear uno nuevo)
     public function index() {
         $data = [
-            'pedidos'    => $this->model->getAll(),  //obtener todos los pedidos
-            'proveedores'=> (new ProveedorModel())->getAll(), //para el select del alta rápida
-            'activePage' => 'pedidos'
+            'pedidos'     => $this->model->getAll(),
+            'proveedores' => (new ProveedorModel())->getAll(),  // para elegir proveedor
+            'repuestos'   => (new RepuestoModel())->getAll(),   // para elegir los repuestos del pedido
+            'activePage'  => 'pedidos'
         ];
         require_once 'backend/pedidos/views/pedidos_listado.php';
     }
 
-    // crear un nuevo pedido
+    // Crear un pedido nuevo (llega desde la ventanita del listado)
     public function create() {
-        // si es POST, guardar nuevo pedido
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nuevoId = $this->model->create($_POST);
-
-            $proveedorId = $_POST['proveedor_id'] ?? $_POST['proveedor'] ?? 'N/A';
-            $total       = $_POST['total'] ?? $_POST['monto'] ?? '';
-
-            // AUDITORÍA: Registro de creación
-            $detalle = "Alta de pedido #$nuevoId (Proveedor ID: $proveedorId" . ($total !== '' ? ", Total: $total" : "") . ")";
-            $this->auditoria->registrar(
-                'CREAR',
-                'Pedidos',
-                $detalle,
-                $nuevoId
-            );
-
-            // redirigir con mensaje de éxito
-            header('Location: index.php?page=pedidos&msg=created');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php?page=pedidos'); // el formulario está en el listado
             exit;
         }
-        //mostrar formulario vacío
-        $data = [
-            'proveedores' => (new ProveedorModel())->getAll(),
-            'activePage'  => 'pedidos'
-        ];
-        require_once 'backend/pedidos/views/pedido_form.php';
-    }
 
-    // eliminar un pedido
-    public function delete() {
-        $id = (int)($_GET['id'] ?? 0);
-
-        $pedido = $this->model->getById($id);
-
-        if ($this->model->delete($id)) {
-            // AUDITORÍA: Registro de eliminación
-            $this->auditoria->registrar(
-                'ELIMINAR',
-                'Pedidos',
-                "Baja de pedido #$id",
-                $id
-            );
+        // Los repuestos llegan como listas paralelas: repuesto_id[] y cantidad[]
+        $ids = $_POST['repuesto_id'] ?? [];
+        $cants = $_POST['cantidad'] ?? [];
+        $items = [];
+        foreach ($ids as $i => $rid) {
+            $items[] = ['repuesto_id' => $rid, 'cantidad' => $cants[$i] ?? 0];
         }
 
-        // redirigir a lista con mensaje de éxito
-        header('Location: index.php?page=pedidos&msg=deleted');
+        // Si no escribieron responsable, uso el usuario que está logueado
+        if (empty($_POST['responsable_pedido'])) {
+            $_POST['responsable_pedido'] = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
+        }
+
+        $nuevoId = $this->model->create($_POST, $items);
+
+        if (!$nuevoId) {
+            // La ventanita muestra este texto como error (sin recargar la página)
+            echo $this->model->error;
+            exit;
+        }
+
+        $this->auditoria->registrar(
+            'CREAR',
+            'Pedidos',
+            "Alta de pedido #$nuevoId (Proveedor ID: " . ($_POST['proveedor_id'] ?: 'N/A') . ", " . count($items) . " renglón/es)",
+            $nuevoId
+        );
+
+        header('Location: index.php?page=pedidos&msg=created');
         exit;
     }
 
-    // marcar un pedido como entregado
-    public function entregar() {
+    // Eliminar un pedido (solo si todavía no fue recibido)
+    public function delete() {
         $id = (int)($_GET['id'] ?? 0);
 
-        if ($this->model->entregar($id)) {
-            // AUDITORÍA: Registro de cambio de estado
-            $this->auditoria->registrar(
-                'EDITAR',
-                'Pedidos',
-                "Pedido #$id marcado como ENTREGADO",
-                $id
-            );
+        if ($this->model->delete($id)) {
+            $this->auditoria->registrar('ELIMINAR', 'Pedidos', "Baja de pedido #$id", $id);
+            header('Location: index.php?page=pedidos&msg=deleted');
+        } else {
+            header('Location: index.php?page=pedidos&msg=no_borrable');
         }
+        exit;
+    }
 
-        // redirigir a lista con mensaje de éxito
-        header('Location: index.php?page=pedidos&msg=updated');
+    // RECIBIR un pedido: suma al stock lo que se pidió (antes esto se llamaba "entregar")
+    public function recibir() {
+        $id = (int)($_GET['id'] ?? 0);
+        $res = $this->model->recibir($id);
+
+        if ($res['ok']) {
+            $this->auditoria->registrar('EDITAR', 'Pedidos', "Pedido #$id RECIBIDO (stock actualizado)", $id);
+            header('Location: index.php?page=pedidos&msg=' . (!empty($res['sin_renglones']) ? 'recibido_sin_items' : 'recibido'));
+        } else {
+            header('Location: index.php?page=pedidos&msg=no_recibible');
+        }
         exit;
     }
 }
