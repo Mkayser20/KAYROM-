@@ -34,7 +34,7 @@ CREATE TABLE `auditorias` (
   PRIMARY KEY (`id`),
   KEY `fk_auditoria_usuario` (`usuario_id`),
   CONSTRAINT `fk_auditoria_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `auditorias` (
 
 LOCK TABLES `auditorias` WRITE;
 /*!40000 ALTER TABLE `auditorias` DISABLE KEYS */;
-INSERT INTO `auditorias` VALUES (1,19,'ELIMINAR','Pedidos','Baja de pedido #11',11,'::1','2026-09-07 09:06:27'),(2,19,'ELIMINAR','Pedidos','Baja de pedido #2',2,'::1','2026-09-07 09:07:03'),(3,19,'LOGIN','Autenticación','Inicio de sesión exitoso',NULL,'::1','2026-09-07 19:24:19'),(4,19,'EDITAR','Vehículos','Modificación de vehículo ID 11 (YZ 901 A2)',11,'::1','2026-09-07 19:26:57'),(5,19,'EDITAR','Repuestos','Modificación de repuesto ID 2: Frenos',2,'::1','2026-09-07 20:08:48'),(6,19,'CREAR','Usuarios','Se creó el usuario \'aaa\'',20,'::1','2026-09-08 14:47:29'),(7,19,'EDITAR','Empleados','Modificación de empleado ID 15: a a',15,'::1','2026-09-08 19:20:07'),(8,19,'EDITAR','Empleados','Modificación de empleado ID 20: ll ff',20,'::1','2026-09-08 19:20:13'),(9,19,'EDITAR','Empleados','Modificación de empleado ID 17: MULQUI GAUNA',17,'::1','2026-09-08 19:20:21'),(10,19,'EDITAR','Empleados','Modificación de empleado ID 12: RICARDO HUBER',12,'::1','2026-09-08 19:20:39'),(11,19,'EDITAR','Empleados','Modificación de empleado ID 12: RICARDO HUBER',12,'::1','2026-09-08 19:20:56'),(12,19,'EDITAR','Empleados','Modificación de empleado ID 10: Roberto Juarez',10,'::1','2026-09-08 19:21:12'),(13,19,'EDITAR','Empleados','Modificación de empleado ID 2: Marcos Kayser',2,'::1','2026-09-08 19:21:22'),(14,19,'CREAR','Usuarios','Se creó el usuario \'milenavr\'',21,'::1','2026-09-08 20:52:46'),(15,19,'CREAR','Vehículos','Alta de vehículo (Patente: ac126vc)',38,'::1','2026-09-08 20:53:52'),(16,19,'CREAR','Repuestos','Alta de repuesto: filtro de aire (Stock inicial: 5)',7,'::1','2026-09-08 20:54:31'),(17,19,'CREAR','Pedidos','Alta de pedido #13 (Proveedor ID: )',13,'::1','2026-09-08 20:55:02'),(18,19,'CREAR','Usuarios','Se creó el usuario \'Migue2008\'',22,'::1','2026-09-08 20:57:14'),(19,19,'CREAR','Vehículos','Alta de vehículo (Patente: aa067bb)',39,'::1','2026-09-08 20:58:38'),(20,19,'CREAR','Repuestos','Alta de repuesto: bieleta (Stock inicial: 10)',8,'::1','2026-09-08 20:59:15'),(21,19,'CREAR','Pedidos','Alta de pedido #14 (Proveedor ID: 5)',14,'::1','2026-09-08 20:59:49'),(22,19,'CREAR','Usuarios','Se creó el usuario \'cosme123\'',23,'::1','2026-09-08 21:01:51'),(23,19,'CREAR','Vehículos','Alta de vehículo (Patente: ac125vd)',40,'::1','2026-09-08 21:02:56'),(24,19,'CREAR','Repuestos','Alta de repuesto: bujia (Stock inicial: 10)',9,'::1','2026-09-08 21:03:24'),(25,19,'CREAR','Usuarios','Se creó el usuario \'hector12\'',24,'::1','2026-09-08 21:06:18'),(26,19,'CREAR','Vehículos','Alta de vehículo (Patente: AH123BB)',41,'::1','2026-09-08 21:07:16'),(27,19,'CREAR','Repuestos','Alta de repuesto: luneta (Stock inicial: 10)',10,'::1','2026-09-08 21:07:37'),(28,19,'CREAR','Pedidos','Alta de pedido #15 (Proveedor ID: 1)',15,'::1','2026-09-08 21:08:12'),(29,19,'CREAR','Usuarios','Se creó el usuario \'patrickk\'',25,'::1','2026-09-08 21:10:28'),(30,19,'CREAR','Vehículos','Alta de vehículo (Patente: AH556NN)',42,'::1','2026-09-08 21:12:05'),(31,19,'CREAR','Pedidos','Alta de pedido #16 (Proveedor ID: 4)',16,'::1','2026-09-08 21:12:50'),(32,19,'CREAR','Usuarios','Se creó el usuario \'mchavez\'',26,'::1','2026-09-08 21:15:07'),(33,19,'CREAR','Vehículos','Alta de vehículo (Patente: AE223EE)',43,'::1','2026-09-08 21:16:23'),(34,19,'CREAR','Repuestos','Alta de repuesto: cubiertas (Stock inicial: 13)',11,'::1','2026-09-08 21:17:06'),(35,19,'CREAR','Pedidos','Alta de pedido #17 (Proveedor ID: 1)',17,'::1','2026-09-08 21:36:32'),(36,19,'CREAR','Usuarios','Se creó el usuario \'gvera\'',27,'::1','2026-09-08 21:37:59'),(37,19,'CREAR','Vehículos','Alta de vehículo (Patente: AF302GM)',44,'::1','2026-09-08 21:39:04'),(38,19,'CREAR','Repuestos','Alta de repuesto: Bujia (Stock inicial: 19)',12,'::1','2026-09-08 21:39:43'),(39,19,'CREAR','Pedidos','Alta de pedido #18 (Proveedor ID: 1)',18,'::1','2026-09-08 21:40:14'),(40,19,'CREAR','Usuarios','Se creó el usuario \'andrea01\'',28,'::1','2026-09-08 21:41:36'),(41,19,'CREAR','Vehículos','Alta de vehículo (Patente: AD144TY)',45,'::1','2026-09-08 21:42:57'),(42,19,'CREAR','Repuestos','Alta de repuesto: Frenos (Stock inicial: 9)',13,'::1','2026-09-08 21:43:30'),(43,19,'CREAR','Pedidos','Alta de pedido #19 (Proveedor ID: 1)',19,'::1','2026-09-08 21:44:02'),(44,19,'EDITAR','Vehículos','Modificación de vehículo ID 45 (AD144TY)',45,'::1','2026-09-08 21:59:11'),(45,19,'EDITAR','Vehículos','Modificación de vehículo ID 45 (AD144TY)',45,'::1','2026-09-08 21:59:26'),(46,19,'EDITAR','Vehículos','Modificación de vehículo ID 43 (AE223EE)',43,'::1','2026-09-08 21:59:33'),(47,19,'EDITAR','Vehículos','Modificación de vehículo ID 45 (AD144TY)',45,'::1','2026-09-12 18:34:06'),(48,19,'CREAR','Vehículos','Alta de vehículo (Patente: AI256AS)',46,'::1','2026-09-13 21:21:15'),(49,19,'ELIMINAR','Pedidos','Baja de pedido #20',20,'::1','2026-09-13 21:23:22');
+INSERT INTO `auditorias` VALUES (1,19,'ELIMINAR','Pedidos','Baja de pedido #11',11,'::1','2026-09-07 09:06:27'),(2,19,'ELIMINAR','Pedidos','Baja de pedido #2',2,'::1','2026-09-07 09:07:03'),(3,19,'LOGIN','Autenticación','Inicio de sesión exitoso',NULL,'::1','2026-09-07 19:24:19'),(4,19,'EDITAR','Vehículos','Modificación de vehículo ID 11 (YZ 901 A2)',11,'::1','2026-09-07 19:26:57'),(5,19,'EDITAR','Repuestos','Modificación de repuesto ID 2: Frenos',2,'::1','2026-09-07 20:08:48'),(6,19,'CREAR','Usuarios','Se creó el usuario \'aaa\'',20,'::1','2026-09-08 14:47:29'),(7,19,'EDITAR','Empleados','Modificación de empleado ID 15: a a',15,'::1','2026-09-08 19:20:07'),(8,19,'EDITAR','Empleados','Modificación de empleado ID 20: ll ff',20,'::1','2026-09-08 19:20:13'),(9,19,'EDITAR','Empleados','Modificación de empleado ID 17: MULQUI GAUNA',17,'::1','2026-09-08 19:20:21'),(10,19,'EDITAR','Empleados','Modificación de empleado ID 12: RICARDO HUBER',12,'::1','2026-09-08 19:20:39'),(11,19,'EDITAR','Empleados','Modificación de empleado ID 12: RICARDO HUBER',12,'::1','2026-09-08 19:20:56'),(12,19,'EDITAR','Empleados','Modificación de empleado ID 10: Roberto Juarez',10,'::1','2026-09-08 19:21:12'),(13,19,'EDITAR','Empleados','Modificación de empleado ID 2: Marcos Kayser',2,'::1','2026-09-08 19:21:22'),(14,19,'CREAR','Usuarios','Se creó el usuario \'milenavr\'',21,'::1','2026-09-08 20:52:46'),(15,19,'CREAR','Vehículos','Alta de vehículo (Patente: ac126vc)',38,'::1','2026-09-08 20:53:52'),(16,19,'CREAR','Repuestos','Alta de repuesto: filtro de aire (Stock inicial: 5)',7,'::1','2026-09-08 20:54:31'),(17,19,'CREAR','Pedidos','Alta de pedido #13 (Proveedor ID: )',13,'::1','2026-09-08 20:55:02'),(18,19,'CREAR','Usuarios','Se creó el usuario \'Migue2008\'',22,'::1','2026-09-08 20:57:14'),(19,19,'CREAR','Vehículos','Alta de vehículo (Patente: aa067bb)',39,'::1','2026-09-08 20:58:38'),(20,19,'CREAR','Repuestos','Alta de repuesto: bieleta (Stock inicial: 10)',8,'::1','2026-09-08 20:59:15'),(21,19,'CREAR','Pedidos','Alta de pedido #14 (Proveedor ID: 5)',14,'::1','2026-09-08 20:59:49'),(22,19,'CREAR','Usuarios','Se creó el usuario \'cosme123\'',23,'::1','2026-09-08 21:01:51'),(23,19,'CREAR','Vehículos','Alta de vehículo (Patente: ac125vd)',40,'::1','2026-09-08 21:02:56'),(24,19,'CREAR','Repuestos','Alta de repuesto: bujia (Stock inicial: 10)',9,'::1','2026-09-08 21:03:24'),(25,19,'CREAR','Usuarios','Se creó el usuario \'hector12\'',24,'::1','2026-09-08 21:06:18'),(26,19,'CREAR','Vehículos','Alta de vehículo (Patente: AH123BB)',41,'::1','2026-09-08 21:07:16'),(27,19,'CREAR','Repuestos','Alta de repuesto: luneta (Stock inicial: 10)',10,'::1','2026-09-08 21:07:37'),(28,19,'CREAR','Pedidos','Alta de pedido #15 (Proveedor ID: 1)',15,'::1','2026-09-08 21:08:12'),(29,19,'CREAR','Usuarios','Se creó el usuario \'patrickk\'',25,'::1','2026-09-08 21:10:28'),(30,19,'CREAR','Vehículos','Alta de vehículo (Patente: AH556NN)',42,'::1','2026-09-08 21:12:05'),(31,19,'CREAR','Pedidos','Alta de pedido #16 (Proveedor ID: 4)',16,'::1','2026-09-08 21:12:50'),(32,19,'CREAR','Usuarios','Se creó el usuario \'mchavez\'',26,'::1','2026-09-08 21:15:07'),(33,19,'CREAR','Vehículos','Alta de vehículo (Patente: AE223EE)',43,'::1','2026-09-08 21:16:23'),(34,19,'CREAR','Repuestos','Alta de repuesto: cubiertas (Stock inicial: 13)',11,'::1','2026-09-08 21:17:06'),(35,19,'CREAR','Pedidos','Alta de pedido #17 (Proveedor ID: 1)',17,'::1','2026-09-08 21:36:32'),(36,19,'CREAR','Usuarios','Se creó el usuario \'gvera\'',27,'::1','2026-09-08 21:37:59'),(37,19,'CREAR','Vehículos','Alta de vehículo (Patente: AF302GM)',44,'::1','2026-09-08 21:39:04'),(38,19,'CREAR','Repuestos','Alta de repuesto: Bujia (Stock inicial: 19)',12,'::1','2026-09-08 21:39:43'),(39,19,'CREAR','Pedidos','Alta de pedido #18 (Proveedor ID: 1)',18,'::1','2026-09-08 21:40:14'),(40,19,'CREAR','Usuarios','Se creó el usuario \'andrea01\'',28,'::1','2026-09-08 21:41:36'),(41,19,'CREAR','Vehículos','Alta de vehículo (Patente: AD144TY)',45,'::1','2026-09-08 21:42:57'),(42,19,'CREAR','Repuestos','Alta de repuesto: Frenos (Stock inicial: 9)',13,'::1','2026-09-08 21:43:30'),(43,19,'CREAR','Pedidos','Alta de pedido #19 (Proveedor ID: 1)',19,'::1','2026-09-08 21:44:02'),(44,19,'EDITAR','Vehículos','Modificación de vehículo ID 45 (AD144TY)',45,'::1','2026-09-08 21:59:11'),(45,19,'EDITAR','Vehículos','Modificación de vehículo ID 45 (AD144TY)',45,'::1','2026-09-08 21:59:26'),(46,19,'EDITAR','Vehículos','Modificación de vehículo ID 43 (AE223EE)',43,'::1','2026-09-08 21:59:33'),(47,19,'EDITAR','Vehículos','Modificación de vehículo ID 45 (AD144TY)',45,'::1','2026-09-12 18:34:06'),(48,19,'CREAR','Vehículos','Alta de vehículo (Patente: AI256AS)',46,'::1','2026-09-13 21:21:15'),(49,19,'ELIMINAR','Pedidos','Baja de pedido #20',20,'::1','2026-09-13 21:23:22'),(50,4,'ELIMINAR','Repuestos','Baja de repuesto: bieleta',8,'::1','2026-09-15 00:00:16'),(51,4,'ELIMINAR','Vehículos','Baja de vehículo: EF 456 GH',2,'::1','2026-09-15 10:55:33'),(52,4,'CREAR','Órdenes de Trabajo','Alta de orden de trabajo #4 para vehículo ID 11',4,'::1','2026-09-15 11:58:53'),(53,4,'ELIMINAR','Vehículos','Baja de vehículo: AA22BC',10,'::1','2026-09-15 12:04:16'),(54,4,'ELIMINAR','Pedidos','Baja de pedido #9',9,'::1','2026-09-15 19:33:09'),(55,4,'EDITAR','Empleados','Modificación de empleado ID 16: Cristian Martearena',16,'::1','2026-09-15 19:33:56'),(56,4,'ELIMINAR','Vehículos','Baja de vehículo: AF302GM',44,'::1','2026-09-15 19:36:20'),(57,4,'ELIMINAR','Vehículos','Baja de vehículo: YZ 901 A2',11,'::1','2026-09-15 19:44:21'),(58,4,'ELIMINAR','Vehículos','Baja de vehículo: MN 012 OP',4,'::1','2026-09-15 19:46:23'),(59,4,'ELIMINAR','Vehículos','Baja de vehículo: AE223EE',43,'::1','2026-09-15 19:46:45'),(60,4,'ELIMINAR','Repuestos','Baja de repuesto: Frenos',2,'::1','2026-09-18 15:03:33'),(61,4,'CREAR','Pedidos','Alta de pedido #23 (Proveedor ID: 5)',23,'::1','2026-09-18 15:12:28'),(62,4,'EDITAR','Vehículos','Modificación de vehículo ID 46 (AI256AS)',46,'::1','2026-09-18 15:13:38'),(63,4,'EDITAR','Vehículos','Modificación de vehículo ID 46 (AI256AS)',46,'::1','2026-09-18 15:13:55'),(64,4,'ELIMINAR','Vehículos','Baja de vehículo: AH556NN',42,'::1','2026-09-18 15:14:21'),(65,4,'CREAR','Órdenes de Trabajo','Alta de orden de trabajo #5 para vehículo ID 46',5,'::1','2026-09-29 20:07:37'),(66,4,'CREAR','Repuestos','Alta de repuesto: Repuesto Prueba (Stock inicial: 10)',14,'::1','2026-10-02 03:35:11'),(67,4,'EDITAR','Repuestos','Modificación de repuesto ID 14: Repuesto Prueba',14,'::1','2026-10-02 03:35:55'),(68,4,'CREAR','Órdenes de Trabajo','Alta de orden de trabajo #6 para vehículo ID 46',6,'::1','2026-10-02 03:40:23'),(69,4,'EDITAR','Órdenes de Trabajo','Cierre de orden de trabajo #6',6,'::1','2026-10-02 03:42:00'),(70,4,'CREAR','Órdenes de Trabajo','Alta de orden de trabajo #7 para vehículo ID 46',7,'::1','2026-10-02 03:42:37'),(71,4,'CREAR','Pedidos','Pedido #24 generado desde Realizar pedido a proveedores',24,'::1','2026-10-02 03:47:30'),(72,4,'CREAR','Pedidos','Pedido #25 generado desde Realizar pedido a proveedores',25,'::1','2026-10-02 03:47:30'),(73,4,'CREAR','Pedidos','Pedido #26 generado desde Realizar pedido a proveedores',26,'::1','2026-10-02 03:47:30'),(74,4,'CREAR','Pedidos','Pedido #27 generado desde Realizar pedido a proveedores',27,'::1','2026-10-02 03:47:30'),(75,4,'EDITAR','Pedidos','Pedido #27 RECIBIDO (stock actualizado)',27,'::1','2026-10-02 03:49:37'),(76,4,'EDITAR','Pedidos','Pedido #26 RECIBIDO (stock actualizado)',26,'::1','2026-10-02 03:50:36'),(77,4,'EDITAR','Órdenes de Trabajo','Cierre de orden de trabajo #7',7,'::1','2026-10-02 10:50:59'),(78,4,'CREAR','Órdenes de Trabajo','Alta de orden de trabajo #8 para vehículo ID 46',8,'::1','2026-10-02 10:51:22'),(79,4,'CREAR','Órdenes de Trabajo','Alta de orden de trabajo #9 para vehículo ID 45',9,'::1','2026-10-02 10:56:52'),(80,4,'CREAR','Repuestos','Alta de repuesto: Bujia Prueba (Stock inicial: 2)',15,'::1','2026-10-02 11:09:47'),(81,4,'CREAR','Repuestos','Alta de repuesto: Bujia Prueba (Stock inicial: 2)',16,'::1','2026-10-02 11:10:40'),(82,4,'ELIMINAR','Repuestos','Baja de repuesto: Bujia Prueba',15,'::1','2026-10-02 11:11:32'),(83,4,'CREAR','Repuestos','Alta de repuesto: Repuesto Prueba (Stock inicial: 22)',17,'::1','2026-10-02 11:29:57'),(84,4,'ELIMINAR','Repuestos','Baja de repuesto: Repuesto Prueba',17,'::1','2026-10-02 11:30:17'),(85,4,'ELIMINAR','Repuestos','Baja de repuesto: filtro de aire',7,'::1','2026-10-02 11:30:50');
 /*!40000 ALTER TABLE `auditorias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,7 +65,7 @@ CREATE TABLE `carrito` (
   KEY `repuesto_id` (`repuesto_id`),
   CONSTRAINT `carrito_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`),
   CONSTRAINT `carrito_ibfk_2` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE `carrito` (
 
 LOCK TABLES `carrito` WRITE;
 /*!40000 ALTER TABLE `carrito` DISABLE KEYS */;
-INSERT INTO `carrito` VALUES (1,4,4,5,'2026-06-29 15:16:35'),(2,4,3,3,'2026-06-29 15:16:51'),(5,11,5,1,'2026-06-29 15:39:19'),(8,4,5,4,'2026-06-30 16:40:11');
+INSERT INTO `carrito` VALUES (5,11,5,1,'2026-06-29 15:39:19');
 /*!40000 ALTER TABLE `carrito` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,10 +87,10 @@ DROP TABLE IF EXISTS `cliente`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cliente` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `apellido` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `dni` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `telefono` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nombre` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `apellido` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dni` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `telefono` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_cliente_dni` (`dni`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -116,11 +116,11 @@ DROP TABLE IF EXISTS `detalle_pedido`;
 CREATE TABLE `detalle_pedido` (
   `id` int NOT NULL AUTO_INCREMENT,
   `detalle_pedido` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `productos_id` int NOT NULL,
+  `productos_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `productos_id` (`productos_id`),
   CONSTRAINT `detalle_pedido_ibfk_1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,7 +129,7 @@ CREATE TABLE `detalle_pedido` (
 
 LOCK TABLES `detalle_pedido` WRITE;
 /*!40000 ALTER TABLE `detalle_pedido` DISABLE KEYS */;
-INSERT INTO `detalle_pedido` VALUES (1,'Pedido urgente por falta de stock',7),(2,'Reposición mensual programada',1),(3,'Reposición por consumo alto en taller',3),(4,'Pedido preventivo antes de temporada',8),(5,'Reposición stock mínimo',12),(6,'Caja de herramientas',1),(7,'No recibirle este pedido',1),(8,'2x Frenos blablabla',1),(9,'3x Aceite Xd',1),(10,'5x Frenos',1),(11,'1x Frenos blablabla',1),(12,'pide un filtro para la toyota hilux',1),(13,'pedido de una bieleta',1),(14,'Pidio una luneta para el renault 12',1),(15,'pidio una puerta y un capot para un bmw e57',1),(16,'Realizó el pedido de cubiertas',1),(17,'Realizó el pedido de 2 bujias ',1),(18,'Realizó el pedido de 3 frenos',1),(19,'1x bieleta, 1x filtro de aire',1),(20,'1x Frenos',1),(21,'2x Aceite Xd',1);
+INSERT INTO `detalle_pedido` VALUES (1,'Pedido urgente por falta de stock',7),(2,'Reposición mensual programada',1),(3,'Reposición por consumo alto en taller',3),(4,'Pedido preventivo antes de temporada',8),(5,'Reposición stock mínimo',12),(6,'Caja de herramientas',1),(7,'No recibirle este pedido',1),(8,'2x Frenos blablabla',1),(9,'3x Aceite Xd',1),(10,'5x Frenos',1),(11,'1x Frenos blablabla',1),(12,'pide un filtro para la toyota hilux',1),(13,'pedido de una bieleta',1),(14,'Pidio una luneta para el renault 12',1),(15,'pidio una puerta y un capot para un bmw e57',1),(16,'Realizó el pedido de cubiertas',1),(17,'Realizó el pedido de 2 bujias ',1),(18,'Realizó el pedido de 3 frenos',1),(19,'1x bieleta, 1x filtro de aire',1),(20,'1x Frenos',1),(21,'2x Aceite Xd',1),(22,'Prueba2',1),(23,'1x cubiertas',NULL),(24,'4x Aceite Xd',NULL),(25,'3x Suspensión  Hilux',NULL),(26,'5x Frenos blablabla',NULL),(27,'2x Repuesto Prueba',NULL);
 /*!40000 ALTER TABLE `detalle_pedido` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -195,12 +195,20 @@ DROP TABLE IF EXISTS `movimientos`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `movimientos` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `repuesto_id` int DEFAULT NULL,
   `tipo` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `descripcion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cantidad` int DEFAULT '0',
   `fecha` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `usuario_id` int DEFAULT NULL,
+  `origen` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Manual',
+  `origen_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_mov_repuesto` (`repuesto_id`),
+  KEY `fk_mov_usuario` (`usuario_id`),
+  CONSTRAINT `fk_mov_repuesto` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_mov_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,7 +217,7 @@ CREATE TABLE `movimientos` (
 
 LOCK TABLES `movimientos` WRITE;
 /*!40000 ALTER TABLE `movimientos` DISABLE KEYS */;
-INSERT INTO `movimientos` VALUES (1,'Entrada','Alta de repuesto: Frenos',2,'2026-04-28 19:24:38'),(2,'Entrada','Alta de repuesto: Frenos',2,'2026-04-28 20:09:42'),(3,'Entrada','Alta de repuesto: Suspensión  Hilux',2,'2026-05-22 18:33:42'),(4,'Entrada','Alta de repuesto: Frenos blablabla',0,'2026-06-09 14:38:43'),(5,'Entrada','Alta de repuesto: Aceite Xd',19,'2026-06-29 15:19:01'),(6,'Entrada','Alta de repuesto: ',0,'2026-09-07 02:25:27'),(7,'Entrada','Alta de repuesto: filtro de aire',5,'2026-09-08 20:54:31'),(8,'Entrada','Alta de repuesto: bieleta',10,'2026-09-08 20:59:15'),(9,'Entrada','Alta de repuesto: bujia',10,'2026-09-08 21:03:24'),(10,'Entrada','Alta de repuesto: luneta',10,'2026-09-08 21:07:37'),(11,'Entrada','Alta de repuesto: cubiertas',13,'2026-09-08 21:17:06'),(12,'Entrada','Alta de repuesto: Bujia',19,'2026-09-08 21:39:43'),(13,'Entrada','Alta de repuesto: Frenos',9,'2026-09-08 21:43:30');
+INSERT INTO `movimientos` VALUES (1,NULL,'Entrada','Alta de repuesto: Frenos',2,'2026-04-28 19:24:38',NULL,'Anteriores',NULL),(2,NULL,'Entrada','Alta de repuesto: Frenos',2,'2026-04-28 20:09:42',NULL,'Anteriores',NULL),(3,NULL,'Entrada','Alta de repuesto: Suspensión  Hilux',2,'2026-05-22 18:33:42',NULL,'Anteriores',NULL),(4,NULL,'Entrada','Alta de repuesto: Frenos blablabla',0,'2026-06-09 14:38:43',NULL,'Anteriores',NULL),(5,NULL,'Entrada','Alta de repuesto: Aceite Xd',19,'2026-06-29 15:19:01',NULL,'Anteriores',NULL),(6,NULL,'Entrada','Alta de repuesto: ',0,'2026-09-07 02:25:27',NULL,'Anteriores',NULL),(7,NULL,'Entrada','Alta de repuesto: filtro de aire',5,'2026-09-08 20:54:31',NULL,'Anteriores',NULL),(8,NULL,'Entrada','Alta de repuesto: bieleta',10,'2026-09-08 20:59:15',NULL,'Anteriores',NULL),(9,NULL,'Entrada','Alta de repuesto: bujia',10,'2026-09-08 21:03:24',NULL,'Anteriores',NULL),(10,NULL,'Entrada','Alta de repuesto: luneta',10,'2026-09-08 21:07:37',NULL,'Anteriores',NULL),(11,NULL,'Entrada','Alta de repuesto: cubiertas',13,'2026-09-08 21:17:06',NULL,'Anteriores',NULL),(12,NULL,'Entrada','Alta de repuesto: Bujia',19,'2026-09-08 21:39:43',NULL,'Anteriores',NULL),(13,NULL,'Entrada','Alta de repuesto: Frenos',9,'2026-09-08 21:43:30',NULL,'Anteriores',NULL),(14,14,'Entrada','Alta de repuesto: Repuesto Prueba',10,'2026-10-02 03:35:11',4,'Alta',NULL),(15,14,'Ajuste','Ajuste manual desde la edición del repuesto',-3,'2026-10-02 03:35:55',4,'Ajuste manual',NULL),(16,4,'Entrada','Recepción del pedido #27: 5 x Frenos blablabla',5,'2026-10-02 03:49:37',4,'Pedido',27),(17,3,'Entrada','Recepción del pedido #26: 3 x Suspensión  Hilux',3,'2026-10-02 03:50:36',4,'Pedido',26),(18,14,'Salida','Uso en Orden de Trabajo #8: 4 x Repuesto Prueba',4,'2026-10-02 10:51:22',4,'Orden de Trabajo',8),(19,14,'Salida','Uso en Orden de Trabajo #9: 3 x Repuesto Prueba',3,'2026-10-02 10:56:52',4,'Orden de Trabajo',9),(20,NULL,'Entrada','Alta de repuesto: Bujia Prueba',2,'2026-10-02 11:09:47',4,'Alta',NULL),(21,16,'Entrada','Alta de repuesto: Bujia Prueba',2,'2026-10-02 11:10:40',4,'Alta',NULL),(22,NULL,'Entrada','Alta de repuesto: Repuesto Prueba',22,'2026-10-02 11:29:57',4,'Alta',NULL),(23,NULL,'Salida','Baja de repuesto: Repuesto Prueba (22 unidad/es dadas de baja)',22,'2026-10-02 11:30:17',4,'Baja de repuesto',17),(24,NULL,'Salida','Baja de repuesto: filtro de aire (1 unidad/es dadas de baja)',1,'2026-10-02 11:30:49',4,'Baja de repuesto',7);
 /*!40000 ALTER TABLE `movimientos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -225,14 +233,14 @@ CREATE TABLE `orden_trabajo` (
   `vehiculo_id` int NOT NULL,
   `mecanico_id` int DEFAULT NULL,
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `descripcion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `estado` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Abierta',
+  `descripcion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `estado` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Abierta',
   PRIMARY KEY (`id`),
   KEY `fk_ordentrabajo_vehiculo` (`vehiculo_id`),
   KEY `fk_ordentrabajo_mecanico` (`mecanico_id`),
   CONSTRAINT `fk_ordentrabajo_mecanico` FOREIGN KEY (`mecanico_id`) REFERENCES `usuario` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_ordentrabajo_vehiculo` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculo` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,7 +249,7 @@ CREATE TABLE `orden_trabajo` (
 
 LOCK TABLES `orden_trabajo` WRITE;
 /*!40000 ALTER TABLE `orden_trabajo` DISABLE KEYS */;
-INSERT INTO `orden_trabajo` VALUES (1,11,17,'2026-09-06 16:07:10','cambio de aceite','Abierta'),(2,7,12,'2026-09-06 16:08:01','cambio de frenos ','Abierta'),(3,46,2,'2026-09-13 21:22:24','cambio de frenos ','Abierta');
+INSERT INTO `orden_trabajo` VALUES (2,7,12,'2026-09-06 16:08:01','cambio de frenos ','Abierta'),(3,46,2,'2026-09-13 21:22:24','cambio de frenos ','Abierta'),(5,46,23,'2026-09-29 20:07:37','Cambio de pastillas de freno','Abierta'),(6,46,26,'2026-10-02 03:40:23','Orden Prueba','Cerrada'),(7,46,26,'2026-10-02 03:42:37','Orden Prueba','Cerrada'),(8,46,26,'2026-10-02 10:51:22','Orden Prueba ','Abierta'),(9,45,23,'2026-10-02 10:56:52','Orden Prueba dois','Abierta');
 /*!40000 ALTER TABLE `orden_trabajo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -262,7 +270,7 @@ CREATE TABLE `orden_trabajo_repuesto` (
   KEY `fk_otr_repuesto` (`repuesto_id`),
   CONSTRAINT `fk_otr_orden` FOREIGN KEY (`orden_trabajo_id`) REFERENCES `orden_trabajo` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_otr_repuesto` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -271,8 +279,39 @@ CREATE TABLE `orden_trabajo_repuesto` (
 
 LOCK TABLES `orden_trabajo_repuesto` WRITE;
 /*!40000 ALTER TABLE `orden_trabajo_repuesto` DISABLE KEYS */;
-INSERT INTO `orden_trabajo_repuesto` VALUES (1,1,5,2),(2,2,4,1),(3,3,13,4);
+INSERT INTO `orden_trabajo_repuesto` VALUES (2,2,4,1),(3,3,13,4),(5,5,4,1),(6,5,13,1),(7,8,14,4),(8,9,14,5);
 /*!40000 ALTER TABLE `orden_trabajo_repuesto` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pedido_item`
+--
+
+DROP TABLE IF EXISTS `pedido_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pedido_item` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `pedido_id` int NOT NULL,
+  `repuesto_id` int NOT NULL,
+  `cantidad` int NOT NULL DEFAULT '1',
+  `precio_unitario` decimal(10,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`),
+  KEY `idx_pi_pedido` (`pedido_id`),
+  KEY `idx_pi_repuesto` (`repuesto_id`),
+  CONSTRAINT `fk_pi_pedido` FOREIGN KEY (`pedido_id`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pi_repuesto` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pedido_item`
+--
+
+LOCK TABLES `pedido_item` WRITE;
+/*!40000 ALTER TABLE `pedido_item` DISABLE KEYS */;
+INSERT INTO `pedido_item` VALUES (1,24,11,1,70000.00),(2,25,5,4,25000.00),(3,26,3,3,150000.00),(4,27,4,5,9999.00),(5,28,14,2,20000.00);
+/*!40000 ALTER TABLE `pedido_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -291,12 +330,19 @@ CREATE TABLE `pedidos` (
   `cantidad` int DEFAULT NULL,
   `detalle_pedido_id` int DEFAULT NULL,
   `proveedor_id` int DEFAULT NULL,
+  `fecha_recepcion` datetime DEFAULT NULL,
+  `vehiculo_id` int DEFAULT NULL,
+  `orden_trabajo_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `detalle_pedido_id` (`detalle_pedido_id`),
   KEY `fk_pedidos_proveedor` (`proveedor_id`),
+  KEY `fk_pedidos_vehiculo` (`vehiculo_id`),
+  KEY `fk_pedidos_orden` (`orden_trabajo_id`),
+  CONSTRAINT `fk_pedidos_orden` FOREIGN KEY (`orden_trabajo_id`) REFERENCES `orden_trabajo` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_pedidos_proveedor` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedor` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_pedidos_vehiculo` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculo` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`detalle_pedido_id`) REFERENCES `detalle_pedido` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -305,7 +351,7 @@ CREATE TABLE `pedidos` (
 
 LOCK TABLES `pedidos` WRITE;
 /*!40000 ALTER TABLE `pedidos` DISABLE KEYS */;
-INSERT INTO `pedidos` VALUES (3,'2024-04-05 14:00:00','Entregado','Medina',1003,30,3,NULL),(4,'2024-04-08 08:45:00','Pendiente','Romero',1004,4,4,NULL),(8,'2026-06-09 14:40:07','En proceso','Gonzalo Gauna',4426,1,7,NULL),(9,'2026-09-06 15:46:35','Pendiente','Migue',3614,2,8,NULL),(10,'2026-09-06 15:46:35','Pendiente','Migue',5017,3,9,6),(12,'2026-09-06 15:47:47','Pendiente','Migue',1946,1,11,4),(13,'2026-09-08 20:55:02','Pendiente','milena',9953,1,12,NULL),(14,'2026-09-08 20:59:49','Pendiente','Miguel Mulqui',7524,1,13,5),(15,'2026-09-08 21:08:12','Pendiente','Hector Villaba',1179,1,14,1),(16,'2026-09-08 21:12:50','Pendiente','Patricio Sosa',1805,1,15,4),(17,'2026-09-08 21:36:32','Pendiente','MIlton Chavez',1691,1,16,1),(18,'2026-09-08 21:40:14','Pendiente','Gabriela Vera ',7754,2,17,1),(19,'2026-09-08 21:44:02','Pendiente','Morel Andrea',7362,3,18,1),(21,'2026-09-13 21:23:10','Pendiente','Migue',3846,1,20,1),(22,'2026-09-13 21:23:10','Pendiente','Migue',6787,2,21,6);
+INSERT INTO `pedidos` VALUES (3,'2024-04-05 14:00:00','Entregado','Medina',1003,30,3,NULL,NULL,NULL,NULL),(4,'2024-04-08 08:45:00','Pendiente','Romero',1004,4,4,NULL,NULL,NULL,NULL),(8,'2026-06-09 14:40:07','En proceso','Gonzalo Gauna',4426,1,7,NULL,NULL,NULL,NULL),(10,'2026-09-06 15:46:35','Pendiente','Migue',5017,3,9,6,NULL,NULL,NULL),(12,'2026-09-06 15:47:47','Pendiente','Migue',1946,1,11,4,NULL,NULL,NULL),(13,'2026-09-08 20:55:02','Pendiente','milena',9953,1,12,NULL,NULL,NULL,NULL),(14,'2026-09-08 20:59:49','Pendiente','Miguel Mulqui',7524,1,13,5,NULL,NULL,NULL),(15,'2026-09-08 21:08:12','Pendiente','Hector Villaba',1179,1,14,1,NULL,NULL,NULL),(16,'2026-09-08 21:12:50','Pendiente','Patricio Sosa',1805,1,15,4,NULL,NULL,NULL),(17,'2026-09-08 21:36:32','Pendiente','MIlton Chavez',1691,1,16,1,NULL,NULL,NULL),(18,'2026-09-08 21:40:14','Pendiente','Gabriela Vera ',7754,2,17,1,NULL,NULL,NULL),(19,'2026-09-08 21:44:02','Pendiente','Morel Andrea',7362,3,18,1,NULL,NULL,NULL),(21,'2026-09-13 21:23:10','Pendiente','Migue',3846,1,20,1,NULL,NULL,NULL),(22,'2026-09-13 21:23:10','Pendiente','Migue',6787,2,21,6,NULL,NULL,NULL),(23,'2026-09-18 15:12:28','Entregado','Mige',5938,1,22,5,NULL,NULL,NULL),(24,'2026-10-02 03:47:30','Pendiente','Ivan',6798,1,23,1,NULL,NULL,NULL),(25,'2026-10-02 03:47:30','Pendiente','Ivan',1174,4,24,6,NULL,NULL,NULL),(26,'2026-10-02 03:47:30','Entregado','Ivan',2666,3,25,NULL,'2026-10-02 03:50:36',NULL,NULL),(27,'2026-10-02 03:47:30','Entregado','Ivan',5141,5,26,4,'2026-10-02 03:49:37',NULL,NULL),(28,'2026-10-02 10:56:52','Pendiente','Sistema (automático por Orden de Trabajo #9)',5637,2,27,2,NULL,45,9);
 /*!40000 ALTER TABLE `pedidos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -323,7 +369,7 @@ CREATE TABLE `permiso_usuario` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_usuario_modulo` (`usuario_id`,`modulo`),
   CONSTRAINT `permiso_usuario_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -332,7 +378,7 @@ CREATE TABLE `permiso_usuario` (
 
 LOCK TABLES `permiso_usuario` WRITE;
 /*!40000 ALTER TABLE `permiso_usuario` DISABLE KEYS */;
-INSERT INTO `permiso_usuario` VALUES (15,1,'productos'),(8,1,'repuestos'),(1,1,'vehiculos'),(67,2,'repuestos'),(66,2,'vehiculos'),(34,3,'repuestos'),(33,3,'vehiculos'),(18,6,'productos'),(11,6,'repuestos'),(4,6,'vehiculos'),(19,8,'productos'),(12,8,'repuestos'),(5,8,'vehiculos'),(65,10,'repuestos'),(64,10,'vehiculos'),(32,13,'pedidos'),(31,13,'repuestos'),(30,13,'vehiculos'),(53,14,'pedidos'),(54,14,'proveedores'),(52,14,'repuestos'),(51,14,'vehiculos'),(62,15,'vehiculos'),(56,16,'pedidos'),(57,16,'proveedores'),(55,16,'vehiculos'),(59,18,'repuestos'),(58,18,'vehiculos'),(63,20,'vehiculos'),(68,21,'repuestos'),(69,22,'repuestos'),(70,23,'vehiculos'),(71,24,'vehiculos'),(72,26,'vehiculos'),(73,27,'vehiculos'),(74,28,'vehiculos');
+INSERT INTO `permiso_usuario` VALUES (15,1,'productos'),(8,1,'repuestos'),(1,1,'vehiculos'),(67,2,'repuestos'),(66,2,'vehiculos'),(34,3,'repuestos'),(33,3,'vehiculos'),(18,6,'productos'),(11,6,'repuestos'),(4,6,'vehiculos'),(19,8,'productos'),(12,8,'repuestos'),(5,8,'vehiculos'),(65,10,'repuestos'),(64,10,'vehiculos'),(32,13,'pedidos'),(31,13,'repuestos'),(30,13,'vehiculos'),(53,14,'pedidos'),(54,14,'proveedores'),(52,14,'repuestos'),(51,14,'vehiculos'),(62,15,'vehiculos'),(76,16,'pedidos'),(77,16,'proveedores'),(75,16,'vehiculos'),(59,18,'repuestos'),(58,18,'vehiculos'),(63,20,'vehiculos'),(68,21,'repuestos'),(69,22,'repuestos'),(70,23,'vehiculos'),(71,24,'vehiculos'),(72,26,'vehiculos'),(73,27,'vehiculos'),(74,28,'vehiculos'),(78,29,'vehiculos'),(79,30,'vehiculos');
 /*!40000 ALTER TABLE `permiso_usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,7 +397,7 @@ CREATE TABLE `persona` (
   `dni` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `telefono_persona` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -360,7 +406,7 @@ CREATE TABLE `persona` (
 
 LOCK TABLES `persona` WRITE;
 /*!40000 ALTER TABLE `persona` DISABLE KEYS */;
-INSERT INTO `persona` VALUES (1,'Miguel','Romero','Av. 25 de Mayo 1250','40123456','3704-551234'),(2,'Marcos','Kayser','Av. Gutnisky 3800','41987654','3704-445566'),(3,'Carlos','Medina','Los Lapachos 540','35678901','3704-112233'),(4,'Lorena','Villalba','Ruta 81 km 4','38456789','3704-998877'),(5,'Roberto','Sosa','Bv. Centenario 200','29876543','3704-334455'),(6,'Nilda','Fernández','Calle Estrada 88','32109876','3704-667788'),(7,'Distribuidora','AutoPartes Norte','Ruta 11 km 8, Formosa','30712345678','3704-421000'),(8,'Repuestos','Del Chaco SRL','Av. 9 de Julio 540, FMA','30798765432','3704-422000'),(9,'Ivan','Kaiser','Eva Peron 898 qsy',NULL,NULL),(11,'Luis','Sanchez','123',NULL,NULL),(12,'Miguel','Juarez','123','',''),(13,'Pepe','Gomez','Calle 121','12320120','3213123'),(14,'Luis','sanchez','1234',NULL,NULL),(15,'MIGE','ROMERO','Calle 122','232323','233232233223'),(16,'Roberto','Juarez','Su casa 99','5566544','3204566'),(17,'Admin','A','111','499904994','32120'),(18,'aaaa','aaa','1888','31313','1122'),(19,'RICARDO','HUBER','Calle 122','49900000','400000'),(20,'RICARDO','HUBER','Calle 122','419876545','11222'),(21,'Migel','Romeror','Lote 111','66666666','3706666'),(22,'uuu','oiii','a222','463213','3213122'),(23,'a','a','33333333r','33333333333','333333333333333'),(24,'Cristian','Martearena','El potrillo qsy','46333877','3704899965'),(25,'MULQUI','GAUNA','Puerto Elsa','666666669','66669'),(26,'pp','ss','dsd22','222222222','1111111111111'),(27,'Migue','Romero','Manuel Alberti 854','43329003','370454014'),(28,'ll','ff','33333333r','44585665','3704588745'),(29,'Milena','Vera Renaut','Barrio el palomar','43068560','3704852703'),(30,'Miguel','Mulqui','Vicente Posadas 3099','44344934','3704618338'),(31,'Cosme','Fulanito','avenida brasil 566','45903304','3704819935'),(32,'Hector','Villaba','España y Fonta 456','46154857','3704219257'),(33,'Patrick','Sosa','Manzana 102 C11','45899842','3704556611'),(34,'Milton','Chavez','alberti 854','29775014','3704304781'),(35,'Gabriela','Vera','san maria amor 302','33481301','3704312110'),(36,'Andrea','Morel','Barrio Independencia cordoba 555','41176729','3704716209');
+INSERT INTO `persona` VALUES (1,'Miguel','Romero','Av. 25 de Mayo 1250','40123456','3704-551234'),(2,'Marcos','Kayser','Av. Gutnisky 3800','41987654','3704-445566'),(3,'Carlos','Medina','Los Lapachos 540','35678901','3704-112233'),(4,'Lorena','Villalba','Ruta 81 km 4','38456789','3704-998877'),(5,'Roberto','Sosa','Bv. Centenario 200','29876543','3704-334455'),(6,'Nilda','Fernández','Calle Estrada 88','32109876','3704-667788'),(7,'Distribuidora','AutoPartes Norte','Ruta 11 km 8, Formosa','30712345678','3704-421000'),(8,'Repuestos','Del Chaco SRL','Av. 9 de Julio 540, FMA','30798765432','3704-422000'),(9,'Ivan','Kaiser','Eva Peron 898 qsy',NULL,NULL),(11,'Luis','Sanchez','123',NULL,NULL),(12,'Miguel','Juarez','123','',''),(13,'Pepe','Gomez','Calle 121','12320120','3213123'),(14,'Luis','sanchez','1234',NULL,NULL),(15,'MIGE','ROMERO','Calle 122','232323','233232233223'),(16,'Roberto','Juarez','Su casa 99','5566544','3204566'),(17,'Admin','A','111','499904994','32120'),(18,'aaaa','aaa','1888','31313','1122'),(19,'RICARDO','HUBER','Calle 122','49900000','400000'),(20,'RICARDO','HUBER','Calle 122','419876545','11222'),(21,'Migel','Romeror','Lote 111','66666666','3706666'),(22,'uuu','oiii','a222','463213','3213122'),(23,'a','a','33333333r','33333333333','333333333333333'),(24,'Cristian','Martearena','El potrillo qsy','46333877','3704899965'),(25,'MULQUI','GAUNA','Puerto Elsa','666666669','66669'),(26,'pp','ss','dsd22','222222222','1111111111111'),(27,'Migue','Romero','Manuel Alberti 854','43329003','370454014'),(28,'ll','ff','33333333r','44585665','3704588745'),(29,'Milena','Vera Renaut','Barrio el palomar','43068560','3704852703'),(30,'Miguel','Mulqui','Vicente Posadas 3099','44344934','3704618338'),(31,'Cosme','Fulanito','avenida brasil 566','45903304','3704819935'),(32,'Hector','Villaba','España y Fonta 456','46154857','3704219257'),(33,'Patrick','Sosa','Manzana 102 C11','45899842','3704556611'),(34,'Milton','Chavez','alberti 854','29775014','3704304781'),(35,'Gabriela','Vera','san maria amor 302','33481301','3704312110'),(36,'Andrea','Morel','Barrio Independencia cordoba 555','41176729','3704716209'),(37,'Juan','Perez','Calle 1222','2332332','33333'),(38,'Juann','Perezz','Calle 12222','23323323','333333');
 /*!40000 ALTER TABLE `persona` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -435,12 +481,12 @@ CREATE TABLE `repuestos` (
   `stock` int DEFAULT '0',
   `stock_minimo` int DEFAULT '5',
   `precio` decimal(10,2) DEFAULT '0.00',
-  `sku` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sku` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `proveedor_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_repuestos_proveedor` (`proveedor_id`),
   CONSTRAINT `fk_repuestos_proveedor` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedor` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -449,7 +495,7 @@ CREATE TABLE `repuestos` (
 
 LOCK TABLES `repuestos` WRITE;
 /*!40000 ALTER TABLE `repuestos` DISABLE KEYS */;
-INSERT INTO `repuestos` VALUES (2,'Frenos','Frenos',6,5,1500.00,'',1),(3,'Suspensión  Hilux','Suspensión',2,5,150000.00,NULL,NULL),(4,'Frenos blablabla','Frenos',14,5,9999.00,'',4),(5,'Aceite Xd','Lubricantes',17,5,25000.00,'',6),(7,'filtro de aire','Filtros',5,5,400000.00,'',NULL),(8,'bieleta','Carrocería',10,5,550000.00,'',NULL),(9,'bujia','Motor',10,5,50000.00,'',NULL),(10,'luneta','Eléctrico',10,5,50000.00,'',1),(11,'cubiertas','Carrocería',13,5,70000.00,'238723238',1),(12,'Bujia','Motor',19,3,9000000.00,'',1),(13,'Frenos','Frenos',5,5,80000.00,'',1);
+INSERT INTO `repuestos` VALUES (3,'Suspensión  Hilux','Suspensión',5,5,150000.00,NULL,NULL),(4,'Frenos blablabla','Frenos',18,5,9999.00,'',4),(5,'Aceite Xd','Lubricantes',17,5,25000.00,'',6),(9,'bujia','Motor',10,5,50000.00,'',NULL),(10,'luneta','Eléctrico',10,5,50000.00,'',1),(11,'cubiertas','Carrocería',13,5,70000.00,'238723238',1),(12,'Bujia','Motor',19,3,9000000.00,'',1),(13,'Frenos','Frenos',4,5,80000.00,'',1),(14,'Repuesto Prueba','Carrocería',0,5,20000.00,'',2),(16,'Bujia Prueba','Carrocería',2,5,2000.00,'',2);
 /*!40000 ALTER TABLE `repuestos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -525,7 +571,7 @@ CREATE TABLE `usuario` (
   PRIMARY KEY (`id`),
   KEY `persona_id` (`persona_id`),
   CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`persona_id`) REFERENCES `persona` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -534,7 +580,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (1,'mromero','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',1,1,'mromero@kayrom.com',NULL,NULL,'empleado'),(2,'mkayser','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',0,2,'mkayser@kayrom.com',NULL,NULL,'empleado'),(3,'cmedina','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',1,3,'cmedina@kayrom.com',NULL,NULL,'Primo de Mige'),(4,'kayseriv','$2y$10$j3MnT.fTJ6jq6f0XiJsw1.jGQ.v78e6O7itmeSsKANrwDX1qdF2bu',1,9,'maquitosk05@gmail.com',NULL,NULL,'admin'),(6,'lsanchez','$2y$10$OPwcvocVn.nrRu03lWOtm.jfTl96tS5qfJI25zMyeu0ami6FflOia',1,11,'luissanchez@gmail.com',NULL,NULL,'empleado'),(7,'mjuarez','$2y$10$7IbAdVIr1Tjc8D9mwbRFjOpLcBlorKJf3JoUtExydxWedJl0SYBN6',0,12,'miguelj@hotmail.com',NULL,NULL,'admin'),(8,'lsanchezz','$2y$10$tjjrDuBX4SPsPuXh2OD2WucoKGBSMaahjrSXCzeSefhZ4sJAB.ouO',1,14,'lsanchez@gmail.com',NULL,NULL,'encargado_repuesto'),(9,'juarez','$2y$10$r5rKoDv/4jUfcldAYRvhre.55g/HlwfGw5MxhgOYG.7s9JRmejztu',0,15,'mige@kayrom.com',NULL,NULL,'admin'),(10,'rjuarez','$2y$10$o7Pb/fTfAfe8.TIMYzHA0e5dTO3k/lIV1EOE.dCpuFSRgqlrbovU6',0,16,'rjuarez@g.com',NULL,NULL,'Prueba'),(11,'admin','$2y$10$RuunxiAqm0lVyomusSfcOuof31AuZ5/zhIlKRDyX1CArncFHwPZKq',1,17,'admin@admin123.com',NULL,NULL,'admin'),(12,'rhuber','$2y$10$yMU1B5WeAe3TE/cOEl6di.C6BRFvV47fiYaAYCZd3XcxoEUoIsKzu',0,20,'rhub@gmail.com',NULL,NULL,'empleado'),(13,'mije','$2y$10$2U4wOJtV1aE.GbYUzU8hdeRoQWzAI9v5XHIriVfocd1he/lDAhh3K',1,21,'mromero@gmail.com',NULL,NULL,'empleado'),(14,'uoi','$2y$10$YhnP79uddLCdZucUvdkWi.P46nzi3uALBAF4sH5VSTZACMBYzw1Q2',1,22,'u@gmail.com',NULL,NULL,'Hermana de Mulqui'),(15,'ai','$2y$10$aJZId7jQfKmSQ7y6pg6jH.rtSM1tsLpxODbjZENIfbTxbQHCneN/a',0,23,'a@gmail.com',NULL,NULL,'empleado'),(16,'Crismat','$2y$10$38ZjPh7jqRS08u69Xzqa4ulL4SZhWEATuUEufizxv/vkKJAu.OjHG',1,24,'matimartearena@gmail.com',NULL,NULL,'empleado'),(17,'gmulqui','$2y$10$Pd1FqQTStBaEHEICd10Zzut.5Tp3jvDzb0j1a2I8S0cSZqQzp6j7.',0,25,'gaunamulqui@gmail.com',NULL,NULL,'empleado'),(18,'ppguapo','$2y$10$8DwQCrePtFXXR4si8mByM.CPNV1a6kMj04rBVe41sSfCw/APVl1ni',1,26,'aaaaaaaa@gmail.com',NULL,NULL,'empleado'),(19,'Migue','$2y$10$p6R2BtzzZqlCw8JW72v1Dec5rLWT3BuV4zj4pQolX8L8WPx346iOW',1,27,'miguelangelromero2o1553@gmail.com',NULL,NULL,'admin'),(20,'aaa','$2y$10$tJJnriwy6Va/zYHaHs6Pb.b7iQd7FiOln8qw.biG6.gvTPnFY9YqK',0,28,'ffff@gmail.com',NULL,NULL,'empleado'),(21,'milenavr','$2y$10$.GohcUe6ltyLOt66xF2AYOxCrYTTKmCKSnRbR3J9MQKvixuxWTC6y',1,29,'milenaverarenaut1@gmail.com',NULL,NULL,'empleado'),(22,'Migue2008','$2y$10$gaW1G8gU.CzO02zfjjmoOuid8eiOXqbJXMyUZL7DNAKm0Sz6X3AF6',1,30,'miguelmulqui@gmail.com',NULL,NULL,'empleado'),(23,'cosme123','$2y$10$b915NDvIS9BcC6O8/.bQUOIuPo6rXpInS5o2CUf7GuXMCq8v0tUwW',1,31,'fulanito@gmail.com',NULL,NULL,'empleado'),(24,'hector12','$2y$10$MWtVxjheODNnuDO4fJ5xa.NrOAFzonjnO24Ph2J3VjfslXEmD3pqi',1,32,'villabahector257@gmail.com',NULL,NULL,'empleado'),(25,'patrickk','$2y$10$uDxbYjQUuX7hdVqsCMOf7ejY0yKRmLpAPF1VumWDtXUiFnWDqoagW',1,33,'sosapatricio2025@gmail.com',NULL,NULL,'empleado'),(26,'mchavez','$2y$10$RQ8Nsd7G.xqhO5Y1LH3RDeguvNhnJeKeE8ESxIAjGqbOQ2JQ735DW',1,34,'chavezmilton082@gmail.com',NULL,NULL,'empleado'),(27,'gvera','$2y$10$leD5j64crNRtneEn0jnBBeguy6Ugfj29RBqLSpH3ACghJ4uA.ZR1a',1,35,'gabrielavetianavera@gmail.com',NULL,NULL,'empleado'),(28,'andrea01','$2y$10$/Qm5iptWrSN31o3ney821OG9t/d/07sJLWxu/.JCr26wPgg2q.FQy',1,36,'andreamorel@gmail.com',NULL,NULL,'empleado');
+INSERT INTO `usuario` VALUES (1,'mromero','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',1,1,'mromero@kayrom.com',NULL,NULL,'empleado'),(2,'mkayser','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',0,2,'mkayser@kayrom.com',NULL,NULL,'empleado'),(3,'cmedina','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',1,3,'cmedina@kayrom.com',NULL,NULL,'Primo de Mige'),(4,'kayseriv','$2y$10$j3MnT.fTJ6jq6f0XiJsw1.jGQ.v78e6O7itmeSsKANrwDX1qdF2bu',1,9,'maquitosk05@gmail.com',NULL,NULL,'admin'),(6,'lsanchez','$2y$10$OPwcvocVn.nrRu03lWOtm.jfTl96tS5qfJI25zMyeu0ami6FflOia',1,11,'luissanchez@gmail.com',NULL,NULL,'empleado'),(7,'mjuarez','$2y$10$7IbAdVIr1Tjc8D9mwbRFjOpLcBlorKJf3JoUtExydxWedJl0SYBN6',0,12,'miguelj@hotmail.com',NULL,NULL,'admin'),(8,'lsanchezz','$2y$10$tjjrDuBX4SPsPuXh2OD2WucoKGBSMaahjrSXCzeSefhZ4sJAB.ouO',1,14,'lsanchez@gmail.com',NULL,NULL,'encargado_repuesto'),(9,'juarez','$2y$10$r5rKoDv/4jUfcldAYRvhre.55g/HlwfGw5MxhgOYG.7s9JRmejztu',0,15,'mige@kayrom.com',NULL,NULL,'admin'),(10,'rjuarez','$2y$10$o7Pb/fTfAfe8.TIMYzHA0e5dTO3k/lIV1EOE.dCpuFSRgqlrbovU6',0,16,'rjuarez@g.com',NULL,NULL,'Prueba'),(11,'admin','$2y$10$RuunxiAqm0lVyomusSfcOuof31AuZ5/zhIlKRDyX1CArncFHwPZKq',1,17,'admin@admin123.com',NULL,NULL,'admin'),(12,'rhuber','$2y$10$yMU1B5WeAe3TE/cOEl6di.C6BRFvV47fiYaAYCZd3XcxoEUoIsKzu',0,20,'rhub@gmail.com',NULL,NULL,'empleado'),(13,'mije','$2y$10$2U4wOJtV1aE.GbYUzU8hdeRoQWzAI9v5XHIriVfocd1he/lDAhh3K',1,21,'mromero@gmail.com',NULL,NULL,'empleado'),(14,'uoi','$2y$10$YhnP79uddLCdZucUvdkWi.P46nzi3uALBAF4sH5VSTZACMBYzw1Q2',1,22,'u@gmail.com',NULL,NULL,'Hermana de Mulqui'),(15,'ai','$2y$10$aJZId7jQfKmSQ7y6pg6jH.rtSM1tsLpxODbjZENIfbTxbQHCneN/a',0,23,'a@gmail.com',NULL,NULL,'empleado'),(16,'Crismat','$2y$10$38ZjPh7jqRS08u69Xzqa4ulL4SZhWEATuUEufizxv/vkKJAu.OjHG',0,24,'matimartearena@gmail.com',NULL,NULL,'empleado'),(17,'gmulqui','$2y$10$Pd1FqQTStBaEHEICd10Zzut.5Tp3jvDzb0j1a2I8S0cSZqQzp6j7.',0,25,'gaunamulqui@gmail.com',NULL,NULL,'empleado'),(18,'ppguapo','$2y$10$8DwQCrePtFXXR4si8mByM.CPNV1a6kMj04rBVe41sSfCw/APVl1ni',1,26,'aaaaaaaa@gmail.com',NULL,NULL,'empleado'),(19,'Migue','$2y$10$p6R2BtzzZqlCw8JW72v1Dec5rLWT3BuV4zj4pQolX8L8WPx346iOW',1,27,'miguelangelromero2o1553@gmail.com',NULL,NULL,'admin'),(20,'aaa','$2y$10$tJJnriwy6Va/zYHaHs6Pb.b7iQd7FiOln8qw.biG6.gvTPnFY9YqK',0,28,'ffff@gmail.com',NULL,NULL,'empleado'),(21,'milenavr','$2y$10$.GohcUe6ltyLOt66xF2AYOxCrYTTKmCKSnRbR3J9MQKvixuxWTC6y',1,29,'milenaverarenaut1@gmail.com',NULL,NULL,'empleado'),(22,'Migue2008','$2y$10$gaW1G8gU.CzO02zfjjmoOuid8eiOXqbJXMyUZL7DNAKm0Sz6X3AF6',1,30,'miguelmulqui@gmail.com',NULL,NULL,'empleado'),(23,'cosme123','$2y$10$b915NDvIS9BcC6O8/.bQUOIuPo6rXpInS5o2CUf7GuXMCq8v0tUwW',1,31,'fulanito@gmail.com',NULL,NULL,'empleado'),(24,'hector12','$2y$10$MWtVxjheODNnuDO4fJ5xa.NrOAFzonjnO24Ph2J3VjfslXEmD3pqi',1,32,'villabahector257@gmail.com',NULL,NULL,'empleado'),(25,'patrickk','$2y$10$uDxbYjQUuX7hdVqsCMOf7ejY0yKRmLpAPF1VumWDtXUiFnWDqoagW',1,33,'sosapatricio2025@gmail.com',NULL,NULL,'empleado'),(26,'mchavez','$2y$10$RQ8Nsd7G.xqhO5Y1LH3RDeguvNhnJeKeE8ESxIAjGqbOQ2JQ735DW',1,34,'chavezmilton082@gmail.com',NULL,NULL,'empleado'),(27,'gvera','$2y$10$leD5j64crNRtneEn0jnBBeguy6Ugfj29RBqLSpH3ACghJ4uA.ZR1a',1,35,'gabrielavetianavera@gmail.com',NULL,NULL,'empleado'),(28,'andrea01','$2y$10$/Qm5iptWrSN31o3ney821OG9t/d/07sJLWxu/.JCr26wPgg2q.FQy',1,36,'andreamorel@gmail.com',NULL,NULL,'empleado'),(29,'pjuan','$2y$10$Y7bkG/xGMuBnqWYH5inA1.Dqfq2efy6Lpk0RfP83WZAT5veNqhNG2',1,37,'juanperez@gmail.com',NULL,NULL,'empleado'),(30,'pjuann','$2y$10$oZ4/7yj2E/4hFssoAxCE2OaplakziNfj8VHXP4Q/kPv.B1SkX9Op2',1,38,'juanperezz@gmail.com',NULL,NULL,'empleado');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -555,7 +601,7 @@ CREATE TABLE `vehiculo` (
   `compatibilidad_repuestos_id` int DEFAULT '0',
   `tipo_vehiculo_id` int DEFAULT NULL,
   `modelo_vehiculo_id` int DEFAULT NULL,
-  `estado_taller` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'En Diagnóstico',
+  `estado_taller` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'En Diagnóstico',
   `kilometraje` int NOT NULL DEFAULT '0',
   `anio` int DEFAULT NULL,
   `cliente_id` int DEFAULT NULL,
@@ -575,9 +621,13 @@ CREATE TABLE `vehiculo` (
 
 LOCK TABLES `vehiculo` WRITE;
 /*!40000 ALTER TABLE `vehiculo` DISABLE KEYS */;
-INSERT INTO `vehiculo` VALUES (2,1,'EF 456 GH','CH556677889900','MT112233','2024-01-22 00:00:00',0,2,2,'En Diagnóstico',0,NULL,NULL),(3,1,'IJ 789 KL','CH223344556677','MT445566','2023-11-05 00:00:00',0,2,3,'En Diagnóstico',0,NULL,NULL),(4,1,'MN 012 OP','CH334455667788','MT778899','2024-02-14 00:00:00',0,5,4,'En Diagnóstico',0,NULL,NULL),(7,1,'YZ 901 AB','CH667788990022','MT667788','2024-04-10 00:00:00',0,1,8,'En Reparación',0,NULL,NULL),(10,1,'AA22BC','123EE2','243321','2026-05-22 00:00:00',0,1,5,'En Diagnóstico',0,NULL,NULL),(11,1,'YZ 901 A2','99999999999999991','243321','2026-05-23 00:00:00',0,1,7,'Listo para Entrega',0,NULL,NULL),(38,1,'ac126vc','adsfd5454','asdsa2132','2026-09-08 00:00:00',0,2,1,'En Reparación',120000,2018,NULL),(39,1,'aa067bb','sdfffsdfd5','sdfsdfsdf55','2026-09-08 00:00:00',0,2,9,'En Reparación',200000,2016,NULL),(40,1,'ac125vd','adfadsf556565','sadfdsf66','2026-09-09 00:00:00',0,2,6,'En Reparación',50000,2018,NULL),(41,1,'AH123BB','ADFSAFDSF44444','adsfadf55555','2026-09-09 00:00:00',0,1,10,'En Reparación',3000000,2025,NULL),(42,1,'AH556NN','AAADDDDDDD555','asssssss555','2026-09-09 00:00:00',0,1,11,'En Diagnóstico',100000,2025,NULL),(43,1,'AE223EE','67348423','38738763764','2026-09-09 00:00:00',0,2,1,'Esperando Repuestos',70000,2026,NULL),(44,1,'AF302GM','861276237','87621762','2026-09-09 00:00:00',0,1,7,'En Diagnóstico',10,2020,NULL),(45,1,'AD144TY','17276376','723732','2026-09-09 00:00:00',0,1,12,'Listo para Entrega',30000,2019,1),(46,1,'AI256AS','FEDDS54G5','SFG123DS','2026-09-14 00:00:00',0,1,11,'En Reparación',10000,2026,2);
+INSERT INTO `vehiculo` VALUES (3,1,'IJ 789 KL','CH223344556677','MT445566','2023-11-05 00:00:00',0,2,3,'En Diagnóstico',0,NULL,NULL),(7,1,'YZ 901 AB','CH667788990022','MT667788','2024-04-10 00:00:00',0,1,8,'En Reparación',0,NULL,NULL),(38,1,'ac126vc','adsfd5454','asdsa2132','2026-09-08 00:00:00',0,2,1,'En Reparación',120000,2018,NULL),(39,1,'aa067bb','sdfffsdfd5','sdfsdfsdf55','2026-09-08 00:00:00',0,2,9,'En Reparación',200000,2016,NULL),(40,1,'ac125vd','adfadsf556565','sadfdsf66','2026-09-09 00:00:00',0,2,6,'En Reparación',50000,2018,NULL),(41,1,'AH123BB','ADFSAFDSF44444','adsfadf55555','2026-09-09 00:00:00',0,1,10,'En Reparación',3000000,2025,NULL),(45,1,'AD144TY','17276376','723732','2026-09-09 00:00:00',0,1,12,'Listo para Entrega',30000,2019,1),(46,1,'AI256AS','FEDDS54G5','SFG123DS','2026-09-14 00:00:00',0,1,11,'En Reparación',10000,2026,2);
 /*!40000 ALTER TABLE `vehiculo` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'soft_kayrom'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -588,4 +638,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-13 21:26:44
+-- Dump completed on 2026-10-02 13:41:58
