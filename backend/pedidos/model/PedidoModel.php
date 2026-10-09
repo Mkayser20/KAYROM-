@@ -181,6 +181,23 @@ class PedidoModel {
         }
     }
 
+    // Cambia el estado de un pedido a "Pendiente" o "Cancelado" (lo usa el desplegable del listado).
+    // "Recibido" NO pasa por acá: tiene que usar recibir(), que es el que suma al stock.
+    public function cambiarEstado($id, $estado) {
+        $id = (int)$id;
+        if (!in_array($estado, ['Pendiente', 'Cancelado'], true)) return false;
+
+        $pedido = $this->getById($id);
+        if (!$pedido) return false;
+
+        // un pedido ya recibido movió stock: no se vuelve atrás
+        if (strtolower($pedido['estado_pedido'] ?? '') === 'entregado') return false;
+
+        $stmt = $this->db->prepare("UPDATE pedidos SET estado_pedido = ? WHERE id = ?");
+        $stmt->bind_param('si', $estado, $id);
+        return $stmt->execute();
+    }
+
     // Eliminar un pedido. Un pedido ya recibido NO se puede eliminar
     // (ya movió stock y tiene que quedar como registro).
     public function delete($id) {

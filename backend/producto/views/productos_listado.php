@@ -1,13 +1,13 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>🔧 Productos / Stock</h1>
+    <h1><?= icono('llave') ?> Productos / Stock</h1>
     <a href="index.php?page=productos&action=create" class="btn btn-primary">＋ Nuevo Producto</a>
 </div>
 
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead>
                 <tr><th>#</th><th>Nombre</th><th>Tipo</th><th>Cantidad</th><th>Stock Disponible</th><th>Alerta</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr>
             </thead>

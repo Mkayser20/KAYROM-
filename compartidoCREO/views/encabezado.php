@@ -1,18 +1,43 @@
 <?php
+// Devuelve un ícono SVG de una sola tinta (toma el color del texto, como los del menú).
+// Se usa así: icono('vehiculo')  o  icono('caja', 16) si querés elegir el tamaño (en píxeles)
+if (!function_exists('icono')) {
+    function icono($nombre, $tam = 24) {
+        $dibujos = [
+            'vehiculo'    => '<rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+            'caja'        => '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+            'llave'       => '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+            'lista'       => '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+            'grafico'     => '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+            'alerta'      => '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+            'check'       => '<polyline points="20 6 9 17 4 12"/>',
+            'editar'      => '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+            'eliminar'    => '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+            'ajustes'     => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+            'etiqueta'    => '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+            'movimientos' => '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+            'recibir'     => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+            'enviar'      => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+        ];
+        $trazos = $dibujos[$nombre] ?? '';
+        return '<svg class="icono" width="' . $tam . '" height="' . $tam . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $trazos . '</svg>';
+    }
+}
+
 $activePage    = $data['activePage'] ?? '';
 $msg           = $_GET['msg'] ?? '';
 $msgTexts      = [
-    'created' => '✅ Registro creado exitosamente.',
-    'updated' => '✅ Registro actualizado.',
-    'deleted'  => '🗑️ Registro eliminado.',
-    'agregado' => '📤 Repuesto agregado a tu pedido a proveedores.',
+    'created' => 'Registro creado exitosamente.',
+    'updated' => 'Registro actualizado.',
+    'deleted'  => 'Registro eliminado.',
+    'agregado' => 'Repuesto agregado a tu pedido a proveedores.',
     // NUEVO: mensajes del ciclo de pedidos y stock
-    'recibido'           => '📥 Pedido recibido: el stock fue actualizado.',
-    'recibido_sin_items' => '⚠️ Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
-    'no_recibible'       => '⚠️ Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
-    'repuesto_en_uso'    => '⚠️ No se puede eliminar: ese repuesto ya se usó en órdenes de trabajo o está en pedidos.',
-    'no_borrable'        => '⚠️ No se puede eliminar un pedido ya recibido.',
-    'error'              => '⚠️ No se pudo completar la operación. No se guardó ningún cambio.',
+    'recibido'           => 'Pedido recibido: el stock fue actualizado.',
+    'recibido_sin_items' => 'Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
+    'no_recibible'       => 'Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
+    'repuesto_en_uso'    => 'No se puede eliminar: ese repuesto ya se usó en órdenes de trabajo o está en pedidos.',
+    'no_borrable'        => 'No se puede eliminar un pedido ya recibido.',
+    'error'              => 'No se pudo completar la operación. No se guardó ningún cambio.',
 ];
 $nombreUsuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
 $rolUsuario    = $_SESSION['rol']    ?? '';
@@ -303,19 +328,57 @@ async function enviarModalForm(form, event, toastId) {
         const mensaje = (await respuesta.text()).trim();
         const toast = document.getElementById(toastId);
         if (toast) {
-            toast.textContent = '⚠️ ' + (mensaje || 'Ocurrió un error, probá de nuevo.');
+            toast.textContent = '' + (mensaje || 'Ocurrió un error, probá de nuevo.');
         } else {
             alert(mensaje || 'Ocurrió un error, probá de nuevo.');
         }
     } catch (err) {
         const toast = document.getElementById(toastId);
-        if (toast) toast.textContent = '⚠️ Error de conexión, probá de nuevo.';
+        if (toast) toast.textContent = 'Error de conexión, probá de nuevo.';
     } finally {
         boton.disabled = false;
         boton.textContent = textoOriginal;
     }
     return false;
 }
+// Modo tarjetas en celular: copia el título de cada columna (th) a cada celda (td) de las
+// tablas con la clase "tabla-cards", así el CSS lo muestra al lado del dato
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('table.tabla-cards').forEach(function (tabla) {
+        const titulos = Array.from(tabla.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        tabla.querySelectorAll('tbody tr').forEach(function (fila) {
+            Array.from(fila.children).forEach(function (celda, i) {
+                if (titulos[i]) celda.setAttribute('data-label', titulos[i]);
+            });
+        });
+    });
+});
+
+// Muestra un aviso chiquito abajo a la derecha (usa el mismo estilo del toast del sistema,
+// que se desvanece solo con la animación del CSS)
+function mostrarToast(texto) {
+    const aviso = document.createElement('div');
+    aviso.className = 'toast';
+    aviso.textContent = texto;
+    document.body.appendChild(aviso);
+    setTimeout(() => aviso.remove(), 3500);
+}
+
+// Manda un cambio rápido (un estado, un check) por AJAX, sin recargar la página.
+// Devuelve true si salió bien. Si falla, muestra el motivo en un aviso y devuelve false.
+async function enviarCambio(url, datos) {
+    try {
+        const respuesta = await fetch(url, { method: 'POST', body: new URLSearchParams(datos) });
+        if (respuesta.ok) return true;
+        // el servidor devuelve el motivo del error en texto plano
+        const mensaje = (await respuesta.text()).trim();
+        mostrarToast('' + (mensaje || 'No se pudo guardar el cambio.'));
+    } catch (err) {
+        mostrarToast('Error de conexión, probá de nuevo.');
+    }
+    return false;
+}
+
 // Cerrar el modal si se hace clic fuera de la tarjeta (en el fondo oscuro)
 document.addEventListener('click', function (e) {
     if (e.target.classList.contains('quick-modal-overlay')) {

@@ -2,16 +2,16 @@
 $activePage    = $data['activePage'] ?? '';
 $msg           = $_GET['msg'] ?? '';
 $msgTexts      = [
-    'created' => '✅ Registro creado exitosamente.',
-    'updated' => '✅ Registro actualizado.',
-    'deleted'  => '🗑️ Registro eliminado.',
-    'agregado' => '📤 Repuesto agregado a tu pedido a proveedores.',
+    'created' => 'Registro creado exitosamente.',
+    'updated' => 'Registro actualizado.',
+    'deleted'  => 'Registro eliminado.',
+    'agregado' => 'Repuesto agregado a tu pedido a proveedores.',
     // NUEVO: mensajes del ciclo de pedidos y stock
-    'recibido'           => '📥 Pedido recibido: el stock fue actualizado.',
-    'recibido_sin_items' => '⚠️ Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
-    'no_recibible'       => '⚠️ Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
-    'no_borrable'        => '⚠️ No se puede eliminar un pedido ya recibido.',
-    'error'              => '⚠️ No se pudo completar la operación. No se guardó ningún cambio.',
+    'recibido'           => 'Pedido recibido: el stock fue actualizado.',
+    'recibido_sin_items' => 'Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
+    'no_recibible'       => 'Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
+    'no_borrable'        => 'No se puede eliminar un pedido ya recibido.',
+    'error'              => 'No se pudo completar la operación. No se guardó ningún cambio.',
 ];
 $nombreUsuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';
 $rolUsuario    = $_SESSION['rol']    ?? '';

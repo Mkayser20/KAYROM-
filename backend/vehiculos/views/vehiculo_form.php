@@ -11,11 +11,11 @@ $action = $isEdit
 $wizard = !$isEdit;
 ?>
 <div class="page-header">
-    <h1><?= $isEdit ? '✏️ Editar Vehículo' : '＋ Nuevo Vehículo' ?></h1>
+    <h1><?= $isEdit ? 'Editar Vehículo' : '＋ Nuevo Vehículo' ?></h1>
     <a href="index.php?page=vehiculos" class="btn btn-ghost">← Volver</a>
 </div>
 <?php if ($error): ?>
-<div class="toast-error" style="position:static;display:flex;margin-bottom:20px;">⚠️ <?= htmlspecialchars($error) ?></div>
+<div class="toast-error" style="position:static;display:flex;margin-bottom:20px;"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
 <?php if ($wizard): ?>
@@ -117,7 +117,7 @@ $wizard = !$isEdit;
                     <label>Estado en Taller</label>
                     <?php $estActual = $formData['estado_taller'] ?? $v['estado_taller'] ?? 'En Diagnóstico'; ?>
                     <select name="estado_taller">
-                        <?php foreach (['En Diagnóstico','En Reparación','Esperando Repuestos','Listo para Entrega'] as $est): ?>
+                        <?php foreach (VehiculoModel::$estadosTaller as $est): ?>
                         <option value="<?= $est ?>" <?= $estActual===$est?'selected':'' ?>><?= $est ?></option>
                         <?php endforeach; ?>
                     </select>
@@ -133,7 +133,7 @@ $wizard = !$isEdit;
             </div>
             <div class="wizard-nav">
                 <?php if ($wizard): ?><button type="button" class="btn btn-ghost" onclick="wizardIr(2)">← Atrás</button><?php else: ?><span></span><?php endif; ?>
-                <button type="submit" class="btn btn-primary"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+                <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
             </div>
         </div>
 

@@ -1,7 +1,7 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>📤 Realizar pedido a proveedores</h1>
+    <h1><?= icono('enviar') ?> Realizar pedido a proveedores</h1>
 </div>
 
 <?php if (empty($items)): ?>
@@ -58,7 +58,7 @@
             </div>
             <a href="index.php?page=carrito&action=solicitar" class="btn btn-primary" style="padding:12px 22px;font-size:14px;"
                onclick="return confirmarAccion(this.href, 'Se va a generar un pedido por cada proveedor con estos repuestos y esta lista se va a vaciar. ¿Confirmás?')">
-+                📤 Generar pedido(s) a proveedores
++                Generar pedido(s) a proveedores
             </a>
         </div>
     </div>

@@ -2,6 +2,9 @@
 class VehiculoModel {
     private $db;
 
+    // Estados posibles de un vehículo en el taller (lista cerrada, la usan el desplegable y la validación)
+    public static $estadosTaller = ['En Diagnóstico', 'En Reparación', 'Esperando Repuestos', 'Listo para Entrega', 'Entregado'];
+
     public function __construct() {
         $this->db = Database::getInstance()->getConexion();
     }
@@ -143,6 +146,16 @@ class VehiculoModel {
              kilometraje=$kilometraje, anio=$anio, cliente_id=$cliente_id WHERE id=$id"
         );
         return $success ? ['success' => true] : ['error' => 'Error al actualizar el vehículo'];
+    }
+
+    // Cambia solo el estado del taller (lo usa el desplegable del listado)
+    public function cambiarEstado($id, $estado) {
+        // si el estado no está en la lista, no se guarda
+        if (!in_array($estado, self::$estadosTaller, true)) return false;
+
+        $stmt = $this->db->prepare("UPDATE vehiculo SET estado_taller = ? WHERE id = ?");
+        $stmt->bind_param('si', $estado, $id);
+        return $stmt->execute();
     }
 
     public function delete($id) {

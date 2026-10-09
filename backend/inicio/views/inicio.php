@@ -74,7 +74,7 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
 
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🚘 Últimos Vehículos Añadidos</div>
+            <div class="panel-title"><?= icono('vehiculo', 16) ?> Últimos Vehículos Añadidos</div>
             <a href="index.php?page=vehiculos&action=create" class="btn btn-primary" style="font-size:11px;padding:5px 12px;">+ Nuevo</a>
         </div>
         <div class="panel-body">
@@ -107,7 +107,7 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
 
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">📦 Pedidos Recientes</div>
+            <div class="panel-title"><?= icono('caja', 16) ?> Pedidos Recientes</div>
             <a href="index.php?page=pedidos&action=create" class="btn btn-primary" style="font-size:11px;padding:5px 12px;">+ Nuevo</a>
         </div>
         <div class="panel-body">
@@ -158,7 +158,7 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
     <!-- Informe 1: Vehículos por Tipo (torta) -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🚘 Vehículos por Tipo</div>
+            <div class="panel-title"><?= icono('vehiculo', 16) ?> Vehículos por Tipo</div>
         </div>
         <div class="panel-body">
             <div class="chart-container">
@@ -193,7 +193,7 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
     <!-- Informe 2: Pedidos por Estado (torta) -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">📦 Pedidos por Estado</div>
+            <div class="panel-title"><?= icono('caja', 16) ?> Pedidos por Estado</div>
         </div>
         <div class="panel-body">
             <div class="chart-container">
@@ -228,7 +228,7 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
     <!-- Informe 3: Vehículos por Estado de Taller (barras) -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🔧 Vehículos por Estado de Taller</div>
+            <div class="panel-title"><?= icono('llave', 16) ?> Vehículos por Estado de Taller</div>
         </div>
         <div class="panel-body">
             <div class="bar-chart">
@@ -252,7 +252,7 @@ $maxRepuestos = !empty($data['estadRepuestos']) ? max(array_column($data['estadR
     <!-- Informe 4: Repuestos por Categoría (barras) -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🛠️ Repuestos por Categoría</div>
+            <div class="panel-title"><?= icono('llave', 16) ?> Repuestos por Categoría</div>
         </div>
         <div class="panel-body">
             <div class="bar-chart">

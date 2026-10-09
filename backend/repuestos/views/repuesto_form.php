@@ -7,7 +7,7 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
 ?>
 
 <div class="page-header">
-    <h1><?= $isEdit ? '✏️ Editar Repuesto' : '＋ Nuevo Repuesto' ?></h1>
+    <h1><?= $isEdit ? 'Editar Repuesto' : '＋ Nuevo Repuesto' ?></h1>
     <a href="index.php?page=repuestos" class="btn btn-ghost">← Volver</a>
 </div>
 
@@ -59,7 +59,7 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
                 <input type="number" name="stock_minimo" value="<?= $r['stock_minimo'] ?? 5 ?>" min="0">
             </div>
         </div>
-        <button type="submit" class="btn btn-primary"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+        <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
 
     <script>
         function mostrarError(mensaje) {

@@ -5,7 +5,7 @@ $isEdit = !empty($p);
 ?>
 
 <div class="page-header">
-    <h1><?= $isEdit ? '✏️ Editar Proveedor' : '+ Nuevo Proveedor' ?></h1>
+    <h1><?= $isEdit ? 'Editar Proveedor' : '+ Nuevo Proveedor' ?></h1>
     <a href="index.php?page=proveedores" class="btn btn-ghost">← Volver</a>
 </div>
 

@@ -1,8 +1,8 @@
 <?php
 $msg = $_GET['msg'] ?? '';
 $msgTexts = [
-    'created' => '✅ Registro creado exitosamente.',
-    'updated' => '✅ Registro actualizado.',
+    'created' => 'Registro creado exitosamente.',
+    'updated' => 'Registro actualizado.',
 ];
 ?>
 <!DOCTYPE html>

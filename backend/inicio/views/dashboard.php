@@ -35,28 +35,28 @@ foreach($statsV as $i=>$s){
 <!-- STAT CARDS -->
 <div class="stats-grid">
     <div class="stat-card blue">
-        <div class="stat-icon">🚗</div>
+        <div class="stat-icon"><?= icono('vehiculo', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Total Vehículos</div>
             <div class="stat-value"><?= $data['totalVehiculos'] ?></div>
         </div>
     </div>
     <div class="stat-card green">
-        <div class="stat-icon">📦</div>
+        <div class="stat-icon"><?= icono('caja', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Unidades en Stock</div>
             <div class="stat-value"><?= $data['totalStock'] ?></div>
         </div>
     </div>
     <div class="stat-card orange">
-        <div class="stat-icon">⚠️</div>
+        <div class="stat-icon"><?= icono('alerta', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Productos Stock Bajo</div>
             <div class="stat-value"><?= $data['stockBajo'] ?></div>
         </div>
     </div>
     <div class="stat-card red">
-        <div class="stat-icon">📋</div>
+        <div class="stat-icon"><?= icono('lista', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Total Pedidos</div>
             <div class="stat-value"><?= $data['totalPedidos'] ?></div>
@@ -70,7 +70,7 @@ foreach($statsV as $i=>$s){
     <!-- Últimos Vehículos -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🚘 Últimos Vehículos Añadidos</div>
+            <div class="panel-title"><?= icono('vehiculo', 16) ?> Últimos Vehículos Añadidos</div>
             <a href="index.php?page=vehiculos&action=create" class="btn btn-green" style="font-size:11px;padding:5px 12px;">+ Nuevo</a>
         </div>
         <div class="panel-body">
@@ -85,7 +85,7 @@ foreach($statsV as $i=>$s){
                         <td><?= htmlspecialchars($v['modelo_vehiculo'] ?? '-') ?></td>
                         <td style="color:var(--text-muted);"><?= htmlspecialchars($v['tipo_vehiculo'] ?? '-') ?></td>
                         <td style="color:var(--text-muted);"><?= $v['anio_vehiculo'] ?? '-' ?></td>
-                        <td><a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="action-edit" style="text-decoration:none;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:rgba(59,130,246,0.15);color:var(--accent-blue);">✏️</a></td>
+                        <td><a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="action-edit" style="text-decoration:none;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:rgba(59,130,246,0.15);color:var(--accent-blue);"><?= icono('editar', 14) ?></a></td>
                     </tr>
                 <?php endforeach; endif; ?>
                 </tbody>
@@ -99,12 +99,12 @@ foreach($statsV as $i=>$s){
     <!-- Alertas Stock Bajo -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">⚠️ Alertas de Stock Bajo</div>
+            <div class="panel-title"><?= icono('alerta', 16) ?> Alertas de Stock Bajo</div>
         </div>
         <div class="panel-body">
             <div class="alert-list">
             <?php if(empty($data['lowStockItems'])): ?>
-                <div style="padding:20px;text-align:center;color:var(--accent-green);">✅ Todo el stock está OK</div>
+                <div style="padding:20px;text-align:center;color:var(--accent-green);">Todo el stock está OK</div>
             <?php else: foreach($data['lowStockItems'] as $item): ?>
                 <div class="alert-item">
                     <div style="display:flex;align-items:center;">
@@ -124,7 +124,7 @@ foreach($statsV as $i=>$s){
     <!-- Gráfico por tipo de vehículo -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">📊 Vehículos por Tipo</div>
+            <div class="panel-title"><?= icono('grafico', 16) ?> Vehículos por Tipo</div>
         </div>
         <div class="panel-body">
             <div class="chart-container">
@@ -159,7 +159,7 @@ foreach($statsV as $i=>$s){
     <!-- Pedidos Recientes -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">📦 Pedidos Recientes</div>
+            <div class="panel-title"><?= icono('caja', 16) ?> Pedidos Recientes</div>
             <a href="index.php?page=pedidos&action=create" class="btn btn-primary" style="font-size:11px;padding:5px 12px;">+ Nuevo</a>
         </div>
         <div class="panel-body">

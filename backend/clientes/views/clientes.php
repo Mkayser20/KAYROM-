@@ -6,12 +6,12 @@
 </div>
 
 <?php if (!empty($_GET['error'])): ?>
-    <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;">⚠️ <?= htmlspecialchars($_GET['error']) ?></div>
+    <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;"><?= htmlspecialchars($_GET['error']) ?></div>
 <?php endif; ?>
 
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead><tr><th>#</th><th>Nombre</th><th>DNI</th><th>Teléfono</th><th>Vehículos</th><th>Acciones</th></tr></thead>
             <tbody>
             <?php if (empty($data['clientes'])): ?>
@@ -87,7 +87,7 @@
                         <input type="text" name="telefono" id="cliente-telefono">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" id="cliente-submit">✅ Guardar</button>
+                <button type="submit" class="btn btn-primary" id="cliente-submit">Guardar</button>
             </form>
         </div>
     </div>
@@ -100,7 +100,7 @@ function abrirCliente(c) {
     const titulo = document.getElementById('cliente-titulo');
     if (c && c.id) {
         form.action = 'index.php?page=clientes&action=edit';
-        titulo.textContent = '✏️ Editar Cliente';
+        titulo.textContent = 'Editar Cliente';
         document.getElementById('cliente-id').value = c.id;
         document.getElementById('cliente-nombre').value = c.nombre || '';
         document.getElementById('cliente-apellido').value = c.apellido || '';

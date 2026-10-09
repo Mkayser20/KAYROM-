@@ -1,7 +1,7 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>🔧 Catálogo de Repuestos e Insumos</h1>
+    <h1><?= icono('llave') ?> Catálogo de Repuestos e Insumos</h1>
     <button type="button" class="btn btn-primary" onclick="abrirRepuesto()">＋ Nuevo Repuesto</button>
 </div>
 
@@ -33,7 +33,7 @@
 
 <div class="panel">
     <div class="panel-body">
-        <table id="tabla-repuestos">
+        <table id="tabla-repuestos" class="tabla-cards">
             <thead>
                 <tr>
                     <th>#</th><th>SKU</th><th>Nombre</th><th>Categoría</th><th>Stock (Actual / Mín.)</th><th>Precio</th><th>Proveedor</th><th>Estado</th><th>Acciones</th>
@@ -162,7 +162,7 @@
                         <input type="number" name="stock_minimo" id="rep-stock-min" value="5" min="0">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" id="rep-submit">✅ Guardar</button>
+                <button type="submit" class="btn btn-primary" id="rep-submit">Guardar</button>
             </form>
         </div>
     </div>
@@ -177,8 +177,8 @@ function abrirRepuesto(r) {
 
     if (r && r.id) {
         form.action = 'index.php?page=repuestos&action=edit&id=' + r.id;
-        titulo.textContent = '✏️ Editar Repuesto';
-        submit.textContent = '💾 Actualizar';
+        titulo.textContent = 'Editar Repuesto';
+        submit.textContent = 'Actualizar';
         document.getElementById('rep-nombre').value     = r.nombre || '';
         document.getElementById('rep-sku').value        = r.sku || '';
         document.getElementById('rep-proveedor').value  = r.proveedor_id || '';
@@ -190,7 +190,7 @@ function abrirRepuesto(r) {
         form.reset();
         form.action = 'index.php?page=repuestos&action=create';
         titulo.textContent = '＋ Nuevo Repuesto';
-        submit.textContent = '✅ Guardar';
+        submit.textContent = 'Guardar';
     }
     abrirModal('modal-nuevo-repuesto');
     return false;

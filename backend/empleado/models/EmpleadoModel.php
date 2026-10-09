@@ -85,6 +85,16 @@ class EmpleadoModel {
     );
     }
 
+    // Activa o desactiva un usuario (lo usa el check de la tabla). No borra nada: solo cambia usuario.activo
+    public function cambiarActivo($id, $activo) {
+        $id     = (int)$id;
+        $activo = $activo ? 1 : 0;
+
+        $stmt = $this->db->prepare("UPDATE usuario SET activo = ? WHERE id = ?");
+        $stmt->bind_param('ii', $activo, $id);
+        return $stmt->execute();
+    }
+
     public function delete($id) {
     $emp = $this->getById($id);
     if (!$emp) return false;

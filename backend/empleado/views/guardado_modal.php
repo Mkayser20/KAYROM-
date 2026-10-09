@@ -6,7 +6,7 @@
 </head>
 <body style="align-items:center; justify-content:center; display:flex; height:100vh; background:transparent;">
     <div style="text-align:center; color:var(--text-primary); font-family:var(--font-display);">
-        ✅ Guardado. Cerrando...
+        Guardado. Cerrando...
     </div>
     <script>
         // Recarga la pantalla de atrás (ya con los datos actualizados) y listo:

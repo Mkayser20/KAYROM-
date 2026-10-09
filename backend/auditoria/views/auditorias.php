@@ -1,7 +1,7 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>📋 Auditoría</h1>
+    <h1><?= icono('lista') ?> Auditoría</h1>
 </div>
 
 <div class="stats-grid" style="margin-bottom: 20px;">
@@ -27,7 +27,7 @@
     ?>
 
     <div class="stat-card blue">
-        <div class="stat-icon">📊</div>
+        <div class="stat-icon"><?= icono('grafico', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Eventos</div>
             <div class="stat-value"><?= $totalAuditorias ?></div>
@@ -35,7 +35,7 @@
     </div>
 
     <div class="stat-card green">
-        <div class="stat-icon">✅</div>
+        <div class="stat-icon"><?= icono('check', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Creaciones</div>
             <div class="stat-value"><?= $totalCreaciones ?></div>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="stat-card orange">
-        <div class="stat-icon">✏️</div>
+        <div class="stat-icon"><?= icono('editar', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Ediciones</div>
             <div class="stat-value"><?= $totalEdiciones ?></div>
@@ -51,7 +51,7 @@
     </div>
 
     <div class="stat-card red">
-        <div class="stat-icon">🗑️</div>
+        <div class="stat-icon"><?= icono('eliminar', 22) ?></div>
         <div class="stat-info">
             <div class="stat-label">Eliminaciones</div>
             <div class="stat-value"><?= $totalEliminaciones ?></div>
@@ -65,7 +65,7 @@
     </div>
 
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead>
                 <tr>
                     <th>#</th>

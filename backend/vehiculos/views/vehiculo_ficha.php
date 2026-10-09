@@ -4,17 +4,17 @@ $v = $data['vehiculo'];
 ?>
 
 <div class="page-header">
-    <h1>🚘 Ficha Técnica — <?= htmlspecialchars($v['patente'] ?? 'Vehículo') ?></h1>
+    <h1><?= icono('vehiculo') ?> Ficha Técnica — <?= htmlspecialchars($v['patente'] ?? 'Vehículo') ?></h1>
     <a href="index.php?page=vehiculos" class="btn btn-ghost">&larr; Volver al listado</a>
 </div>
 
 <?php if (!empty($_GET['ot_error'])): ?>
-    <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;">⚠️ <?= htmlspecialchars($_GET['ot_error']) ?></div>
+    <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;"><?= htmlspecialchars($_GET['ot_error']) ?></div>
 <?php endif; ?>
 
 <?php if (!empty($_GET['ot_aviso'])): ?>
     <div style="position:static;display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent-blue);color:var(--text-primary);padding:13px 20px;border-radius:10px;margin-bottom:16px;font-size:13.5px;">
-        📦 <?= htmlspecialchars(str_replace(' | ', ' — ', $_GET['ot_aviso'])) ?>
+        <?= htmlspecialchars(str_replace(' | ', ' — ', $_GET['ot_aviso'])) ?>
     </div>
 <?php endif; ?>
 
@@ -62,7 +62,7 @@ $v = $data['vehiculo'];
 <!-- Panel de Órdenes de Trabajo: qué mecánico trabajó en este vehículo y qué repuestos usó -->
 <div class="panel" style="margin-top:20px;">
     <div class="panel-header">
-        <div class="panel-title">🔧 Órdenes de Trabajo</div>
+        <div class="panel-title"><?= icono('llave', 16) ?> Órdenes de Trabajo</div>
         <button type="button" class="btn btn-primary" onclick="abrirModal('modal-nueva-orden')">＋ Nueva Orden</button>
     </div>
     <div class="panel-body">
@@ -149,7 +149,7 @@ $v = $data['vehiculo'];
                     <button type="button" class="btn btn-ghost" style="margin-top:8px;" onclick="agregarFilaRepuesto()">＋ Agregar repuesto</button>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="margin-top:10px;">✅ Guardar Orden</button>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;">Guardar Orden</button>
             </form>
         </div>
     </div>
@@ -177,7 +177,7 @@ function agregarFilaRepuesto() {
         </div>
         <div class="form-group" style="margin-bottom:0; display:flex; gap:6px;">
             <input type="number" name="cantidad_usada[]" value="1" min="1" style="flex:1;">
-            <button type="button" class="btn btn-ghost" onclick="this.closest('.form-row').remove()">🗑️</button>
+            <button type="button" class="btn btn-ghost" onclick="this.closest('.form-row').remove()"><?= icono('eliminar', 14) ?></button>
         </div>`;
     cont.appendChild(fila);
 }

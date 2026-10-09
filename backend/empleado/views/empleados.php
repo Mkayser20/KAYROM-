@@ -7,7 +7,7 @@
 
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
         <thead>
             <tr>
                 <th>#</th>
@@ -34,9 +34,14 @@
                 <td style="color:var(--text-muted);"><?= htmlspecialchars($e['nombre_usuario'] ?? '-') ?></td>
                 <td><?= htmlspecialchars($e['rol'] ?? '-') ?></td>
                 <td>
-                    <span class="badge-status <?= $e['activo'] ? 'disponible' : 'vendido' ?>">
-                        <?= $e['activo'] ? 'Activo' : 'Inactivo' ?>
-                    </span>
+                    <!-- Check: tildado = activo. Al tocarlo se guarda solo -->
+                    <label class="check-activo">
+                        <input type="checkbox" <?= $e['activo'] ? 'checked' : '' ?>
+                               onchange="cambiarActivoEmpleado(this, <?= $e['id'] ?>)">
+                        <span class="badge-status <?= $e['activo'] ? 'disponible' : 'vendido' ?>">
+                            <?= $e['activo'] ? 'Activo' : 'Inactivo' ?>
+                        </span>
+                    </label>
                 </td>
                 <td>
                     <div class="action-icons">
@@ -62,12 +67,26 @@
 </div>
 
 <script>
+// Guarda el estado activo / inactivo apenas se toca el check
+async function cambiarActivoEmpleado(check, id) {
+    const ok = await enviarCambio('index.php?page=empleados&action=cambiarActivo', { id: id, activo: check.checked ? 1 : 0 });
+    if (!ok) {
+        check.checked = !check.checked; // si falló, lo dejo como estaba
+        return;
+    }
+    // actualizo el badge que está al lado del check
+    const badge = check.parentElement.querySelector('.badge-status');
+    badge.className = 'badge-status ' + (check.checked ? 'disponible' : 'vendido');
+    badge.textContent = check.checked ? 'Activo' : 'Inactivo';
+    mostrarToast('Estado actualizado.');
+}
+
 function abrirEmpleadoModal(modo, id) {
     const iframe = document.getElementById('empleado-iframe');
     const titulo = document.getElementById('emp-titulo');
     if (modo === 'edit') {
         iframe.src = 'index.php?page=empleados&action=edit&id=' + id + '&modal=1';
-        titulo.textContent = '✏️ Editar Empleado';
+        titulo.textContent = 'Editar Empleado';
     } else {
         iframe.src = 'index.php?page=empleados&action=create&modal=1';
         titulo.textContent = '＋ Nuevo Empleado';

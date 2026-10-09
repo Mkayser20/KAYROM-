@@ -26,7 +26,7 @@
     <?php endif; ?>
 
     <?php if (($_GET['msg'] ?? '') === 'password_changed'): ?>
-    <div class="auth-alert success">✓ Contraseña cambiada exitosamente. Ya podés iniciar sesión.</div>
+    <div class="auth-alert success">Contraseña cambiada exitosamente. Ya podés iniciar sesión.</div>
     <?php endif; ?>
 
     <form method="POST" action="index.php?page=iniciar_sesion&action=iniciar_sesion" class="auth-form">

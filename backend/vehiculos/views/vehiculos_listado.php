@@ -1,13 +1,17 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>🚘 Vehículos</h1>
+    <h1><?= icono('vehiculo') ?> Vehículos</h1>
     <button type="button" class="btn btn-primary" onclick="abrirVehiculo()">＋ Nuevo Vehículo</button>
 </div>
 
+<?php
+    // Color del desplegable según el estado (mismos colores que los badges)
+    $estadoBadge = ['En Diagnóstico'=>'reparacion','En Reparación'=>'reparacion','Esperando Repuestos'=>'vendido','Listo para Entrega'=>'disponible','Entregado'=>'disponible'];
+?>
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead>
                 <tr><th>#</th><th>Patente</th><th>Cliente</th><th>N° Chasis</th><th>N° Motor</th><th>Modelo</th><th>Tipo</th><th>Año</th><th>Km</th><th>Estado Taller</th><th>Fecha Ingreso</th><th>Acciones</th></tr>
             </thead>
@@ -32,11 +36,15 @@
                     <td><?= $v['anio'] ?? '-' ?></td>
                     <td style="color:var(--text-muted);"><?= number_format($v['kilometraje'] ?? 0, 0, ',', '.') ?> km</td>
                     <td>
-                        <?php
-                            $estadoBadge = ['En Diagnóstico'=>'reparacion','En Reparación'=>'reparacion','Esperando Repuestos'=>'vendido','Listo para Entrega'=>'disponible','Entregado'=>'disponible'];
-                            $et = $v['estado_taller'] ?? 'En Diagnóstico';
-                        ?>
-                        <span class="badge-status <?= $estadoBadge[$et] ?? 'reparacion' ?>"><?= htmlspecialchars($et) ?></span>
+                        <?php $et = $v['estado_taller'] ?? 'En Diagnóstico'; ?>
+                        <!-- Desplegable: al elegir otro estado se guarda solo -->
+                        <select class="estado-select <?= $estadoBadge[$et] ?? 'reparacion' ?>"
+                                data-actual="<?= htmlspecialchars($et) ?>"
+                                onchange="cambiarEstadoVehiculo(this, <?= $v['id'] ?>)">
+                            <?php foreach (VehiculoModel::$estadosTaller as $est): ?>
+                            <option value="<?= $est ?>" <?= $et === $est ? 'selected' : '' ?>><?= $est ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </td>
                     <td style="color:var(--text-muted);"><?= isset($v['fecha_ingreso']) ? substr($v['fecha_ingreso'],0,10) : '-' ?></td>
                     <td>
@@ -128,6 +136,7 @@
                             <option value="En Reparación">En Reparación</option>
                             <option value="Esperando Repuestos">Esperando Repuestos</option>
                             <option value="Listo para Entrega">Listo para Entrega</option>
+                            <option value="Entregado">Entregado</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -155,7 +164,7 @@
                         <input type="text" name="cliente_telefono" id="veh-cliente-telefono" placeholder="Teléfono">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" id="veh-submit">✅ Guardar</button>
+                <button type="submit" class="btn btn-primary" id="veh-submit">Guardar</button>
             </form>
         </div>
     </div>
@@ -168,6 +177,23 @@ const opcionesTipos   = <?= json_encode(array_map(fn($t) => ['id' => $t['id'], '
 crearCombo('combo-modelo', opcionesModelos);
 crearCombo('combo-tipo', opcionesTipos);
 
+// Colores del desplegable de estado (vienen del PHP de arriba)
+const colorEstadoVehiculo = <?= json_encode($estadoBadge) ?>;
+
+// Guarda el nuevo estado del vehículo apenas se elige en el desplegable
+async function cambiarEstadoVehiculo(select, id) {
+    const ok = await enviarCambio('index.php?page=vehiculos&action=cambiarEstado', { id: id, estado: select.value });
+    if (ok) {
+        // cambio el color y recuerdo el estado nuevo
+        select.className = 'estado-select ' + (colorEstadoVehiculo[select.value] || 'reparacion');
+        select.dataset.actual = select.value;
+        mostrarToast('Estado actualizado.');
+    } else {
+        // si falló, vuelvo al estado que tenía
+        select.value = select.dataset.actual;
+    }
+}
+
 // Un solo modal para alta y edición de vehículo: sin datos = alta; con datos = edición.
 function abrirVehiculo(v) {
     const form   = document.getElementById('form-vehiculo');
@@ -176,8 +202,8 @@ function abrirVehiculo(v) {
 
     if (v && v.id) {
         form.action = 'index.php?page=vehiculos&action=edit&id=' + v.id;
-        titulo.textContent = '✏️ Editar Vehículo';
-        submit.textContent = '💾 Actualizar';
+        titulo.textContent = 'Editar Vehículo';
+        submit.textContent = 'Actualizar';
         document.getElementById('veh-patente').value = v.patente || '';
         document.getElementById('veh-anio').value    = v.anio || '';
         document.getElementById('veh-chasis').value  = v.numero_chasis || '';
@@ -195,7 +221,7 @@ function abrirVehiculo(v) {
         form.reset();
         form.action = 'index.php?page=vehiculos&action=create';
         titulo.textContent = '＋ Nuevo Vehículo';
-        submit.textContent = '✅ Guardar';
+        submit.textContent = 'Guardar';
         document.getElementById('veh-anio').value = '';
         document.getElementById('combo-modelo')._limpiar();
         document.getElementById('combo-tipo')._limpiar();

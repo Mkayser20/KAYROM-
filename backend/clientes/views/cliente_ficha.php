@@ -26,7 +26,7 @@ $c = $data['cliente']; //datos del cliente que llegan desde el controller
 
 <!-- Todos los vehículos que tiene este cliente a su nombre -->
 <div class="panel">
-    <div class="panel-header"><div class="panel-title">🚘 Vehículos de este cliente</div></div>
+    <div class="panel-header"><div class="panel-title"><?= icono('vehiculo', 16) ?> Vehículos de este cliente</div></div>
     <div class="panel-body">
         <?php if (empty($data['vehiculos'])): ?>
             <div style="padding:30px;text-align:center;color:var(--text-muted);">Todavía no tiene vehículos cargados.</div>

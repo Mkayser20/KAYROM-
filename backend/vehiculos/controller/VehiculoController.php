@@ -161,6 +161,32 @@ class VehiculoController {
         require_once 'backend/vehiculos/views/vehiculo_ficha.php';
     }
 
+    // cambiar solo el estado de un vehículo (llega por AJAX desde el desplegable del listado)
+    public function cambiarEstado() {
+        $id     = (int)($_POST['id'] ?? 0);
+        $estado = $_POST['estado'] ?? '';
+
+        // si algo falla, devuelvo el error en texto plano (igual que en los modales)
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$this->model->cambiarEstado($id, $estado)) {
+            http_response_code(422);
+            echo 'No se pudo cambiar el estado del vehículo.';
+            exit;
+        }
+
+        // AUDITORÍA: Registro del cambio de estado
+        $vehiculo = $this->model->getById($id);
+        $patente  = $vehiculo['patente'] ?? "ID $id";
+        $this->auditoria->registrar(
+            'EDITAR',
+            'Vehículos',
+            "Cambio de estado del vehículo $patente a: $estado",
+            $id
+        );
+
+        echo 'ok';
+        exit;
+    }
+
     //eliminar un vehículo
     public function delete() {
         $id = (int)($_GET['id'] ?? 0); // obtener ID del vehículo a eliminar

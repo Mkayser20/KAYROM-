@@ -46,7 +46,7 @@ body {
 .sidebar {
     width: var(--sidebar-w);
     background: var(--bg-panel);
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--border); /* línea que separa el menú del contenido */
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -63,7 +63,6 @@ body {
     align-items: center;
     gap: 10px;
     padding: 0 16px;
-    border-bottom: 1px solid var(--border);
     flex-shrink: 0;
     background: var(--bg-dark);
 }
@@ -170,7 +169,6 @@ body {
     height: 64px;
     background: rgba(0,0,0,0.92);
     backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -234,6 +232,7 @@ body {
     margin-top: 64px;
     padding: 24px;
     flex: 1;
+    min-width: 0; /* deja que el contenido se achique: la tabla scrollea adentro de su panel en vez de cortar la pantalla */
     min-height: calc(100vh - 64px);
     background: var(--bg-dark);
 }
@@ -283,7 +282,7 @@ body {
 .alert-strip .alert-strip-text b { color: var(--accent-orange); font-family: var(--font-mono); }
 .alert-strip .alert-strip-text .item-sep { color: var(--text-dim); }
 
-.panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+.panel { background: var(--bg-card); border: none; border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
 
 .panel-header {
     padding: 16px 20px;
@@ -306,7 +305,7 @@ thead th {
     border-bottom: 1px solid var(--border);
 }
 
-tbody td { padding: 12px 16px; border-bottom: 1px solid rgba(35,43,62,0.6); color: var(--text-primary); }
+tbody td { padding: 12px 16px; border-bottom: none; color: var(--text-primary); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--accent-blue); }
 
@@ -315,6 +314,17 @@ tbody tr:hover { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--ac
 .badge-status.disponible { background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
 .badge-status.vendido    { background: rgba(239,68,68,0.15);  color: #EF4444; border: 1px solid rgba(239,68,68,0.3); }
 .badge-status.reparacion { background: rgba(245,158,11,0.15); color: #F59E0B; border: 1px solid rgba(245,158,11,0.35); }
+
+/* Desplegable de estado: se ve como el badge pero se puede cambiar (vehículos y pedidos) */
+.estado-select { padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; font-family: var(--font-mono); cursor: pointer; outline: none; }
+.estado-select option { background: var(--bg-card); color: var(--text-primary); }
+.estado-select.disponible { background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
+.estado-select.vendido    { background: rgba(239,68,68,0.15);  color: #EF4444; border: 1px solid rgba(239,68,68,0.3); }
+.estado-select.reparacion { background: rgba(245,158,11,0.15); color: #F59E0B; border: 1px solid rgba(245,158,11,0.35); }
+
+/* Check de activo / inactivo (empleados): el check va al lado del badge */
+.check-activo { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.check-activo input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent-blue); }
 
 /* ── ALERT LIST ──────────────────────────────────── */
 .alert-list { padding: 8px 16px 4px; }
@@ -360,6 +370,12 @@ tbody tr:hover { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--ac
 .section-divider span { color: var(--text-primary); font-family: var(--font-display); font-size: 16px; font-weight: 700; white-space: nowrap; }
 .section-divider .line { flex: 1; height: 1px; background: var(--border); }
 .chart-export-actions { display: flex; gap: 8px; }
+
+/* ── ÍCONOS (reemplazan a los emojis de color) ───── */
+.icono { display: inline-block; flex-shrink: 0; vertical-align: -0.15em; }
+.page-header h1 { display: flex; align-items: center; gap: 10px; }
+.page-header h1 .icono, .panel-title .icono { color: var(--accent-blue-bright); }
+.stat-icon .icono { display: block; }
 
 /* ── PAGE HEADER ─────────────────────────────────── */
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
@@ -532,8 +548,29 @@ tbody tr:hover { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--ac
     .modules-grid { grid-template-columns: 1fr 1fr; }
 }
 
+/* Celulares y tablets chicas: cabecera de página, tablas y modales */
+@media (max-width: 768px) {
+    .page-header { flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 20px; }
+    .main-content { padding: 14px; }
+    .quick-modal-overlay { padding: 10px; }
+
+    /* Tabla en tarjetas: cada fila es una tarjeta y cada celda muestra su título a la izquierda.
+       Los títulos los pone el JavaScript del encabezado (atributo data-label) */
+    .tabla-cards, .tabla-cards tbody, .tabla-cards tr, .tabla-cards td { display: block; width: 100%; }
+    .tabla-cards thead { display: none; }
+    .tabla-cards tr { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .tabla-cards tr:last-child { border-bottom: none; }
+    .tabla-cards td { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 6px 0; text-align: right; }
+    .tabla-cards td::before { content: attr(data-label); color: var(--text-dim); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; text-align: left; flex-shrink: 0; }
+    .tabla-cards td[colspan]::before, .tabla-cards td:not([data-label])::before { content: none; }
+    .tabla-cards td[colspan] { display: block; text-align: center; }
+}
+
 @media (max-width: 520px) {
     .stats-grid { grid-template-columns: 1fr; }
+    .btn-logout { font-size: 0; gap: 0; padding: 8px 10px; } /* en celular el botón de cerrar sesión queda solo con el ícono */
+    .toast, .toast-error { left: 14px; right: 14px; bottom: 14px; }
     .topbar-user > div { display: none; } /* oculto nombre/rol, se queda solo el avatar */
 }
 
@@ -547,7 +584,9 @@ tbody tr { transition: background 0.12s ease, box-shadow 0.12s ease; }
 @media (max-width: 768px)  { .stats-grid { grid-template-columns: 1fr 1fr; } }
 
 /* ── SCROLLBAR ───────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; }
+html { color-scheme: dark; } /* controles nativos (scroll, desplegables) en oscuro */
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 

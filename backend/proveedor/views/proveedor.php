@@ -1,13 +1,13 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>📦 Proveedores</h1>
+    <h1><?= icono('caja') ?> Proveedores</h1>
     <button type="button" class="btn btn-primary" onclick="abrirProveedor()">+ Nuevo Proveedor</button>
 </div>
 
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead>
                 <tr>
                     <th>#</th>
@@ -78,7 +78,7 @@
                     <label>Email</label>
                     <input type="text" name="email" id="pv-email">
                 </div>
-                <button type="submit" class="btn btn-primary" id="pv-submit">✅ Guardar</button>
+                <button type="submit" class="btn btn-primary" id="pv-submit">Guardar</button>
             </form>
         </div>
     </div>
@@ -93,8 +93,8 @@ function abrirProveedor(p) {
 
     if (p && p.id) {
         form.action = 'index.php?page=proveedores&action=edit&id=' + p.id;
-        titulo.textContent = '✏️ Editar Proveedor';
-        submit.textContent = '💾 Actualizar';
+        titulo.textContent = 'Editar Proveedor';
+        submit.textContent = 'Actualizar';
         document.getElementById('pv-nombre').value   = p.nombre_proveedor || '';
         document.getElementById('pv-cuit').value     = p.cuit || '';
         document.getElementById('pv-telefono').value = p.telefono || '';
@@ -102,7 +102,7 @@ function abrirProveedor(p) {
     } else {
         form.action = 'index.php?page=proveedores&action=create';
         titulo.textContent = '＋ Nuevo Proveedor';
-        submit.textContent = '✅ Guardar';
+        submit.textContent = 'Guardar';
         form.reset();
     }
     abrirModal('modal-proveedor');

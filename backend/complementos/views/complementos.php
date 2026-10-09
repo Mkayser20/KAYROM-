@@ -1,11 +1,11 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>⚙️ Complementos</h1>
+    <h1><?= icono('ajustes') ?> Complementos</h1>
 </div>
 
 <?php if (!empty($_GET['error'])): ?>
-    <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;">⚠️ <?= htmlspecialchars($_GET['error']) ?></div>
+    <div class="toast-error" style="position:static;display:flex;margin-bottom:16px;"><?= htmlspecialchars($_GET['error']) ?></div>
 <?php endif; ?>
 
 <div class="dashboard-grid">
@@ -13,7 +13,7 @@
     <!-- ───── MODELOS DE VEHÍCULO ───── -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🚘 Modelos de Vehículo</div>
+            <div class="panel-title"><?= icono('vehiculo', 16) ?> Modelos de Vehículo</div>
             <button type="button" class="btn btn-primary" style="font-size:12px;padding:6px 12px;" onclick="abrirModelo()">＋ Nuevo</button>
         </div>
         <div class="panel-body">
@@ -44,7 +44,7 @@
     <!-- ───── TIPOS DE VEHÍCULO ───── -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title">🏷️ Tipos de Vehículo</div>
+            <div class="panel-title"><?= icono('etiqueta', 16) ?> Tipos de Vehículo</div>
             <button type="button" class="btn btn-primary" style="font-size:12px;padding:6px 12px;" onclick="abrirTipo()">＋ Nuevo</button>
         </div>
         <div class="panel-body">
@@ -88,7 +88,7 @@
                     <label>Nombre del Modelo</label>
                     <input type="text" name="nombre" id="modelo-nombre" placeholder="Ej: Toyota Hilux">
                 </div>
-                <button type="submit" class="btn btn-primary" id="modelo-submit">✅ Guardar</button>
+                <button type="submit" class="btn btn-primary" id="modelo-submit">Guardar</button>
             </form>
         </div>
     </div>
@@ -108,7 +108,7 @@
                     <label>Nombre del Tipo</label>
                     <input type="text" name="nombre" id="tipo-nombre" placeholder="Ej: Automóvil, Moto, Camioneta">
                 </div>
-                <button type="submit" class="btn btn-primary" id="tipo-submit">✅ Guardar</button>
+                <button type="submit" class="btn btn-primary" id="tipo-submit">Guardar</button>
             </form>
         </div>
     </div>
@@ -121,7 +121,7 @@ function abrirModelo(m) {
     const titulo = document.getElementById('modelo-titulo');
     if (m && m.id) {
         form.action = 'index.php?page=complementos&action=editarModelo';
-        titulo.textContent = '✏️ Editar Modelo';
+        titulo.textContent = 'Editar Modelo';
         document.getElementById('modelo-id').value = m.id;
         document.getElementById('modelo-nombre').value = m.nombre || '';
     } else {
@@ -140,7 +140,7 @@ function abrirTipo(t) {
     const titulo = document.getElementById('tipo-titulo');
     if (t && t.id) {
         form.action = 'index.php?page=complementos&action=editarTipo';
-        titulo.textContent = '✏️ Editar Tipo';
+        titulo.textContent = 'Editar Tipo';
         document.getElementById('tipo-id').value = t.id;
         document.getElementById('tipo-nombre').value = t.nombre || '';
     } else {

@@ -74,6 +74,24 @@ class PedidoController {
         exit;
     }
 
+    // Cambiar el estado de un pedido (Pendiente / Cancelado) desde el desplegable del listado
+    public function cambiarEstado() {
+        $id     = (int)($_POST['id'] ?? 0);
+        $estado = $_POST['estado'] ?? '';
+
+        // si algo falla, devuelvo el error en texto plano
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$this->model->cambiarEstado($id, $estado)) {
+            http_response_code(422);
+            echo 'No se pudo cambiar el estado del pedido.';
+            exit;
+        }
+
+        $this->auditoria->registrar('EDITAR', 'Pedidos', "Pedido #$id cambiado a: $estado", $id);
+
+        echo 'ok';
+        exit;
+    }
+
     // RECIBIR un pedido: suma al stock lo que se pidió (antes esto se llamaba "entregar")
     public function recibir() {
         $id = (int)($_GET['id'] ?? 0);

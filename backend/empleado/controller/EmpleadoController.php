@@ -115,6 +115,38 @@ class EmpleadoController {
         require_once 'backend/empleado/views/empleado_form.php';
     }
 
+    // Activar / desactivar un empleado desde el check de la tabla (llega por AJAX)
+    public function cambiarActivo() {
+        $id     = (int)($_POST['id'] ?? 0);
+        $activo = !empty($_POST['activo']) ? 1 : 0; // "1" = activo, "0" = inactivo
+
+        // El admin no puede desactivarse a sí mismo (se quedaría sin poder entrar)
+        if ($id === (int)($_SESSION['usuario_id'] ?? 0) && !$activo) {
+            http_response_code(422);
+            echo 'No podés desactivar tu propio usuario.';
+            exit;
+        }
+
+        $empleado = $this->model->getById($id);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$empleado || !$this->model->cambiarActivo($id, $activo)) {
+            http_response_code(422);
+            echo 'No se pudo cambiar el estado del empleado.';
+            exit;
+        }
+
+        // AUDITORÍA: Activación / desactivación
+        $nombreCompleto = trim(($empleado['nombre'] ?? '') . ' ' . ($empleado['apellido'] ?? ''));
+        $this->auditoria->registrar(
+            'EDITAR',
+            'Empleados',
+            "Empleado $nombreCompleto " . ($activo ? 'activado' : 'desactivado'),
+            $id
+        );
+
+        echo 'ok';
+        exit;
+    }
+
     public function delete() {
         $id = $_GET['id'] ?? 0;
 

@@ -21,10 +21,10 @@ require_once 'compartidoCREO/views/encabezado.php';
             <div class="form-group">
                 <label>Estado del Pedido</label>
                 <select name="estado_pedido">
-                    <option value="Pendiente">📋 Pendiente</option>
-                    <option value="En proceso">🔄 En proceso</option>
-                    <option value="Entregado">✅ Entregado</option>
-                    <option value="Cancelado">❌ Cancelado</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En proceso">En proceso</option>
+                    <option value="Entregado">Entregado</option>
+                    <option value="Cancelado">Cancelado</option>
                 </select>
             </div>
             <div class="form-group">
@@ -49,7 +49,7 @@ require_once 'compartidoCREO/views/encabezado.php';
             <input type="text" name="detalle_pedido" placeholder="Descripción del pedido">
         </div>
         
-        <button type="submit" class="btn btn-primary">✅ Registrar Pedido</button>
+        <button type="submit" class="btn btn-primary">Registrar Pedido</button>
 
     <script>
         function mostrarError(mensaje) {

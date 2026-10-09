@@ -3,13 +3,13 @@ require_once 'compartidoCREO/views/encabezado.php';
 ?>
 
 <div class="page-header">
-    <h1>🔄 Movimientos de stock</h1>
+    <h1><?= icono('movimientos') ?> Movimientos de stock</h1>
     <a href="index.php?page=movimientos&action=create" class="btn btn-primary">＋ Movimiento manual</a>
 </div>
 
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead>
                 <tr>
                     <th>#</th><th>Fecha</th><th>Tipo</th><th>Repuesto</th><th>Cantidad</th><th>Origen</th><th>Usuario</th><th>Descripción</th>
@@ -21,9 +21,9 @@ require_once 'compartidoCREO/views/encabezado.php';
                 <?php else: foreach ($data['movimientos'] as $m): ?>
                 <?php
                 // Color e ícono según el tipo de movimiento
-                if ($m['tipo'] === 'Entrada')     { $tipoCls = 'disponible'; $tipoIcon = '📥'; }
-                elseif ($m['tipo'] === 'Salida')  { $tipoCls = 'vendido';    $tipoIcon = '📤'; }
-                else                              { $tipoCls = 'reparacion'; $tipoIcon = '🔁'; }
+                if ($m['tipo'] === 'Entrada')     { $tipoCls = 'disponible'; $tipoIcon = '↓'; }
+                elseif ($m['tipo'] === 'Salida')  { $tipoCls = 'vendido';    $tipoIcon = '↑'; }
+                else                              { $tipoCls = 'reparacion'; $tipoIcon = '⇄'; }
 
                 // Texto de origen: "Pedido #12", "Orden de Trabajo #5", "Manual"...
                 $origen = $m['origen'] ?? 'Manual';

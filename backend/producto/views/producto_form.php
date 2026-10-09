@@ -6,7 +6,7 @@ $action = $isEdit ? "index.php?page=productos&action=edit&id={$p['id']}" : "inde
 $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','Carrocería','Motor','Transmisión','Otro'];
 ?>
 <div class="page-header">
-    <h1><?= $isEdit ? '✏️ Editar Producto' : '＋ Nuevo Producto' ?></h1>
+    <h1><?= $isEdit ? 'Editar Producto' : '＋ Nuevo Producto' ?></h1>
     <a href="index.php?page=productos" class="btn btn-ghost">← Volver</a>
 </div>
 <div class="form-card">
@@ -45,7 +45,7 @@ $tipos = ['Repuesto','Lubricante','Filtro','Freno','Suspensión','Eléctrico','C
             <label>Alerta de stock bajo (mínimo)</label>
             <input type="number" name="alerta_stockBajo" value="<?= $p['alerta_stockBajo'] ?? 5 ?>" min="0">
         </div>
-        <button type="submit" class="btn btn-primary"><?= $isEdit ? '💾 Actualizar' : '✅ Guardar' ?></button>
+        <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
 
     <script>
         function mostrarError(mensaje) {

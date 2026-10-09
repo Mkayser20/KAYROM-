@@ -1,13 +1,13 @@
 <?php require_once 'compartidoCREO/views/encabezado.php'; ?>
 
 <div class="page-header">
-    <h1>📦 Pedidos a proveedores</h1>
+    <h1><?= icono('caja') ?> Pedidos a proveedores</h1>
     <button type="button" class="btn btn-primary" onclick="abrirModal('modal-nuevo-pedido')">＋ Nuevo Pedido</button>
 </div>
 
 <div class="panel">
     <div class="panel-body">
-        <table>
+        <table class="tabla-cards">
             <thead>
                 <tr><th>#</th><th>Fecha</th><th>N° Único</th><th>Proveedor</th><th>Vehículo</th><th>Estado</th><th>Responsable</th><th>Cant.</th><th>Detalle</th><th>Acciones</th></tr>
             </thead>
@@ -28,7 +28,28 @@
                     <td><strong>#<?= $p['numero_unico'] ?></strong></td>
                     <td style="color:var(--text-muted);"><?= htmlspecialchars($p['nombre_proveedor'] ?? '—') ?></td>
                     <td style="color:var(--text-muted);"><?= htmlspecialchars($p['patente'] ?? '—') ?></td>
-                    <td><span class="badge-status <?= $ecls ?>"><?= $recibido ? 'Recibido' : htmlspecialchars($p['estado_pedido']) ?></span></td>
+                    <td>
+                        <?php if ($recibido): ?>
+                            <!-- Un pedido recibido ya sumó stock: queda fijo, solo se muestra el badge -->
+                            <span class="badge-status <?= $ecls ?>">Recibido</span>
+                        <?php else: ?>
+                            <?php
+                            // Opciones del desplegable (valor que se guarda => texto que se ve)
+                            $opciones = ['Pendiente' => 'Pendiente', 'Entregado' => 'Recibido', 'Cancelado' => 'Cancelado'];
+                            // Si es un estado viejo (ej: "En proceso"), lo agrego para que se vea bien
+                            if (!empty($p['estado_pedido']) && !isset($opciones[$p['estado_pedido']])) {
+                                $opciones[$p['estado_pedido']] = $p['estado_pedido'];
+                            }
+                            ?>
+                            <select class="estado-select <?= $ecls ?>"
+                                    data-actual="<?= htmlspecialchars($p['estado_pedido'] ?? '') ?>"
+                                    onchange="cambiarEstadoPedido(this, <?= $p['id'] ?>)">
+                                <?php foreach ($opciones as $valor => $texto): ?>
+                                <option value="<?= htmlspecialchars($valor) ?>" <?= ($p['estado_pedido'] ?? '') === $valor ? 'selected' : '' ?>><?= htmlspecialchars($texto) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($p['responsable_pedido'] ?? '-') ?></td>
                     <td><?= $p['cantidad'] ?></td>
                     <td style="color:var(--text-muted);font-size:12px;"><?= htmlspecialchars(substr($p['detalle_pedido'] ?? '-', 0, 60)) ?></td>
@@ -38,7 +59,7 @@
                             <!-- RECIBIR: suma lo pedido al stock -->
                             <a href="index.php?page=pedidos&action=recibir&id=<?= $p['id'] ?>"
                                onclick="return confirmarAccion(this.href, '¿Llegó este pedido? Se va a sumar al stock lo que se pidió.')"
-                               class="action-edit" title="Recibir pedido (suma al stock)">📥</a>
+                               class="action-edit" title="Recibir pedido (suma al stock)"><?= icono('recibir', 14) ?></a>
                             <?php endif; ?>
                             <?php if(!$recibido): ?>
                             <a href="index.php?page=pedidos&action=delete&id=<?= $p['id'] ?>"
@@ -88,7 +109,7 @@
                 <div id="renglones-pedido"></div>
                 <button type="button" class="btn btn-ghost" onclick="agregarRenglonPedido()" style="margin:6px 0 14px;">＋ Agregar otro repuesto</button>
 
-                <button type="submit" class="btn btn-primary">✅ Registrar Pedido</button>
+                <button type="submit" class="btn btn-primary">Registrar Pedido</button>
             </form>
         </div>
     </div>
@@ -109,12 +130,34 @@
             <input type="number" name="cantidad[]" value="1" min="1">
         </div>
         <div class="form-group">
-            <button type="button" class="btn btn-ghost" onclick="this.closest('.renglon-pedido').remove()" title="Quitar">✖</button>
+            <button type="button" class="btn btn-ghost" onclick="this.closest('.renglon-pedido').remove()" title="Quitar">&times;</button>
         </div>
     </div>
 </template>
 
 <script>
+// Cambia el estado del pedido desde el desplegable
+function cambiarEstadoPedido(select, id) {
+    // "Recibido" suma al stock, así que usa el botón de recibir de siempre (con su confirmación)
+    if (select.value === 'Entregado') {
+        select.value = select.dataset.actual; // lo dejo como estaba hasta que confirmen
+        confirmarAccion('index.php?page=pedidos&action=recibir&id=' + id,
+                        '¿Llegó este pedido? Se va a sumar al stock lo que se pidió.');
+        return;
+    }
+    guardarEstadoPedido(select, id);
+}
+
+// Para Pendiente y Cancelado: se guarda y se recarga para actualizar los botones de la fila
+async function guardarEstadoPedido(select, id) {
+    const ok = await enviarCambio('index.php?page=pedidos&action=cambiarEstado', { id: id, estado: select.value });
+    if (ok) {
+        window.location.href = 'index.php?page=pedidos&msg=updated';
+    } else {
+        select.value = select.dataset.actual; // si falló, vuelvo al estado anterior
+    }
+}
+
 // Agrega un renglón vacío al formulario del pedido
 function agregarRenglonPedido() {
     const molde = document.getElementById('tpl-renglon-pedido');

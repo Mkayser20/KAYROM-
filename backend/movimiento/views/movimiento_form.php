@@ -10,7 +10,7 @@ require_once 'compartidoCREO/views/encabezado.php';
 <div class="form-card">
     <form method="POST" action="index.php?page=movimientos&action=create">
         <!-- Si el StockService devolvió un error (ej: stock insuficiente), se muestra acá -->
-        <div id="toast-error" class="toast-error"><?= !empty($data['error']) ? '⚠️ ' . htmlspecialchars($data['error']) : '' ?></div>
+        <div id="toast-error" class="toast-error"><?= !empty($data['error']) ? '' . htmlspecialchars($data['error']) : '' ?></div>
 
         <div class="form-group">
             <label>Repuesto</label>
@@ -26,8 +26,8 @@ require_once 'compartidoCREO/views/encabezado.php';
             <div class="form-group">
                 <label>Tipo de Movimiento</label>
                 <select name="tipo">
-                    <option value="Entrada">📥 Entrada (suma stock)</option>
-                    <option value="Salida">📤 Salida (resta stock)</option>
+                    <option value="Entrada">Entrada (suma stock)</option>
+                    <option value="Salida">Salida (resta stock)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -41,7 +41,7 @@ require_once 'compartidoCREO/views/encabezado.php';
             <input type="text" name="descripcion" placeholder="Ej: Se rompió en el taller / Llegó sin pedido previo">
         </div>
 
-        <button type="submit" class="btn btn-primary">✅ Registrar Movimiento</button>
+        <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
     </form>
 </div>
 
