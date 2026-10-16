@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../auditoria/AuditoriaModel.php';
 
-// Controlador de Clientes: ABM + ficha con los vehículos de cada uno
+// Controlador de Clientes ABM + ficha con los vehículos de cada uno
 class ClienteController {
     private $model;
     private $auditoria;

@@ -7,13 +7,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="public/css/auth.css">
+    <!-- Alertas modernas (SweetAlert2 + tema del sistema). La lógica está en public/js/alertas.js -->
+    <link rel="stylesheet" href="public/vendor/sweetalert2/sweetalert2.min.css">
+    <link rel="stylesheet" href="public/css/alertas.css">
+    <script src="public/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="public/js/alertas.js"></script>
 </head>
 <body>
 
 <div class="auth-card">
 
     <div class="auth-logo">
-        <img src="public/img/dpv.png" alt="Logo" onerror="this.style.display='none'">
+        <img src="public/img/logo-kayrom.png" alt="KAYROM, de Migue Romero y Marcos Kayser" width="280" height="176">
     </div>
 
     <hr class="auth-divider">
@@ -138,7 +143,7 @@ document.getElementById('resetForm')?.addEventListener('submit', function(e) {
     const p2 = document.getElementById('confirmar_password').value;
     if (p1 !== p2) {
         e.preventDefault();
-        alert('Las contraseñas no coinciden.');
+        notificar('error', 'Las contraseñas no coinciden.');
     }
 });
 </script>

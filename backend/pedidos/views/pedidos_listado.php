@@ -58,7 +58,7 @@
                             <?php if(!$recibido && $estado !== 'cancelado'): ?>
                             <!-- RECIBIR: suma lo pedido al stock -->
                             <a href="index.php?page=pedidos&action=recibir&id=<?= $p['id'] ?>"
-                               onclick="return confirmarAccion(this.href, '¿Llegó este pedido? Se va a sumar al stock lo que se pidió.')"
+                               onclick="return confirmarAccion(this.href, '¿Llegó este pedido? Se va a sumar al stock lo que se pidió.', {titulo: 'Recibir pedido', confirmar: 'Sí, recibir'})"
                                class="action-edit" title="Recibir pedido (suma al stock)"><?= icono('recibir', 14) ?></a>
                             <?php endif; ?>
                             <?php if(!$recibido): ?>
@@ -142,7 +142,8 @@ function cambiarEstadoPedido(select, id) {
     if (select.value === 'Entregado') {
         select.value = select.dataset.actual; // lo dejo como estaba hasta que confirmen
         confirmarAccion('index.php?page=pedidos&action=recibir&id=' + id,
-                        '¿Llegó este pedido? Se va a sumar al stock lo que se pidió.');
+                        '¿Llegó este pedido? Se va a sumar al stock lo que se pidió.',
+                        {titulo: 'Recibir pedido', confirmar: 'Sí, recibir'});
         return;
     }
     guardarEstadoPedido(select, id);

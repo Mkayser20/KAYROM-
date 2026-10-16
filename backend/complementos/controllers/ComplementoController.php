@@ -22,7 +22,7 @@ class ComplementoController {
         require_once 'backend/complementos/views/complementos.php';
     }
 
-    // ---------- acciones de Modelos ----------
+    //  acciones de Modelos 
 
     public function crearModelo() {
         $resultado = $this->model->crearModelo($_POST['nombre'] ?? '');

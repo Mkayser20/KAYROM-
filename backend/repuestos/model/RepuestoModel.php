@@ -46,6 +46,19 @@ class RepuestoModel {
         return $stmt->execute();
     }
 
+    //guardar (o quitar, pasando null) la imagen de un repuesto: se guarda solo el nombre del archivo
+    public function setImagen($id, $nombreArchivo) {
+        $stmt = $this->db->prepare("UPDATE repuestos SET imagen=? WHERE id=?");
+        $stmt->bind_param('si', $nombreArchivo, $id);
+        return $stmt->execute();
+    }
+
+    //saber si la tabla ya tiene la columna de imagen (se agrega con migracion_imagen_repuestos.sql)
+    public function tieneColumnaImagen() {
+        $result = $this->db->query("SHOW COLUMNS FROM repuestos LIKE 'imagen'");
+        return $result && $result->num_rows > 0;
+    }
+
     //eliminar un repuesto por su ID
     public function delete($id) {
         $stmt = $this->db->prepare("DELETE FROM repuestos WHERE id=?");

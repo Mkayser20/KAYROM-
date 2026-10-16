@@ -202,9 +202,16 @@ document.querySelector('#modal-nueva-orden form').addEventListener('submit', fun
         }
     }
     if (faltantes.length > 0) {
-        if (!confirm(`Falta stock de: ${faltantes.join(', ')}. Se va a generar un pedido automático al proveedor por la diferencia. ¿Confirmás?`)) {
-            e.preventDefault();
-        }
+        // freno el envío, pregunto con el diálogo moderno y recién si confirma mando el formulario
+        e.preventDefault();
+        const formulario = this;
+        preguntar(
+            'Falta stock de algunos repuestos',
+            `${faltantes.join(', ')}. Se va a generar un pedido automático al proveedor por la diferencia.`,
+            { confirmar: 'Sí, continuar' }
+        ).then(function (ok) {
+            if (ok) { formulario.submit(); }
+        });
     }
 });
 </script>

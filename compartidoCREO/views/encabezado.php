@@ -51,10 +51,15 @@ $esAdmin = ($rolUsuario === 'admin');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kayrom — Sistema de Inventario</title>
+    <title>KAYROM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="public/css/style.css">
+    <!-- Alertas modernas (SweetAlert2 + tema del sistema). La lógica está en public/js/alertas.js -->
+    <link rel="stylesheet" href="public/vendor/sweetalert2/sweetalert2.min.css">
+    <link rel="stylesheet" href="public/css/alertas.css">
+    <script src="public/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="public/js/alertas.js"></script>
 </head>
 <body>
 
@@ -66,15 +71,12 @@ $esAdmin = ($rolUsuario === 'admin');
 <aside class="sidebar" id="sidebar">
 
     <!-- Logo -->
+    <!-- Marca: emblema (auto + engranaje) y nombre. Los dibujos están en public/img -->
     <div class="sidebar-logo">
-        <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-                <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-            </svg>
-        </div>
+        <img class="logo-emblema" src="public/img/logo-emblema.png" alt="" width="84" height="40">
         <div class="sidebar-brand">
-            <span class="name">KayRom</span>
-            <span class="tag">Taller &amp; Repuestos</span>
+            <img class="logo-nombre" src="public/img/logo-nombre.png" alt="KAYROM" width="116" height="20">
+            <span class="tag">Sistema de inventario</span>
         </div>
     </div>
 
@@ -164,7 +166,7 @@ $esAdmin = ($rolUsuario === 'admin');
     <?php endif; ?>
 
     <!-- 6. Ayuda - lo ven todos -->
-    <a href="#" class="nav-icon-btn">
+    <a href="index.php?page=ayuda<?= ($activePage && $activePage !== 'ayuda') ? '&modulo=' . urlencode($activePage) : '' ?>" class="nav-icon-btn <?= $activePage==='ayuda'?'active':'' ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span class="tooltip">Ayuda</span>
     </a>
@@ -182,62 +184,46 @@ $esAdmin = ($rolUsuario === 'admin');
     </button>
     <div class="topbar-title">Sistema de Inventario de Vehículos y Repuestos</div>
     <div class="topbar-right">
-        <div class="topbar-user">
-            <div style="text-align:right; line-height:1.3;">
-                <div style="font-size:13px; color:var(--text-primary); font-weight:600;">
-                    <?= htmlspecialchars($nombreUsuario) ?>
+        <!-- Menú de usuario: cápsula con avatar, nombre y rol. Al tocarla se abre el menú con "Cerrar sesión" -->
+        <div class="menu-usuario" id="menu-usuario">
+            <button type="button" class="chip-usuario" id="chip-usuario" onclick="toggleMenuUsuario(event)"
+                    aria-haspopup="true" aria-expanded="false">
+                <span class="avatar">
+                    <?= strtoupper(substr($nombreUsuario, 0, 1)) ?>
+                    <span class="punto-estado" title="Sesión activa"></span>
+                </span>
+                <span class="info-usuario">
+                    <span class="nombre-usuario"><?= htmlspecialchars($nombreUsuario) ?></span>
+                    <?php if ($rolUsuario): ?>
+                    <span class="rol-usuario"><?= htmlspecialchars($rolUsuario) ?></span>
+                    <?php endif; ?>
+                </span>
+                <svg class="flecha" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+
+            <div class="desplegable-usuario" id="desplegable-usuario">
+                <div class="cabecera-usuario">
+                    <span class="avatar avatar-lg">
+                        <?= strtoupper(substr($nombreUsuario, 0, 1)) ?>
+                        <span class="punto-estado"></span>
+                    </span>
+                    <div>
+                        <div class="nom"><?= htmlspecialchars($nombreUsuario) ?></div>
+                        <div class="sub">Sesión activa<?= $rolUsuario ? ' · ' . htmlspecialchars($rolUsuario === 'admin' ? 'Administrador' : ucfirst($rolUsuario)) : '' ?></div>
+                    </div>
                 </div>
-                <?php if ($rolUsuario): ?>
-                <div style="font-size:11px; color:var(--accent-blue-bright); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.04em;">
-                    <?= htmlspecialchars($rolUsuario) ?>
-                </div>
-                <?php endif; ?>
-            </div>
-            <div class="avatar">
-                <?= strtoupper(substr($nombreUsuario, 0, 1)) ?>
-                <span class="badge">!</span>
+                <a href="index.php?page=logout" onclick="cerrarMenuUsuario(); return confirmarAccion(this.href, '¿Cerrar sesión?')">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Cerrar sesión
+                </a>
             </div>
         </div>
-        <a href="index.php?page=logout" class="btn-logout"
-           onclick="return confirmarAccion(this.href, '¿Cerrar sesión?')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Cerrar Sesión
-        </a>
     </div>
 
 </header>
     
-    <div id="modal-overlay" class="modal-overlay">
-    <div class="modal-box">
-        <p id="modal-mensaje" class="modal-mensaje"></p>
-        <div class="modal-botones">
-            <button type="button" id="btn-modal-cancelar" class="btn-cancelar">Cancelar</button>
-            <button type="button" id="btn-modal-aceptar" class="btn-aceptar">Aceptar</button>
-        </div>
-    </div>
-    </div>
-                    
     <script>
-function confirmarAccion(urlDestino, mensaje) {
-    const overlay = document.getElementById('modal-overlay');
-    const mensajeElemento = document.getElementById('modal-mensaje');
-    const btnAceptar = document.getElementById('btn-modal-aceptar');
-    const btnCancelar = document.getElementById('btn-modal-cancelar');
-    
-    mensajeElemento.textContent = mensaje;
-    
-    overlay.style.display = 'flex';
-    
-    btnAceptar.onclick = function() {
-        window.location.href = urlDestino;
-    };
-    
-    btnCancelar.onclick = function() {
-        overlay.style.display = 'none';
-    };
-    
-    return false;
-    }
+// confirmarAccion() y el resto de las alertas se definen en public/js/alertas.js (SweetAlert2)
 
 // Modales de alta rápida (Nuevo Vehículo / Repuesto / Pedido) desde el listado
 function abrirModal(id) {
@@ -258,6 +244,31 @@ function cerrarSidebar() {
 }
 // Si tocás un link del menú estando en mobile, se cierra solo (no hace falta cerrarlo a mano)
 document.querySelectorAll('.sidebar-nav a').forEach(link => link.addEventListener('click', cerrarSidebar));
+
+// Menú de usuario (arriba a la derecha): se abre/cierra al tocar la cápsula; se cierra con clic afuera o con Escape
+function toggleMenuUsuario(event) {
+    event.stopPropagation(); // para que el clic no llegue al "cerrar al hacer clic afuera"
+    const menu  = document.getElementById('desplegable-usuario');
+    const chip  = document.getElementById('chip-usuario');
+    const abrir = !menu.classList.contains('abierto');
+    menu.classList.toggle('abierto', abrir);
+    chip.classList.toggle('abierto', abrir);
+    chip.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+}
+function cerrarMenuUsuario() {
+    const menu = document.getElementById('desplegable-usuario');
+    const chip = document.getElementById('chip-usuario');
+    if (!menu) { return; }
+    menu.classList.remove('abierto');
+    chip.classList.remove('abierto');
+    chip.setAttribute('aria-expanded', 'false');
+}
+document.addEventListener('click', function (e) {
+    if (!e.target.closest('#menu-usuario')) { cerrarMenuUsuario(); }
+});
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { cerrarMenuUsuario(); }
+});
 
 // Combo con buscador (autocompletar): arma un input + dropdown a partir de una lista cerrada
 // de opciones {id, label}. Sigue siendo "elegir de la lista", no texto libre: el valor real
@@ -325,16 +336,13 @@ async function enviarModalForm(form, event, toastId) {
         }
 
         // Si no redirigió, el cuerpo de la respuesta es el mensaje de error en texto plano
+        // el servidor devuelve el motivo del error como texto corto; si viniera algo raro
+        // (por ejemplo una página de error de PHP entera) muestro un mensaje genérico
         const mensaje = (await respuesta.text()).trim();
-        const toast = document.getElementById(toastId);
-        if (toast) {
-            toast.textContent = '' + (mensaje || 'Ocurrió un error, probá de nuevo.');
-        } else {
-            alert(mensaje || 'Ocurrió un error, probá de nuevo.');
-        }
+        const esTextoCorto = mensaje !== '' && mensaje.length < 200 && mensaje.indexOf('<') === -1;
+        notificar('error', esTextoCorto ? mensaje : 'Ocurrió un error, probá de nuevo.');
     } catch (err) {
-        const toast = document.getElementById(toastId);
-        if (toast) toast.textContent = 'Error de conexión, probá de nuevo.';
+        notificar('error', 'Error de conexión, probá de nuevo.');
     } finally {
         boton.disabled = false;
         boton.textContent = textoOriginal;
@@ -356,7 +364,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Muestra un aviso chiquito abajo a la derecha (usa el mismo estilo del toast del sistema,
 // que se desvanece solo con la animación del CSS)
-function mostrarToast(texto) {
+function mostrarToast(texto, tipo) {
+    // con la librería de alertas cargada (public/js/alertas.js) se muestra la píldora; el tipo por defecto es éxito
+    if (window.notificar) { notificar(tipo || 'success', texto); return; }
+    // respaldo: si la librería no cargó, queda el aviso de antes
     const aviso = document.createElement('div');
     aviso.className = 'toast';
     aviso.textContent = texto;
@@ -372,9 +383,9 @@ async function enviarCambio(url, datos) {
         if (respuesta.ok) return true;
         // el servidor devuelve el motivo del error en texto plano
         const mensaje = (await respuesta.text()).trim();
-        mostrarToast('' + (mensaje || 'No se pudo guardar el cambio.'));
+        mostrarToast(mensaje || 'No se pudo guardar el cambio.', 'error');
     } catch (err) {
-        mostrarToast('Error de conexión, probá de nuevo.');
+        mostrarToast('Error de conexión, probá de nuevo.', 'error');
     }
     return false;
 }

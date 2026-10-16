@@ -33,6 +33,7 @@ require_once 'backend/pedidos/controller/PedidoController.php';
 require_once 'backend/proveedor/controllers/ProveedorController.php';
 require_once 'backend/carrito/models/CarritoModels.php';
 require_once 'backend/carrito/controllers/CarritoControllers.php';
+require_once 'backend/ayuda/controllers/AyudaController.php';
 
 //paginas que se pueden ver sin estar logueado
 $paginasPublicas = ['iniciar_sesion', 'logout', 'recuperar_clave', 'restablecer_clave'];
@@ -57,7 +58,7 @@ if (in_array($page, $paginasAdmin) && ($_SESSION['rol'] ?? '') !== 'admin') {
 if (!empty($_SESSION['usuario_id']) && ($_SESSION['rol'] ?? '') !== 'admin') {
 
     // Páginas que cualquier usuario logueado puede ver (sin importar permisos)
-    $paginasLibres = ['inicio', 'logout', 'iniciar_sesion'];
+    $paginasLibres = ['inicio', 'logout', 'iniciar_sesion', 'ayuda'];
 
     // Módulos asignables por checkbox: si el page coincide, hay que chequear
     $modulosAsignables = ['vehiculos', 'repuestos', 'pedidos', 'proveedores', 'productos', 'movimientos', 'clientes'];
@@ -167,6 +168,10 @@ switch ($page) {
 
     case 'auditorias':
         (new AuditoriaController())->index();
+        break;
+
+    case 'ayuda':
+        (new AyudaController())->index();
         break;
 
     //si la pagina no coincide con ninguna de las anteriores, muestra el inicio o el login segun haya sesion o no

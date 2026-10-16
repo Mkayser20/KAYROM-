@@ -12,13 +12,13 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
 </div>
 
 <div class="form-card">
-    <form method="POST" action="<?= $action ?>">
+    <form method="POST" action="<?= $action ?>" enctype="multipart/form-data">
         <div class="form-group">
             <label>Nombre</label>
             <input type="text" name="nombre" value="<?= htmlspecialchars($r['nombre'] ?? '') ?>"  placeholder="Frenos de Disco, Bujías...">
         </div>
 
-        <div id="toast-error" class="toast-error"></div>
+        <div id="toast-error" class="toast-error"><?= htmlspecialchars($data['error'] ?? '') ?></div>
 
         <div class="form-row">
             <div class="form-group">
@@ -58,6 +58,17 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
                 <label>Stock Mínimo</label>
                 <input type="number" name="stock_minimo" value="<?= $r['stock_minimo'] ?? 5 ?>" min="0">
             </div>
+        </div>
+        <div class="form-group">
+            <label>Imagen (opcional)</label>
+            <?php if (!empty($r['imagen_url'])): ?>
+            <img src="<?= htmlspecialchars($r['imagen_url']) ?>" alt="Imagen actual" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid var(--border);display:block;margin-bottom:10px;">
+            <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <input type="checkbox" name="quitar_imagen" value="1" data-optional="1"> Quitar la imagen actual
+            </label>
+            <?php endif; ?>
+            <input type="file" name="imagen" accept="image/jpeg,image/png,image/webp" data-optional="1">
+            <small style="color:var(--text-dim);">JPG, PNG o WebP · máx. 2 MB</small>
         </div>
         <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Actualizar' : 'Guardar' ?></button>
 

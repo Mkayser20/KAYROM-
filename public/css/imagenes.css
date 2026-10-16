@@ -1,0 +1,129 @@
+/* ── IMÁGENES: miniaturas, tarjetas, visor y cuadro para subir la foto ──────────── */
+/* Se usa en el módulo de Repuestos (y sirve para cualquier otra pantalla con imágenes) */
+
+/* El atributo "hidden" tiene que ganarle a los display de abajo */
+.grid-rep[hidden], .panel[hidden], .btn-quitar[hidden], .visor[hidden] { display: none !important; }
+
+/* ── Selector Lista / Tarjetas ── */
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-left: auto; align-self: flex-end; flex-shrink: 0; }
+.seg button { display: flex; align-items: center; gap: 7px; padding: 9px 14px; background: transparent; border: none; color: var(--text-muted); font: 600 12.5px var(--font-body); cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
+.seg button:hover { color: var(--text-primary); }
+.seg button.on { background: rgba(59,130,246,0.15); color: #93C5FD; }
+.seg button:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(59,130,246,0.55); }
+
+/* ── Miniatura en la tabla ── */
+/* el título de la columna sale de aria-label (así el JS del modo tarjetas no le pone etiqueta a esta celda) */
+th.th-img::before { content: attr(aria-label); }
+td.td-img { padding: 8px 10px; }
+.thumb {
+    position: relative; width: 48px; height: 48px; padding: 0;
+    border-radius: 11px; border: 1px solid var(--border);
+    background: radial-gradient(circle at 50% 35%, #232833, #0b0c0f);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+    cursor: zoom-in; transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb:hover, .thumb:focus-visible { outline: none; border-color: var(--accent-blue); transform: scale(1.07); box-shadow: 0 0 0 3px rgba(59,130,246,0.2), 0 8px 20px -6px rgba(37,99,235,0.6); }
+.thumb .lupa { position: absolute; right: 3px; bottom: 3px; width: 17px; height: 17px; border-radius: 6px; background: rgba(0,0,0,0.7); color: #93C5FD; display: none; align-items: center; justify-content: center; }
+.thumb:hover .lupa, .thumb:focus-visible .lupa { display: flex; }
+/* sin imagen: cuadro punteado */
+.thumb.vacio { border-style: dashed; color: #475569; cursor: default; background: #07080a; }
+.thumb.vacio:hover { transform: none; box-shadow: none; border-color: #334155; }
+/* cartelito "Doble clic para ampliar" */
+.thumb[data-tip]:hover::after {
+    content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+    background: #000; border: 1px solid var(--accent-blue); color: var(--text-primary);
+    font: 600 11.5px var(--font-body); padding: 6px 10px; border-radius: 8px; white-space: nowrap; z-index: 5;
+}
+
+/* ── Vista de tarjetas ── */
+.grid-rep { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.card-rep { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--bg-card); transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease; }
+.card-rep:hover { border-color: var(--accent-blue); transform: translateY(-3px); box-shadow: 0 14px 30px -10px rgba(37,99,235,0.55); }
+.card-rep .foto { position: relative; width: 100%; height: 150px; padding: 0; border: none; background: radial-gradient(circle at 50% 38%, #262b36, #0b0c0f); display: flex; align-items: center; justify-content: center; cursor: zoom-in; overflow: hidden; }
+.card-rep .foto img { width: 100%; height: 100%; object-fit: cover; }
+.card-rep .foto:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent-blue); }
+.card-rep .foto.vacio { background: #07080a; color: #475569; flex-direction: column; gap: 8px; font: 500 11.5px var(--font-body); cursor: default; border-bottom: 1px dashed var(--border); }
+.card-rep .stock-tag { position: absolute; left: 10px; top: 10px; z-index: 1; }
+/* la etiqueta de stock lleva fondo oscuro para que se lea también sobre fotos claras */
+.card-rep .stock-tag .badge-status { background: rgba(0,0,0,0.72); backdrop-filter: blur(6px); }
+.card-rep .zoom { position: absolute; right: 10px; top: 10px; z-index: 1; width: 28px; height: 28px; border-radius: 9px; background: rgba(0,0,0,0.65); border: 1px solid var(--border); color: #93C5FD; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s ease; }
+.card-rep:hover .zoom, .card-rep .foto:focus-visible .zoom { opacity: 1; }
+.card-rep .cuerpo { padding: 12px 14px 14px; }
+.card-rep .cat { font: 600 10px var(--font-mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-dim); }
+.card-rep .nom { font: 700 15px var(--font-display); color: var(--text-primary); margin: 3px 0 2px; }
+.card-rep .sku { font: 500 11px var(--font-mono); color: var(--text-dim); min-height: 14px; }
+.card-rep .fila { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.card-rep .precio { font: 800 17px var(--font-display); color: var(--text-primary); }
+.card-rep .stk { font: 600 12px var(--font-body); color: var(--text-muted); }
+.card-rep .stk b { color: var(--accent-green); } .card-rep .stk b.bajo { color: var(--accent-orange); } .card-rep .stk b.sin { color: var(--accent-red); }
+.card-rep .acc { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+/* ── Visor (doble clic sobre una imagen) ── */
+.visor { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.84); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px; }
+.visor.abierto { display: flex; animation: visorEntra 0.18s ease; }
+@keyframes visorEntra { from { opacity: 0; } to { opacity: 1; } }
+.visor .caja { width: min(700px, 100%); }
+.visor .escena { position: relative; height: min(430px, 56vh); border-radius: 20px; background: radial-gradient(circle at 50% 40%, #2b313d, #0a0b0e 75%); border: 1px solid #2a3142; box-shadow: 0 30px 70px -10px rgba(0,0,0,0.95), 0 0 80px -20px rgba(59,130,246,0.35); overflow: hidden; touch-action: none; user-select: none; }
+.visor .lienzo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; cursor: zoom-in; transform-origin: 50% 50%; will-change: transform; color: var(--text-muted); font: 500 13px var(--font-body); }
+.visor .lienzo.zoom { cursor: grab; }
+.visor .lienzo.arrastrando { cursor: grabbing; transition: none !important; }
+.visor .lienzo img { max-width: 92%; max-height: 92%; object-fit: contain; border-radius: 10px; pointer-events: none; -webkit-user-drag: none; }
+.visor .cerrar, .visor .flecha, .visor .zoomctl button { background: rgba(0,0,0,0.6); border: 1px solid #2a3142; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, border-color 0.15s ease; z-index: 2; }
+.visor .cerrar:hover, .visor .flecha:hover, .visor .zoomctl button:hover { background: rgba(59,130,246,0.25); border-color: var(--accent-blue); }
+.visor button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.45); }
+.visor .cerrar { position: absolute; right: 14px; top: 14px; width: 36px; height: 36px; border-radius: 50%; }
+.visor .flecha { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; }
+.visor .flecha.izq { left: 14px; } .visor .flecha.der { right: 14px; }
+.visor .flecha:disabled { opacity: 0.3; cursor: default; }
+.visor .contador { position: absolute; left: 16px; top: 20px; z-index: 2; font: 600 11px var(--font-mono); color: var(--text-muted); letter-spacing: 0.06em; }
+.visor .zoomctl { position: absolute; right: 14px; bottom: 14px; z-index: 2; display: flex; gap: 6px; align-items: center; }
+.visor .zoomctl button { width: 34px; height: 34px; border-radius: 10px; font: 600 15px var(--font-body); }
+.visor .zoomctl span { min-width: 46px; text-align: center; font: 600 12px var(--font-mono); color: #CBD5E1; }
+.visor .pie { margin-top: 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.visor .pie .t { font: 800 24px var(--font-display); color: var(--text-primary); letter-spacing: -0.02em; }
+.visor .pie .s { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.visor .pie .p { font: 800 26px var(--font-display); color: var(--text-primary); text-align: right; white-space: nowrap; }
+.visor .chip { font: 600 11.5px var(--font-body); padding: 5px 11px; border-radius: 999px; border: 1px solid #2a3142; color: #CBD5E1; background: rgba(255,255,255,0.03); }
+.visor .chip.mono { font-family: var(--font-mono); }
+.visor .chip b.bajo { color: #F59E0B; } .visor .chip b.sin { color: #EF4444; } .visor .chip b.ok { color: #10B981; }
+
+/* ── Formulario con imagen (alta y edición de repuesto) ── */
+.mod-ancho { max-width: 780px !important; width: calc(100vw - 32px); }
+.mod-img { display: grid; grid-template-columns: 230px 1fr; gap: 22px; }
+.dropz { position: relative; display: flex; align-items: center; justify-content: center; height: 230px; border-radius: 16px; background: radial-gradient(circle at 50% 38%, #262b36, #0b0c0f); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+.dropz:hover { border-color: var(--accent-blue); }
+.dropz #dz-contenido { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.dropz img { width: 100%; height: 100%; object-fit: cover; }
+.dropz .dz-vacio { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-dim); font: 500 12px var(--font-body); text-align: center; padding: 0 18px; }
+.dropz .dz-arrastre { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(37,99,235,0.22); border: 2px dashed var(--accent-blue); border-radius: 16px; color: #BFDBFE; font: 700 14px var(--font-body); }
+.dropz.arrastrando .dz-arrastre { display: flex; }
+.dropz.con-error { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+.dz-botones { display: flex; gap: 8px; margin-top: 10px; }
+.btn-img { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 10px; border: 1px dashed #334155; background: transparent; color: var(--text-muted); font: 600 12.5px var(--font-body); cursor: pointer; transition: border-color 0.15s ease, color 0.15s ease; }
+.btn-img:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+.btn-quitar { width: 40px; border-radius: 10px; border: 1px solid #3a2226; background: rgba(239,68,68,0.08); color: #F87171; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease; }
+.btn-quitar:hover { background: rgba(239,68,68,0.2); }
+.dz-nota { margin-top: 10px; font: 500 11px var(--font-body); color: var(--text-dim); line-height: 1.5; text-align: center; }
+.dz-error { margin-top: 8px; font: 600 12px var(--font-body); color: #F87171; text-align: center; }
+/* el botón Guardar/Actualizar queda separado de la imagen y de su mensaje de error */
+.mod-img + .btn { margin-top: 18px; }
+
+/* ── Celular ── */
+@media (max-width: 768px) {
+    /* en el modo tarjetas de la tabla, la miniatura va sola y más grande */
+    .tabla-cards td.td-img { justify-content: flex-start; padding: 4px 0 10px; }
+    .tabla-cards th.th-img { display: none; }
+    .tabla-cards .thumb { width: 72px; height: 72px; }
+    .seg { margin-left: 0; align-self: stretch; }
+    .seg button { flex: 1; justify-content: center; }
+    .grid-rep { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card-rep .foto { height: 120px; }
+    .mod-img { grid-template-columns: 1fr; }
+    .dropz { height: 200px; }
+    .visor .pie { flex-direction: column; align-items: flex-start; }
+    .visor .pie .p { text-align: left; font-size: 22px; }
+    .visor .flecha { width: 36px; height: 36px; }
+}
+@media (max-width: 420px) { .grid-rep { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .visor.abierto { animation: none; } .thumb, .card-rep { transition: none; } }

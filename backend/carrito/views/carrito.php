@@ -57,7 +57,7 @@
                 <div class="stat-value" style="font-size:26px;">$<?= number_format($total, 2, ',', '.') ?></div>
             </div>
             <a href="index.php?page=carrito&action=solicitar" class="btn btn-primary" style="padding:12px 22px;font-size:14px;"
-               onclick="return confirmarAccion(this.href, 'Se va a generar un pedido por cada proveedor con estos repuestos y esta lista se va a vaciar. ¿Confirmás?')">
+               onclick="return confirmarAccion(this.href, 'Se va a generar un pedido por cada proveedor con estos repuestos y esta lista se va a vaciar. ¿Confirmás?', {titulo: 'Generar pedidos', confirmar: 'Sí, generar'})">
 +                Generar pedido(s) a proveedores
             </a>
         </div>

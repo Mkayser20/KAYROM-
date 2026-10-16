@@ -55,9 +55,9 @@ body {
 }
 
 .auth-logo img {
-    width: 100px;
+    width: 100%;
+    max-width: 280px;
     height: auto;
-    filter: drop-shadow(0 4px 12px rgba(59,130,246,0.3));
 }
 
 /* ── TÍTULOS ────────────────────────────────────── */

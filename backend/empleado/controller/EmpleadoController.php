@@ -54,7 +54,7 @@ class EmpleadoController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // --- Validación de unicidad (excluyendo al propio usuario que se edita) ---
+            //  Validación de unicidad (excluyendo al propio usuario que se edita) 
             require_once 'compartidoCREO/models/UsuarioModel.php';
             $usuarioModel = new UsuarioModel();
 
