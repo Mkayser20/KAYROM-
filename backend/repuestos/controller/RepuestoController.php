@@ -8,9 +8,9 @@ class RepuestoController {
     const CARPETA_IMAGENES = __DIR__ . '/../../../public/uploads/repuestos';
     const URL_IMAGENES     = 'public/uploads/repuestos/';
 
-    private $model;           // modelo de repuestos
-    private $stock;           // el "encargado del stock" (cambia el stock y anota el movimiento)
-    private $auditoria;       // modelo para el sistema de auditoría
+    private $model;            // modelo de repuestos
+    private $stock;            // el "encargado del stock" (cambia el stock y anota el movimiento)
+    private $auditoria;        // modelo para el sistema de auditoría
 
     public function __construct() {
         $this->model = new RepuestoModel();
@@ -230,6 +230,46 @@ class RepuestoController {
         }
 
         $_POST['categoria'] = is_string($categoria) ? trim($categoria) : '';
+    }
+
+    // marcar / desmarcar un repuesto como favorito (la estrella de las acciones)
+    // Desde la pantalla se llama con JavaScript (fetch) y responde un JSON, así no se recarga la página.
+    public function favorito() {
+        $id = (int)($_GET['id'] ?? 0);
+        $esAjax = !empty($_GET['ajax']);
+
+        // sin la columna en la tabla no hay dónde guardar la marca
+        if (!$this->model->tieneColumnaFavorito()) {
+            $this->responderFavorito($esAjax, false, null, 'Falta ejecutar agregar_favorito_repuestos.sql en la base de datos.');
+        }
+
+        $nuevoEstado = $this->model->toggleFavorito($id);
+        if ($nuevoEstado === null) {
+            $this->responderFavorito($esAjax, false, null, 'El repuesto no existe.');
+        }
+
+        // AUDITORÍA: queda anotado quién marcó o desmarcó el favorito
+        $repuesto = $this->model->getById($id);
+        $this->auditoria->registrar(
+            'EDITAR',
+            'Repuestos',
+            ($nuevoEstado ? 'Marcó como favorito' : 'Quitó de favoritos') . ' el repuesto: ' . $repuesto['nombre'],
+            $id
+        );
+
+        $this->responderFavorito($esAjax, true, $nuevoEstado);
+    }
+
+    // Respuesta de la acción favorito: JSON si vino de JavaScript, o vuelta al listado si fue un clic normal
+    private function responderFavorito($esAjax, $ok, $favorito, $error = '') {
+        if ($esAjax) {
+            header('Content-Type: application/json; charset=utf-8');
+            if (!$ok) http_response_code(422);
+            echo json_encode(['ok' => $ok, 'favorito' => $favorito, 'error' => $error], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        header('Location: index.php?page=repuestos' . ($ok ? '' : '&msg=error'));
+        exit;
     }
 
     // Revisa la imagen que mandó el formulario (si mandó alguna) y la guarda.

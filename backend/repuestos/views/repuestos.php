@@ -22,14 +22,14 @@ if (!function_exists('datosVisor')) {
     }
 }
 
-// Íconos de acción de un repuesto (agregar al pedido, editar, eliminar): se usan en la tabla y en las tarjetas
+// Íconos de acción de un repuesto (agregar al pedido, editar, eliminar y la estrella de favorito): se usan en la tabla y en las tarjetas
 if (!function_exists('accionesRepuesto')) {
     function accionesRepuesto($r) { ?>
                         <div class="action-icons">
                             <?php if ($r['stock'] > 0): ?>
                              <a href="index.php?page=carrito&action=agregar&id=<?= $r['id'] ?>" class="action-edit" title="Agregar al pedido a proveedores">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                            </a>
+                             </a>
                             <?php endif; ?>
                             <a href="#" class="action-edit" title="Editar"
                                onclick="return abrirRepuesto({
@@ -52,6 +52,15 @@ if (!function_exists('accionesRepuesto')) {
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                 </button>
                             </form>
+                            <?php $esFav = !empty($r['favorito']); ?>
+                            <!-- Estrella de favorito: el clic lo maneja el JavaScript de abajo (marcarFavorito) -->
+                            <a href="index.php?page=repuestos&action=favorito&id=<?= $r['id'] ?>"
+                               class="action-fav<?= $esFav ? ' on' : '' ?>"
+                               data-id="<?= $r['id'] ?>"
+                               title="<?= $esFav ? 'Quitar de favoritos' : 'Marcar como favorito' ?>"
+                               onclick="return marcarFavorito(this)">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            </a>
                         </div>
     <?php }
 }
@@ -110,7 +119,9 @@ if (!function_exists('accionesRepuesto')) {
                     $sinStock = $r['stock'] == 0;
                     $estadoFiltro = $sinStock ? 'sin' : ($bajo ? 'bajo' : 'ok');
                 ?>
-                <tr data-nombre="<?= htmlspecialchars(mb_strtolower($r['nombre'])) ?>"
+                <tr data-id="<?= $r['id'] ?>"
+                    data-favorito="<?= !empty($r['favorito']) ? 1 : 0 ?>"
+                    data-nombre="<?= htmlspecialchars(mb_strtolower($r['nombre'])) ?>"
                     data-categoria="<?= htmlspecialchars($r['categoria']) ?>"
                     data-estado="<?= $estadoFiltro ?>">
                     <td style="color:var(--text-muted);"><?= $r['id'] ?></td>
@@ -168,6 +179,8 @@ if (!function_exists('accionesRepuesto')) {
         $claseStock = $sinStock ? 'sin' : ($bajo ? 'bajo' : '');
     ?>
     <article class="card-rep"
+             data-id="<?= $r['id'] ?>"
+             data-favorito="<?= !empty($r['favorito']) ? 1 : 0 ?>"
              data-nombre="<?= htmlspecialchars(mb_strtolower($r['nombre'])) ?>"
              data-categoria="<?= htmlspecialchars($r['categoria']) ?>"
              data-estado="<?= $estadoFiltro ?>">
@@ -378,7 +391,7 @@ function elegirImagen(archivo) {
     const input = document.getElementById('rep-imagen');
     const motivo = revisarImagen(archivo);
     if (motivo) {
-        input.value = '';              // no se manda el archivo que no sirve
+        input.value = '';            // no se manda el archivo que no sirve
         mostrarErrorImagen(motivo);
         return;
     }
@@ -415,13 +428,13 @@ function elegirImagen(archivo) {
 
 // Lista / Tarjetas: se recuerda la elección en este navegador
 (function () {
-    const lista    = document.getElementById('vista-lista');
+    const lista     = document.getElementById('vista-lista');
     const tarjetas = document.getElementById('vista-tarjetas');
-    const btnLista    = document.getElementById('btn-vista-lista');
+    const btnLista     = document.getElementById('btn-vista-lista');
     const btnTarjetas = document.getElementById('btn-vista-tarjetas');
 
     function elegirVista(vista) {
-        lista.hidden    = vista !== 'lista';
+        lista.hidden     = vista !== 'lista';
         tarjetas.hidden = vista !== 'tarjetas';
         btnLista.classList.toggle('on', vista === 'lista');
         btnTarjetas.classList.toggle('on', vista === 'tarjetas');
@@ -435,12 +448,49 @@ function elegirImagen(archivo) {
     elegirVista(guardada === 'tarjetas' ? 'tarjetas' : 'lista');
 })();
 
-// Filtro 100% en el navegador: no vuelve a pedirle nada a la base de datos.
+// ----- Favoritos: la estrella marca/desmarca el repuesto y los favoritos se acomodan primero -----
+function marcarFavorito(boton) {
+    const id = boton.dataset.id;
+    boton.classList.add('cargando');
+
+    fetch(boton.href + '&ajax=1', { method: 'POST' })
+        .then(resp => resp.json())
+        .then(datos => {
+            if (!datos.ok) { notificar('error', datos.error || 'No se pudo marcar el favorito.'); return; }
+
+            const esFav = datos.favorito === 1;
+            document.querySelectorAll('[data-id="' + id + '"][data-favorito]').forEach(el => el.dataset.favorito = esFav ? 1 : 0);
+            document.querySelectorAll('.action-fav[data-id="' + id + '"]').forEach(estrella => {
+                estrella.classList.toggle('on', esFav);
+                estrella.title = esFav ? 'Quitar de favoritos' : 'Marcar como favorito';
+            });
+
+            ordenarPorFavorito(document.querySelector('#tabla-repuestos tbody'));
+            ordenarPorFavorito(document.getElementById('vista-tarjetas'));
+            notificar('success', esFav ? 'Agregado a favoritos' : 'Quitado de favoritos');
+        })
+        .catch(() => notificar('error', 'No se pudo conectar con el servidor.'))
+        .finally(() => boton.classList.remove('cargando'));
+
+    return false;
+}
+
+function ordenarPorFavorito(contenedor) {
+    if (!contenedor) return;
+    const elementos = Array.from(contenedor.querySelectorAll(':scope > [data-favorito]'));
+    elementos.sort((a, b) => {
+        const difFav = Number(b.dataset.favorito) - Number(a.dataset.favorito);
+        return difFav !== 0 ? difFav : a.dataset.nombre.localeCompare(b.dataset.nombre, 'es');
+    });
+    elementos.forEach(el => contenedor.appendChild(el));
+}
+
+// Filtro 100% en el navegador
 (function () {
     const buscar    = document.getElementById('filtro-buscar');
     const categoria = document.getElementById('filtro-categoria');
     const estado    = document.getElementById('filtro-estado');
-    const filas     = document.querySelectorAll('#tabla-repuestos tbody tr[data-nombre], #vista-tarjetas .card-rep[data-nombre]'); // filas de la tabla y tarjetas
+    const filas     = document.querySelectorAll('#tabla-repuestos tbody tr[data-nombre], #vista-tarjetas .card-rep[data-nombre]');
     const sinResultados = document.getElementById('sin-resultados');
 
     function aplicarFiltros() {
@@ -453,18 +503,19 @@ function elegirImagen(archivo) {
             const coincideTexto = !texto || fila.dataset.nombre.includes(texto);
             const coincideCat   = !cat || fila.dataset.categoria === cat;
             const coincideEst   = !est || fila.dataset.estado === est;
+
             const mostrar = coincideTexto && coincideCat && coincideEst;
             fila.style.display = mostrar ? '' : 'none';
             if (mostrar) visibles++;
         });
 
-        sinResultados.style.display = (visibles === 0 && filas.length > 0) ? 'block' : 'none';
+        if (sinResultados) {
+            sinResultados.style.display = visibles === 0 ? 'block' : 'none';
+        }
     }
 
-    buscar.addEventListener('input', aplicarFiltros);
-    categoria.addEventListener('change', aplicarFiltros);
-    estado.addEventListener('change', aplicarFiltros);
+    if (buscar) buscar.addEventListener('input', aplicarFiltros);
+    if (categoria) categoria.addEventListener('change', aplicarFiltros);
+    if (estado) estado.addEventListener('change', aplicarFiltros);
 })();
 </script>
-
-<?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>

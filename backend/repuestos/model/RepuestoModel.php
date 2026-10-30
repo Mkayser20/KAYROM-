@@ -7,13 +7,16 @@ class RepuestoModel {
         $this->db = Database::getInstance()->getConexion();
     }
 
-    //obtener todos los repuestos ordenados por nombre (con el nombre del proveedor, si tiene)
+    //obtener todos los repuestos (con el nombre del proveedor, si tiene):
+    //primero los marcados como favoritos y después el resto, cada grupo ordenado por nombre
     public function getAll() {
+        // si todavía no se ejecutó agregar_favorito_repuestos.sql, se ordena solo por nombre (así no se rompe la pantalla)
+        $orden = $this->tieneColumnaFavorito() ? 'r.favorito DESC, r.nombre ASC' : 'r.nombre ASC';
         $result = $this->db->query(
             "SELECT r.*, pr.nombre_proveedor
              FROM repuestos r
              LEFT JOIN proveedor pr ON pr.id = r.proveedor_id
-             ORDER BY r.nombre ASC"
+             ORDER BY $orden"
         );
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
@@ -109,6 +112,23 @@ class RepuestoModel {
     //saber si la tabla ya tiene la columna de imagen (se agrega con migracion_imagen_repuestos.sql)
     public function tieneColumnaImagen() {
         $result = $this->db->query("SHOW COLUMNS FROM repuestos LIKE 'imagen'");
+        return $result && $result->num_rows > 0;
+    }
+
+    //marcar o desmarcar un repuesto como favorito (si estaba en 1 pasa a 0 y al revés)
+    //devuelve el estado nuevo (1 o 0), o null si el repuesto no existe
+    public function toggleFavorito($id) {
+        $stmt = $this->db->prepare("UPDATE repuestos SET favorito = 1 - favorito WHERE id=?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+
+        $repuesto = $this->getById($id);
+        return $repuesto ? (int)$repuesto['favorito'] : null;
+    }
+
+    //saber si la tabla ya tiene la columna de favorito (se agrega con agregar_favorito_repuestos.sql)
+    public function tieneColumnaFavorito() {
+        $result = $this->db->query("SHOW COLUMNS FROM repuestos LIKE 'favorito'");
         return $result && $result->num_rows > 0;
     }
 
