@@ -148,7 +148,7 @@ class EmpleadoController {
     }
 
     public function delete() {
-        $id = $_GET['id'] ?? 0;
+        $id = (int)($_POST['id'] ?? 0);
 
         $empleado = $this->model->getById($id);
         if ($this->model->delete($id)) {

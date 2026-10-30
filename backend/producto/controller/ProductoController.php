@@ -73,7 +73,7 @@ class ProductoController {
 
     //eliminar un producto
     public function delete() {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $producto = $this->model->getById($id);
 
         if ($this->model->delete($id)) {

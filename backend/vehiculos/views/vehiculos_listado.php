@@ -67,8 +67,11 @@
                                     kilometraje: <?= (int)($v['kilometraje'] ?? 0) ?>,
                                     fecha_ingreso: <?= htmlspecialchars(json_encode(substr($v['fecha_ingreso'] ?? '', 0, 10)), ENT_QUOTES, 'UTF-8') ?>
                                })"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></a>
-                            <a href="index.php?page=vehiculos&action=delete&id=<?= $v['id'] ?>" class="action-delete"
-                               onclick="return confirmarAccion(this.href, '¿Eliminar este vehículo?')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></a>
+                            <form method="POST" action="index.php?page=vehiculos&action=delete" onsubmit="return confirmarFormulario(this, '¿Eliminar este vehículo?')">
+                                <input type="hidden" name="id" value="<?= (int)$v['id'] ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(CsrfToken::obtener(), ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="submit" class="action-delete" title="Eliminar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                            </form>
                         </div>
                     </td>
                 </tr>

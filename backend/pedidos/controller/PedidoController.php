@@ -63,7 +63,7 @@ class PedidoController {
 
     // Eliminar un pedido (solo si todavía no fue recibido)
     public function delete() {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
 
         if ($this->model->delete($id)) {
             $this->auditoria->registrar('ELIMINAR', 'Pedidos', "Baja de pedido #$id", $id);

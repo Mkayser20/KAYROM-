@@ -57,7 +57,7 @@ class ComplementoController {
     }
 
     public function eliminarModelo() {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $resultado = $this->model->eliminarModelo($id);
 
         if (!isset($resultado['error'])) {
@@ -107,7 +107,7 @@ class ComplementoController {
     }
 
     public function eliminarTipo() {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $resultado = $this->model->eliminarTipo($id);
 
         if (!isset($resultado['error'])) {

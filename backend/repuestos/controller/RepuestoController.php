@@ -33,6 +33,24 @@ class RepuestoController {
     // crear un nuevo repuesto
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->prepararCategoria();
+            $error = $this->model->validarDatos($_POST);
+            if ($error !== null) {
+                if (!empty($_POST['ajax'])) {
+                    http_response_code(422);
+                    echo $error;
+                    exit;
+                }
+                $data = [
+                    'proveedores' => (new ProveedorModel())->getAll(),
+                    'activePage' => 'repuestos',
+                    'error' => $error,
+                    'formData' => $_POST,
+                ];
+                require_once 'backend/repuestos/views/repuesto_form.php';
+                return;
+            }
+
             // Primero reviso la imagen: si no sirve, no se crea nada
             $img = $this->recibirImagen();
             if (!$img['ok']) $this->errorImagen($img['error']);
@@ -81,6 +99,26 @@ class RepuestoController {
         $id = $_GET['id'] ?? 0;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->prepararCategoria();
+            $error = $this->model->validarDatos($_POST);
+            if ($error !== null) {
+                if (!empty($_POST['ajax'])) {
+                    http_response_code(422);
+                    echo $error;
+                    exit;
+                }
+                $repuesto = $this->model->getById($id);
+                $data = [
+                    'repuesto' => $repuesto ? $this->conImagen([$repuesto])[0] : null,
+                    'proveedores' => (new ProveedorModel())->getAll(),
+                    'activePage' => 'repuestos',
+                    'error' => $error,
+                    'formData' => $_POST,
+                ];
+                require_once 'backend/repuestos/views/repuesto_form.php';
+                return;
+            }
+
             // El stock tampoco se cambia directo: si el usuario cambió el número,
             // el StockService lo registra como "Ajuste manual" en Movimientos.
             $anterior   = $this->model->getById($id);
@@ -133,7 +171,7 @@ class RepuestoController {
 
     // eliminar un repuesto
     public function delete() {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
 
         // Obtenemos los datos antes de eliminar (nombre para la auditoría, stock para el movimiento)
         $repuesto = $this->model->getById($id);
@@ -143,6 +181,14 @@ class RepuestoController {
         }
         $nombreRepuesto = $repuesto['nombre'];
         $stockActual    = (int)$repuesto['stock'];
+
+        $referencias = $this->model->getReferencias($id);
+        if ((int)$referencias['ordenes'] > 0
+            || (int)$referencias['pedidos'] > 0
+            || (int)$referencias['carritos'] > 0) {
+            header('Location: index.php?page=repuestos&msg=repuesto_en_uso');
+            exit;
+        }
 
         // Todo junto: si no se puede eliminar, tampoco se anota el movimiento
         $db = Database::getInstance()->getConexion();
@@ -157,9 +203,9 @@ class RepuestoController {
             if (!$this->model->delete($id)) throw new Exception('No se pudo eliminar el repuesto.');
             Tx::terminar($db, true);
         } catch (Throwable $e) {
-            // Típico: el repuesto ya se usó en una orden de trabajo o está en un pedido
             Tx::terminar($db, false);
-            header('Location: index.php?page=repuestos&msg=repuesto_en_uso');
+            error_log("No se pudo eliminar el repuesto #$id: " . $e->getMessage());
+            header('Location: index.php?page=repuestos&msg=error');
             exit;
         }
 
@@ -171,6 +217,19 @@ class RepuestoController {
 
         header('Location: index.php?page=repuestos&msg=deleted');
         exit;
+    }
+
+    private function prepararCategoria() {
+        $categorias = ['Frenos', 'Filtros', 'Motor', 'Suspensión', 'Eléctrico', 'Lubricantes', 'Refrigeración', 'Carrocería', 'Transmisión'];
+        $categoria = $_POST['categoria'] ?? '';
+
+        if ($categoria === '__otro__') {
+            $categoria = $_POST['categoria_otro'] ?? '';
+        } elseif (!is_string($categoria) || !in_array($categoria, $categorias, true)) {
+            $categoria = '';
+        }
+
+        $_POST['categoria'] = is_string($categoria) ? trim($categoria) : '';
     }
 
     // Revisa la imagen que mandó el formulario (si mandó alguna) y la guarda.

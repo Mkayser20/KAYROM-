@@ -1,5 +1,8 @@
 Options -Indexes
 RewriteEngine On
+RewriteRule (^|/)\.git(?:/|$) - [F,L,NC]
+RewriteRule (^|/)\.env(?:\..*)?$ - [F,L,NC]
+RewriteRule (^|/).*\.sql$ - [F,L,NC]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

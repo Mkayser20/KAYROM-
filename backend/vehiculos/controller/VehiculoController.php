@@ -189,13 +189,19 @@ class VehiculoController {
 
     //eliminar un vehículo
     public function delete() {
-        $id = (int)($_GET['id'] ?? 0); // obtener ID del vehículo a eliminar
+        $id = (int)($_POST['id'] ?? 0); // obtener ID del vehículo a eliminar
 
         // Cargar datos previos para la auditoría
         $vehiculo = $this->model->getById($id);
         $patente  = $vehiculo['patente'] ?? $vehiculo['dominio'] ?? "ID $id";
 
-        if ($this->model->delete($id)) {
+        $resultado = $this->model->delete($id);
+        if (isset($resultado['error'])) {
+            header('Location: index.php?page=vehiculos&msg=' . urlencode($resultado['error']));
+            exit;
+        }
+
+        if ($resultado['success']) {
             // AUDITORÍA: Registro de baja
             $this->auditoria->registrar(
                 'ELIMINAR',
@@ -205,7 +211,6 @@ class VehiculoController {
             );
         }
 
-        // redirigir a lista con mensaje de éxito
         header('Location: index.php?page=vehiculos&msg=deleted');
         exit;
     }

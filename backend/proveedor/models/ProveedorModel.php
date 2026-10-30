@@ -56,8 +56,23 @@ public function update($id, $data) {
 }
 
 public function delete($id) {
+    $stmt = $this->db->prepare(
+        "SELECT
+            (SELECT COUNT(*) FROM repuestos WHERE proveedor_id = ?) AS repuestos,
+            (SELECT COUNT(*) FROM pedidos WHERE proveedor_id = ?) AS pedidos"
+    );
+    $stmt->bind_param('ii', $id, $id);
+    $stmt->execute();
+    $asociados = $stmt->get_result()->fetch_assoc();
+
+    if ((int)$asociados['repuestos'] > 0 || (int)$asociados['pedidos'] > 0) {
+        return ['error' => 'proveedor_en_uso'];
+    }
+
     $stmt = $this->db->prepare("DELETE FROM proveedor WHERE id = ?");
     $stmt->bind_param('i', $id);
-    return $stmt->execute();
+    return $stmt->execute() && $stmt->affected_rows > 0
+        ? ['success' => true]
+        : ['error' => 'error'];
 }
 }

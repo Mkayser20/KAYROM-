@@ -36,8 +36,11 @@ require_once 'compartidoCREO/views/encabezado.php';
                     <td>
                         <div class="action-icons">
                             <a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="action-edit" title="Editar">✏️</a>
-                            <a href="index.php?page=vehiculos&action=delete&id=<?= $v['id'] ?>" class="action-delete" title="Eliminar"
-                               onclick="return confirm('¿Eliminar este vehículo?')">🗑️</a>
+                            <form method="POST" action="index.php?page=vehiculos&action=delete" onsubmit="return confirmarFormulario(this, '¿Eliminar este vehículo?')">
+                                <input type="hidden" name="id" value="<?= (int)$v['id'] ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(CsrfToken::obtener(), ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="submit" class="action-delete" title="Eliminar">🗑️</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

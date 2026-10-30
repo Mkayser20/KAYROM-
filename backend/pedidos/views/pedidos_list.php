@@ -1,5 +1,6 @@
 <?php 
 require_once 'compartidoCREO/views/encabezado.php';
+?>
 
 <div class="page-header">
     <h1>Pedidos</h1>
@@ -39,10 +40,11 @@ require_once 'compartidoCREO/views/encabezado.php';
                                 style="width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(34,197,94,0.15);color:var(--accent-green);text-decoration:none;"
                                 title="Confirmar entrega">✅</a>
                             <?php endif; ?>
-                            <a href="index.php?page=pedidos&action=delete&id=<?= $p['id'] ?>"
-                                onclick="return confirm('¿Eliminar este pedido?')"
-                                style="width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(239,68,68,0.15);color:var(--accent-red);text-decoration:none;"
-                                title="Eliminar">🗑️</a>
+                            <form method="POST" action="index.php?page=pedidos&action=delete" onsubmit="return confirmarFormulario(this, '¿Eliminar este pedido?')">
+                                <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(CsrfToken::obtener(), ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="submit" class="action-delete" title="Eliminar">🗑️</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

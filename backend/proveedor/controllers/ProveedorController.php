@@ -86,9 +86,14 @@ class ProveedorController {
 
     //eliminar un proveedor
     public function delete() {
-        $id = $_GET['id'] ?? 0;
+        $id = (int)($_POST['id'] ?? 0);
         $proveedor = $this->model->getById($id);
-        $this->model->delete($id);
+        $resultado = $this->model->delete($id);
+
+        if (isset($resultado['error'])) {
+            header('Location: index.php?page=proveedores&msg=' . urlencode($resultado['error']));
+            exit;
+        }
 
         if ($proveedor) {
             $nombreProveedor = $proveedor['nombre_proveedor'] ?? "ID $id";
@@ -100,7 +105,6 @@ class ProveedorController {
             );
         }
 
-        //redirigir a lista con mensaje de éxito
         header('Location: index.php?page=proveedores&msg=deleted');
         exit;
     }

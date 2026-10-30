@@ -28,10 +28,17 @@ class RepuestoModel {
 
     //crear un nuevo repuesto
     public function create($data) {
+        if ($this->validarDatos($data) !== null) {
+            return false;
+        }
+        $nombre = trim($data['nombre']);
+        $stock = (int)($data['stock'] ?? 0);
+        $stock_minimo = (int)$data['stock_minimo'];
+        $precio = (float)$data['precio'];
         $sku = $data['sku'] ?? null;
         $proveedor_id = !empty($data['proveedor_id']) ? (int)$data['proveedor_id'] : null;
         $stmt = $this->db->prepare("INSERT INTO repuestos (nombre, categoria, stock, stock_minimo, precio, sku, proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param('ssiiisi', $data['nombre'], $data['categoria'], $data['stock'], $data['stock_minimo'], $data['precio'], $sku, $proveedor_id);
+        $stmt->bind_param('ssiidsi', $nombre, $data['categoria'], $stock, $stock_minimo, $precio, $sku, $proveedor_id);
         $exito = $stmt->execute();
         // Devuelvo el ID real del repuesto recién creado (lo necesita la auditoría), no true/false
         return $exito ? $this->db->insert_id : false;
@@ -39,11 +46,57 @@ class RepuestoModel {
 
     //actualizar datos de un repuesto existente
     public function update($id, $data) {
+        if ($this->validarDatos($data) !== null) {
+            return false;
+        }
+        $nombre = trim($data['nombre']);
+        $stock = (int)($data['stock'] ?? 0);
+        $stock_minimo = (int)$data['stock_minimo'];
+        $precio = (float)$data['precio'];
         $sku = $data['sku'] ?? null;
         $proveedor_id = !empty($data['proveedor_id']) ? (int)$data['proveedor_id'] : null;
         $stmt = $this->db->prepare("UPDATE repuestos SET nombre=?, categoria=?, stock=?, stock_minimo=?, precio=?, sku=?, proveedor_id=? WHERE id=?");
-        $stmt->bind_param('ssiiisii', $data['nombre'], $data['categoria'], $data['stock'], $data['stock_minimo'], $data['precio'], $sku, $proveedor_id, $id);
+        $stmt->bind_param('ssiidsii', $nombre, $data['categoria'], $stock, $stock_minimo, $precio, $sku, $proveedor_id, $id);
         return $stmt->execute();
+    }
+
+    public function validarDatos($data) {
+        $nombreEntrada = $data['nombre'] ?? null;
+        if (!is_string($nombreEntrada)) {
+            return 'El nombre del repuesto es obligatorio.';
+        }
+        $nombre = trim($nombreEntrada);
+        if ($nombre === '') {
+            return 'El nombre del repuesto es obligatorio.';
+        }
+        if (mb_strlen($nombre, 'UTF-8') > 100) {
+            return 'El nombre no puede superar los 100 caracteres.';
+        }
+
+        $categoria = $data['categoria'] ?? null;
+        if (!is_string($categoria) || trim($categoria) === '') {
+            return 'La categoría del repuesto es obligatoria.';
+        }
+        if (mb_strlen(trim($categoria), 'UTF-8') > 45) {
+            return 'La categoría no puede superar los 45 caracteres.';
+        }
+
+        $precio = $data['precio'] ?? null;
+        if (!is_scalar($precio) || !is_numeric($precio) || !is_finite((float)$precio)
+            || (float)$precio < 0 || (float)$precio > 99999999.99) {
+            return 'El precio debe ser un número mayor o igual a cero.';
+        }
+
+        $stockMinimoEntrada = $data['stock_minimo'] ?? null;
+        if (!is_string($stockMinimoEntrada) && !is_int($stockMinimoEntrada)) {
+            return 'El stock mínimo debe ser un entero mayor o igual a cero.';
+        }
+        $stockMinimo = filter_var($stockMinimoEntrada, FILTER_VALIDATE_INT);
+        if ($stockMinimo === false || $stockMinimo < 0) {
+            return 'El stock mínimo debe ser un entero mayor o igual a cero.';
+        }
+
+        return null;
     }
 
     //guardar (o quitar, pasando null) la imagen de un repuesto: se guarda solo el nombre del archivo
@@ -64,6 +117,18 @@ class RepuestoModel {
         $stmt = $this->db->prepare("DELETE FROM repuestos WHERE id=?");
         $stmt->bind_param('i', $id);
         return $stmt->execute();
+    }
+
+    public function getReferencias($id) {
+        $stmt = $this->db->prepare(
+            "SELECT
+                (SELECT COUNT(*) FROM orden_trabajo_repuesto WHERE repuesto_id = ?) AS ordenes,
+                (SELECT COUNT(*) FROM pedido_item WHERE repuesto_id = ?) AS pedidos,
+                (SELECT COUNT(*) FROM carrito WHERE repuesto_id = ?) AS carritos"
+        );
+        $stmt->bind_param('iii', $id, $id, $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
     //obtener la lista de categorías realmente cargadas (para el filtro del listado)

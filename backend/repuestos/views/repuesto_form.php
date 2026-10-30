@@ -1,9 +1,15 @@
 <?php
 require_once 'compartidoCREO/views/encabezado.php';
 $r = $data['repuesto'] ?? null;
+$formData = $data['formData'] ?? [];
 $isEdit = !is_null($r);
 $action = $isEdit ? "index.php?page=repuestos&action=edit&id={$r['id']}" : "index.php?page=repuestos&action=create";
 $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Refrigeración','Carrocería','Transmisión'];
+$categoriaActual = $formData['categoria'] ?? $r['categoria'] ?? '';
+$categoriaEsFija = in_array($categoriaActual, $cats, true);
+$categoriaOtro = ($formData['categoria'] ?? '') === '__otro__'
+    ? ($formData['categoria_otro'] ?? '')
+    : (!$categoriaEsFija ? $categoriaActual : '');
 ?>
 
 <div class="page-header">
@@ -15,7 +21,7 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
     <form method="POST" action="<?= $action ?>" enctype="multipart/form-data">
         <div class="form-group">
             <label>Nombre</label>
-            <input type="text" name="nombre" value="<?= htmlspecialchars($r['nombre'] ?? '') ?>"  placeholder="Frenos de Disco, Bujías...">
+            <input type="text" name="nombre" value="<?= htmlspecialchars($formData['nombre'] ?? $r['nombre'] ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Frenos de Disco, Bujías..." required maxlength="100">
         </div>
 
         <div id="toast-error" class="toast-error"><?= htmlspecialchars($data['error'] ?? '') ?></div>
@@ -23,28 +29,30 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
         <div class="form-row">
             <div class="form-group">
                 <label>Categoría</label>
-                <select name="categoria">
+                <select name="categoria" id="categoria-repuesto" onchange="actualizarCategoriaFormulario(this)" required>
                     <?php foreach ($cats as $cat): ?>
-                    <option value="<?= $cat ?>" <?= ($r['categoria']??'')===$cat?'selected':'' ?>><?= $cat ?></option>
+                    <option value="<?= htmlspecialchars($cat, ENT_QUOTES, 'UTF-8') ?>" <?= $categoriaActual === $cat ? 'selected' : '' ?>><?= htmlspecialchars($cat, ENT_QUOTES, 'UTF-8') ?></option>
                     <?php endforeach; ?>
+                    <option value="__otro__" <?= !$categoriaEsFija ? 'selected' : '' ?>>Otros...</option>
                 </select>
+                <input type="text" name="categoria_otro" id="categoria-repuesto-otra" value="<?= htmlspecialchars($categoriaOtro, ENT_QUOTES, 'UTF-8') ?>" placeholder="Escribí la categoría" maxlength="45" style="margin-top:8px;<?= !$categoriaEsFija ? '' : 'display:none;' ?>" <?= !$categoriaEsFija ? 'required' : 'disabled' ?>>
             </div>
             <div class="form-group">
                 <label>Precio ($)</label>
-                <input type="number" name="precio" value="<?= $r['precio'] ?? 0 ?>" min="0" step="0.01">
+                <input type="number" name="precio" value="<?= htmlspecialchars((string)($formData['precio'] ?? $r['precio'] ?? 0), ENT_QUOTES, 'UTF-8') ?>" min="0" step="0.01" required>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>SKU (opcional)</label>
-                <input type="text" name="sku" data-optional="1" value="<?= htmlspecialchars($r['sku'] ?? '') ?>" placeholder="Código interno o del fabricante">
+                <input type="text" name="sku" data-optional="1" value="<?= htmlspecialchars($formData['sku'] ?? $r['sku'] ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Código interno o del fabricante">
             </div>
             <div class="form-group">
                 <label>Proveedor habitual</label>
                 <select name="proveedor_id" data-optional="1">
                     <option value="">— Sin especificar —</option>
                     <?php foreach ($data['proveedores'] as $prov): ?>
-                    <option value="<?= $prov['id'] ?>" <?= (($r['proveedor_id']??null)==$prov['id'])?'selected':'' ?>><?= htmlspecialchars($prov['nombre_proveedor']) ?></option>
+                    <option value="<?= $prov['id'] ?>" <?= (($formData['proveedor_id'] ?? $r['proveedor_id'] ?? null)==$prov['id'])?'selected':'' ?>><?= htmlspecialchars($prov['nombre_proveedor']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -52,11 +60,11 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
         <div class="form-row">
             <div class="form-group">
                 <label>Stock Actual</label>
-                <input type="number" name="stock" value="<?= $r['stock'] ?? 0 ?>" min="0">
+                <input type="number" name="stock" value="<?= htmlspecialchars((string)($formData['stock'] ?? $r['stock'] ?? 0), ENT_QUOTES, 'UTF-8') ?>" min="0">
             </div>
             <div class="form-group">
                 <label>Stock Mínimo</label>
-                <input type="number" name="stock_minimo" value="<?= $r['stock_minimo'] ?? 5 ?>" min="0">
+                <input type="number" name="stock_minimo" value="<?= htmlspecialchars((string)($formData['stock_minimo'] ?? $r['stock_minimo'] ?? 5), ENT_QUOTES, 'UTF-8') ?>" min="0" step="1" required>
             </div>
         </div>
         <div class="form-group">
@@ -90,6 +98,13 @@ $cats = ['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Re
                 }
             }
         });
+        function actualizarCategoriaFormulario(select) {
+            const input = document.getElementById('categoria-repuesto-otra');
+            const otraCategoria = select.value === '__otro__';
+            input.style.display = otraCategoria ? 'block' : 'none';
+            input.disabled = !otraCategoria;
+            input.required = otraCategoria;
+        }
     </script>
     </form>
 </div>

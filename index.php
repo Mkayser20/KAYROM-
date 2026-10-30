@@ -1,9 +1,46 @@
 <?php
+$cookiePath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
+$cookiePath = rtrim($cookiePath, '/') . '/';
+ini_set('session.use_strict_mode', '1');
+ini_set('session.use_only_cookies', '1');
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => $cookiePath,
+    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
 session_start();
+require_once 'compartidoCREO/models/CsrfToken.php';
 
 //lee que pagina y accion se piden por url, por defecto muestra el inicio
 $page   = $_GET['page']   ?? 'iniciar_sesion';
 $action = $_GET['action'] ?? 'index';
+if (!is_string($action)) {
+    $action = '';
+}
+
+if (preg_match('/^(?:delete|eliminar)/i', $action)) {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        header('Allow: POST');
+        exit('Esta acción requiere una solicitud POST.');
+    }
+    if (!CsrfToken::validar($_POST['csrf_token'] ?? null)) {
+        http_response_code(403);
+        exit('La solicitud no es válida o expiró. Recargá la página e intentá de nuevo.');
+    }
+}
+
+function despacharAccion($controlador, $accion) {
+    if (!is_callable([$controlador, $accion])) {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=UTF-8');
+        exit('La acción solicitada no existe.');
+    }
+
+    $controlador->$accion();
+}
 
 //carga la conexion a la base de datos, los modelos y los controladores necesarios para cada pagina
 require_once 'config/base_datos.php';
@@ -108,62 +145,60 @@ switch ($page) {
 
     case 'vehiculos':
         $c = new VehiculoController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
 
     case 'productos':
         $c = new ProductoController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
 
     case 'pedidos':
         $c = new PedidoController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
     case 'repuestos':
-    require_once 'backend/repuestos/model/RepuestoModel.php';
-    require_once 'backend/movimiento/models/MovimientoModel.php';
-    require_once 'backend/repuestos/controller/RepuestoController.php';
+        require_once 'backend/repuestos/model/RepuestoModel.php';
+        require_once 'backend/movimiento/models/MovimientoModel.php';
+        require_once 'backend/repuestos/controller/RepuestoController.php';
         $c = new RepuestoController();
-        $c->$action();
-    break;
+        despacharAccion($c, $action);
+        break;
 
     case 'movimientos':
         require_once 'backend/movimiento/controllers/MovimientoController.php';
-        if (!in_array($action, ['index', 'create'])) $action = 'index'; // solo estas acciones están permitidas
-       (new MovimientoController())->$action();
+        despacharAccion(new MovimientoController(), $action);
         break;
 
     case 'proveedores':
-    $action = $_GET['action'] ?? 'index';
-    (new ProveedorController())->$action();
-    break;
+        despacharAccion(new ProveedorController(), $action);
+        break;
 
     case 'empleados':
-    require_once 'backend/empleado/controller/EmpleadoController.php';
+        require_once 'backend/empleado/controller/EmpleadoController.php';
         $c = new EmpleadoController();
-        $c->$action();
-    break;
+        despacharAccion($c, $action);
+        break;
 
     case 'carrito':
         require_once 'backend/carrito/controllers/CarritoControllers.php';
         $c = new CarritoController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
 
     case 'ordenes':
         $c = new OrdenTrabajoController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
 
     case 'complementos':
         $c = new ComplementoController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
 
     case 'clientes':
         $c = new ClienteController();
-        $c->$action();
+        despacharAccion($c, $action);
         break;
 
     case 'auditorias':

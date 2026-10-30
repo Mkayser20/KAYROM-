@@ -35,8 +35,10 @@ $msgTexts      = [
     'recibido'           => 'Pedido recibido: el stock fue actualizado.',
     'recibido_sin_items' => 'Pedido marcado como recibido, pero es un pedido antiguo sin renglones: el stock no se modificó.',
     'no_recibible'       => 'Ese pedido no se puede recibir (ya fue recibido, está cancelado o falló el stock).',
-    'repuesto_en_uso'    => 'No se puede eliminar: ese repuesto ya se usó en órdenes de trabajo o está en pedidos.',
+    'repuesto_en_uso'    => 'No se puede eliminar: ese repuesto está asociado a una orden de trabajo, un pedido o un carrito activo.',
     'no_borrable'        => 'No se puede eliminar un pedido ya recibido.',
+    'vehiculo_en_uso'    => 'No se puede eliminar este vehículo porque tiene órdenes de trabajo o pedidos asociados.',
+    'proveedor_en_uso'   => 'No se puede eliminar este proveedor porque tiene repuestos o pedidos asociados.',
     'error'              => 'No se pudo completar la operación. No se guardó ningún cambio.',
 ];
 $nombreUsuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? 'Usuario';

@@ -22,6 +22,7 @@ class SesionController {
             } else {
                 $user = $this->model->findByEmail($email);
                 if ($user && password_verify($pass, $user['contrasena_usuario'])) {
+                    session_regenerate_id(true);
                     $_SESSION['usuario_id'] = $user['id'];
                     $_SESSION['nombre_usuario'] = $user['nombre_usuario'];
                     $_SESSION['nombre']     = $user['nombre'] ?? $user['nombre_usuario'];

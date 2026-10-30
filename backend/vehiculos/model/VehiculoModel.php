@@ -160,7 +160,24 @@ class VehiculoModel {
 
     public function delete($id) {
         $id = (int)$id;
-        return $this->db->query("DELETE FROM vehiculo WHERE id=$id");
+        $stmt = $this->db->prepare(
+            "SELECT
+                (SELECT COUNT(*) FROM orden_trabajo WHERE vehiculo_id = ?) AS ordenes,
+                (SELECT COUNT(*) FROM pedidos WHERE vehiculo_id = ?) AS pedidos"
+        );
+        $stmt->bind_param('ii', $id, $id);
+        $stmt->execute();
+        $asociados = $stmt->get_result()->fetch_assoc();
+
+        if ((int)$asociados['ordenes'] > 0 || (int)$asociados['pedidos'] > 0) {
+            return ['error' => 'vehiculo_en_uso'];
+        }
+
+        $stmt = $this->db->prepare("DELETE FROM vehiculo WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        return $stmt->execute() && $stmt->affected_rows > 0
+            ? ['success' => true]
+            : ['error' => 'error'];
     }
 
     public function getTotal() {

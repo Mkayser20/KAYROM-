@@ -117,6 +117,16 @@
         return false; // evita que el link navegue solo; navegamos recién si se confirmó
     };
 
+    window.confirmarFormulario = function (formulario, mensaje) {
+        preguntar(mensaje, 'Esta acción no se puede deshacer.', {
+            peligroso: true,
+            confirmar: 'Sí, eliminar'
+        }).then(function (ok) {
+            if (ok) { formulario.submit(); }
+        });
+        return false;
+    };
+
     // ---------- PUENTE CON LOS AVISOS VIEJOS ----------
     // El sistema ya tenía avisos escritos en divs (.toast para éxitos y .toast-error para errores).
     // En vez de reescribir cada vista, acá los detectamos y los mostramos con la librería.

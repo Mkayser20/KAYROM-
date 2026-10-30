@@ -74,7 +74,7 @@ class ClienteController {
 
     // Eliminar cliente
     public function delete() {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $cliente = $this->model->getById($id);
         $resultado = $this->model->delete($id);
 

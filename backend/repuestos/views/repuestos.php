@@ -45,10 +45,13 @@ if (!function_exists('accionesRepuesto')) {
                                })">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </a>
-                            <a href="index.php?page=repuestos&action=delete&id=<?= $r['id'] ?>" class="action-delete" title="Eliminar"
-                               onclick="return confirmarAccion(this.href, '¿Eliminar este repuesto?')">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            </a>
+                            <form method="POST" action="index.php?page=repuestos&action=delete" onsubmit="return confirmarFormulario(this, '¿Eliminar este repuesto?')">
+                                <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(CsrfToken::obtener(), ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="submit" class="action-delete" title="Eliminar">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                            </form>
                         </div>
     <?php }
 }
@@ -233,7 +236,7 @@ if (!function_exists('accionesRepuesto')) {
                     <div>
                         <div class="form-group">
                             <label>Nombre</label>
-                            <input type="text" name="nombre" id="rep-nombre" placeholder="Frenos de Disco, Bujías...">
+                            <input type="text" name="nombre" id="rep-nombre" placeholder="Frenos de Disco, Bujías..." required maxlength="100">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -253,15 +256,17 @@ if (!function_exists('accionesRepuesto')) {
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Categoría</label>
-                                <select name="categoria" id="rep-categoria">
+                                <select name="categoria" id="rep-categoria" onchange="actualizarCategoriaModal(this)" required>
                                     <?php foreach (['Frenos','Filtros','Motor','Suspensión','Eléctrico','Lubricantes','Refrigeración','Carrocería','Transmisión'] as $cat): ?>
                                     <option value="<?= $cat ?>"><?= $cat ?></option>
                                     <?php endforeach; ?>
+                                    <option value="__otro__">Otros...</option>
                                 </select>
+                                <input type="text" name="categoria_otro" id="rep-categoria-otro" placeholder="Escribí la categoría" maxlength="45" style="display:none;margin-top:8px;" disabled>
                             </div>
                             <div class="form-group">
                                 <label>Precio ($)</label>
-                                <input type="number" name="precio" id="rep-precio" value="0" min="0" step="0.01">
+                                <input type="number" name="precio" id="rep-precio" value="0" min="0" step="0.01" required>
                             </div>
                         </div>
                         <div class="form-row">
@@ -271,7 +276,7 @@ if (!function_exists('accionesRepuesto')) {
                             </div>
                             <div class="form-group">
                                 <label>Stock Mínimo</label>
-                                <input type="number" name="stock_minimo" id="rep-stock-min" value="5" min="0">
+                                <input type="number" name="stock_minimo" id="rep-stock-min" value="5" min="0" step="1" required>
                             </div>
                         </div>
                     </div>
@@ -291,6 +296,8 @@ function abrirRepuesto(r) {
     const form   = document.getElementById('form-repuesto');
     const titulo = document.getElementById('rep-titulo');
     const submit = document.getElementById('rep-submit');
+    const categoria = document.getElementById('rep-categoria');
+    const categoriaOtro = document.getElementById('rep-categoria-otro');
 
     if (r && r.id) {
         form.action = 'index.php?page=repuestos&action=edit&id=' + r.id;
@@ -299,7 +306,10 @@ function abrirRepuesto(r) {
         document.getElementById('rep-nombre').value     = r.nombre || '';
         document.getElementById('rep-sku').value        = r.sku || '';
         document.getElementById('rep-proveedor').value  = r.proveedor_id || '';
-        document.getElementById('rep-categoria').value  = r.categoria || '';
+        const categoriaExiste = Array.from(categoria.options).some(option => option.value === r.categoria && option.value !== '__otro__');
+        categoria.value = categoriaExiste ? r.categoria : '__otro__';
+        categoriaOtro.value = categoriaExiste ? '' : (r.categoria || '');
+        actualizarCategoriaModal(categoria);
         document.getElementById('rep-precio').value     = r.precio || 0;
         document.getElementById('rep-stock').value      = r.stock || 0;
         document.getElementById('rep-stock-min').value  = r.stock_minimo || 5;
@@ -310,12 +320,21 @@ function abrirRepuesto(r) {
         titulo.textContent = '＋ Nuevo Repuesto';
         submit.textContent = 'Guardar';
         mostrarImagenRepuesto('');
+        actualizarCategoriaModal(categoria);
     }
     mostrarErrorImagen('');
     document.getElementById('rep-quitar-imagen').value = '0';
     document.getElementById('rep-imagen').value = '';
     abrirModal('modal-nuevo-repuesto');
     return false;
+}
+
+function actualizarCategoriaModal(select) {
+    const input = document.getElementById('rep-categoria-otro');
+    const otraCategoria = select.value === '__otro__';
+    input.style.display = otraCategoria ? 'block' : 'none';
+    input.disabled = !otraCategoria;
+    input.required = otraCategoria;
 }
 
 // ----- Imagen del repuesto: cuadro para subir la foto, con vista previa y chequeos -----
