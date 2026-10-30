@@ -514,6 +514,12 @@ tbody tr:hover { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--ac
 .action-delete { background: rgba(239,68,68,0.15);  color: var(--accent-red);  }
 .action-edit:hover   { background: var(--accent-blue); color: #fff; }
 .action-delete:hover { background: var(--accent-red);  color: #fff; }
+/* Estrella de favorito: gris si no está marcada, naranja y rellena si está marcada; siempre a la derecha */
+.action-fav          { background: rgba(148,163,184,0.12); color: var(--text-muted); margin-left: auto; }
+.action-fav:hover    { background: rgba(245,158,11,0.22); color: var(--accent-orange); }
+.action-fav.on       { background: rgba(245,158,11,0.18); color: var(--accent-orange); }
+.action-fav.on svg   { fill: currentColor; }
+.action-fav.cargando { opacity: 0.5; pointer-events: none; }
 
 /* ── SIDEBAR RESPONSIVE (mobile) ──────────────────── */
 .menu-toggle {

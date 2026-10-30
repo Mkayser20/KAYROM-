@@ -22,7 +22,7 @@ if (!function_exists('datosVisor')) {
     }
 }
 
-// Íconos de acción de un repuesto (agregar al pedido, editar, eliminar): se usan en la tabla y en las tarjetas
+// Íconos de acción de un repuesto (agregar al pedido, editar, eliminar y la estrella de favorito): se usan en la tabla y en las tarjetas
 if (!function_exists('accionesRepuesto')) {
     function accionesRepuesto($r) { ?>
                         <div class="action-icons">
@@ -48,6 +48,15 @@ if (!function_exists('accionesRepuesto')) {
                             <a href="index.php?page=repuestos&action=delete&id=<?= $r['id'] ?>" class="action-delete" title="Eliminar"
                                onclick="return confirmarAccion(this.href, '¿Eliminar este repuesto?')">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </a>
+                            <?php $esFav = !empty($r['favorito']); ?>
+                            <!-- Estrella de favorito: el clic lo maneja el JavaScript de abajo (marcarFavorito) -->
+                            <a href="index.php?page=repuestos&action=favorito&id=<?= $r['id'] ?>"
+                               class="action-fav<?= $esFav ? ' on' : '' ?>"
+                               data-id="<?= $r['id'] ?>"
+                               title="<?= $esFav ? 'Quitar de favoritos' : 'Marcar como favorito' ?>"
+                               onclick="return marcarFavorito(this)">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                             </a>
                         </div>
     <?php }
@@ -107,7 +116,9 @@ if (!function_exists('accionesRepuesto')) {
                     $sinStock = $r['stock'] == 0;
                     $estadoFiltro = $sinStock ? 'sin' : ($bajo ? 'bajo' : 'ok');
                 ?>
-                <tr data-nombre="<?= htmlspecialchars(mb_strtolower($r['nombre'])) ?>"
+                <tr data-id="<?= $r['id'] ?>"
+                    data-favorito="<?= !empty($r['favorito']) ? 1 : 0 ?>"
+                    data-nombre="<?= htmlspecialchars(mb_strtolower($r['nombre'])) ?>"
                     data-categoria="<?= htmlspecialchars($r['categoria']) ?>"
                     data-estado="<?= $estadoFiltro ?>">
                     <td style="color:var(--text-muted);"><?= $r['id'] ?></td>
@@ -165,6 +176,8 @@ if (!function_exists('accionesRepuesto')) {
         $claseStock = $sinStock ? 'sin' : ($bajo ? 'bajo' : '');
     ?>
     <article class="card-rep"
+             data-id="<?= $r['id'] ?>"
+             data-favorito="<?= !empty($r['favorito']) ? 1 : 0 ?>"
              data-nombre="<?= htmlspecialchars(mb_strtolower($r['nombre'])) ?>"
              data-categoria="<?= htmlspecialchars($r['categoria']) ?>"
              data-estado="<?= $estadoFiltro ?>">
@@ -415,6 +428,47 @@ function elegirImagen(archivo) {
     try { guardada = localStorage.getItem('kr_vista_repuestos') || 'lista'; } catch (e) {}
     elegirVista(guardada === 'tarjetas' ? 'tarjetas' : 'lista');
 })();
+
+// ----- Favoritos: la estrella marca/desmarca el repuesto y los favoritos se acomodan primero -----
+// Se manda el pedido al servidor sin recargar la página y, si salió bien, se pinta la estrella y se reordena.
+function marcarFavorito(boton) {
+    const id = boton.dataset.id;
+    boton.classList.add('cargando');   // evita que se mande dos veces con doble clic
+
+    fetch(boton.href + '&ajax=1', { method: 'POST' })
+        .then(resp => resp.json())
+        .then(datos => {
+            if (!datos.ok) { notificar('error', datos.error || 'No se pudo marcar el favorito.'); return; }
+
+            const esFav = datos.favorito === 1;
+            // el mismo repuesto está dos veces (fila de la tabla y tarjeta): se actualizan las dos
+            document.querySelectorAll('[data-id="' + id + '"][data-favorito]').forEach(el => el.dataset.favorito = esFav ? 1 : 0);
+            document.querySelectorAll('.action-fav[data-id="' + id + '"]').forEach(estrella => {
+                estrella.classList.toggle('on', esFav);
+                estrella.title = esFav ? 'Quitar de favoritos' : 'Marcar como favorito';
+            });
+
+            ordenarPorFavorito(document.querySelector('#tabla-repuestos tbody'));
+            ordenarPorFavorito(document.getElementById('vista-tarjetas'));
+            notificar('success', esFav ? 'Agregado a favoritos' : 'Quitado de favoritos');
+        })
+        .catch(() => notificar('error', 'No se pudo conectar con el servidor.'))
+        .finally(() => boton.classList.remove('cargando'));
+
+    return false;   // que el enlace no navegue
+}
+
+// Acomoda los elementos de un contenedor igual que el servidor: favoritos primero y después por nombre
+function ordenarPorFavorito(contenedor) {
+    if (!contenedor) return;
+    const elementos = Array.from(contenedor.querySelectorAll(':scope > [data-favorito]'));
+    elementos.sort((a, b) => {
+        const difFav = Number(b.dataset.favorito) - Number(a.dataset.favorito);   // 1 antes que 0
+        return difFav !== 0 ? difFav : a.dataset.nombre.localeCompare(b.dataset.nombre, 'es');
+    });
+    // appendChild mueve el elemento (no lo copia): así quedan en el orden nuevo
+    elementos.forEach(el => contenedor.appendChild(el));
+}
 
 // Filtro 100% en el navegador: no vuelve a pedirle nada a la base de datos.
 (function () {
