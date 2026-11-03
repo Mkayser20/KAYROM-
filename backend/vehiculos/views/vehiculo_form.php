@@ -32,6 +32,7 @@ $wizard = !$isEdit;
 <div class="form-card">
     <div id="toast-error" class="toast-error"></div>
     <form method="POST" action="<?= $action ?>" id="form-vehiculo-completo">
+        <input type="hidden" name="origen_cliente_id" value="<?= (int)($formData['origen_cliente_id'] ?? 0) ?>">
 
         <div class="wizard-panel" data-step="1">
             <div class="form-row">
@@ -83,25 +84,43 @@ $wizard = !$isEdit;
         </div>
 
         <div class="wizard-panel" data-step="2" <?= $wizard ? 'style="display:none;"' : '' ?>>
+            <?php
+                $clienteSeleccionado = (string)($formData['cliente_id'] ?? $v['cliente_id'] ?? '');
+                $clienteNuevoSeleccionado = $clienteSeleccionado === 'nuevo';
+            ?>
+            <div class="form-group">
+                <label>Cliente asociado</label>
+                <select name="cliente_id" id="vehiculo-cliente">
+                    <option value="">— Sin cliente —</option>
+                    <option value="nuevo" <?= $clienteNuevoSeleccionado ? 'selected' : '' ?>>＋ Crear o buscar cliente por DNI</option>
+                    <?php foreach ($data['clientes'] as $cliente): ?>
+                        <option value="<?= (int)$cliente['id'] ?>" <?= (string)$cliente['id'] === $clienteSeleccionado ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($cliente['apellido'] . ', ' . $cliente['nombre'] . ' — DNI ' . $cliente['dni']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div id="vehiculo-cliente-nuevo" <?= $clienteNuevoSeleccionado ? '' : 'style="display:none;"' ?>>
             <div class="form-row">
                 <div class="form-group">
                     <label>Nombre del Cliente</label>
-                    <input type="text" name="cliente_nombre" value="<?= htmlspecialchars($formData['cliente_nombre'] ?? $v['cliente_nombre'] ?? '') ?>" placeholder="Nombre">
+                    <input type="text" name="cliente_nombre" value="<?= htmlspecialchars($formData['cliente_nombre'] ?? '') ?>" placeholder="Nombre">
                 </div>
                 <div class="form-group">
                     <label>Apellido del Cliente</label>
-                    <input type="text" name="cliente_apellido" value="<?= htmlspecialchars($formData['cliente_apellido'] ?? $v['cliente_apellido'] ?? '') ?>" placeholder="Apellido">
+                    <input type="text" name="cliente_apellido" value="<?= htmlspecialchars($formData['cliente_apellido'] ?? '') ?>" placeholder="Apellido">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>DNI del Cliente</label>
-                    <input type="text" name="cliente_dni" value="<?= htmlspecialchars($formData['cliente_dni'] ?? $v['cliente_dni'] ?? '') ?>" placeholder="DNI">
+                    <input type="text" name="cliente_dni" value="<?= htmlspecialchars($formData['cliente_dni'] ?? '') ?>" placeholder="DNI">
                 </div>
                 <div class="form-group">
                     <label>Teléfono del Cliente</label>
-                    <input type="text" name="cliente_telefono" value="<?= htmlspecialchars($formData['cliente_telefono'] ?? $v['cliente_telefono'] ?? '') ?>" placeholder="Teléfono">
+                    <input type="text" name="cliente_telefono" value="<?= htmlspecialchars($formData['cliente_telefono'] ?? '') ?>" placeholder="Teléfono">
                 </div>
+            </div>
             </div>
             <?php if ($wizard): ?>
             <div class="wizard-nav">
@@ -149,6 +168,15 @@ $wizard = !$isEdit;
     // Si estoy editando, precargo el modelo/tipo que ya tenía este vehículo
     document.getElementById('combo-modelo')._setValor(<?= (int)($formData['modelo_vehiculo_id'] ?? $v['modelo_vehiculo_id'] ?? 0) ?>);
     document.getElementById('combo-tipo')._setValor(<?= (int)($formData['tipo_vehiculo_id'] ?? $v['tipo_vehiculo_id'] ?? 0) ?>);
+    const clienteSelect = document.getElementById('vehiculo-cliente');
+    const datosClienteNuevo = document.getElementById('vehiculo-cliente-nuevo');
+    function actualizarCamposCliente() {
+        const esNuevo = clienteSelect.value === 'nuevo';
+        datosClienteNuevo.style.display = esNuevo ? '' : 'none';
+        datosClienteNuevo.querySelectorAll('input').forEach(input => { input.disabled = !esNuevo; });
+    }
+    clienteSelect.addEventListener('change', actualizarCamposCliente);
+    actualizarCamposCliente();
 
     function mostrarError(mensaje) {
         const toast = document.getElementById('toast-error');

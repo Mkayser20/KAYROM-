@@ -59,6 +59,7 @@
                                     modelo_vehiculo_id: <?= (int)($v['modelo_vehiculo_id'] ?? 0) ?>,
                                     tipo_vehiculo_id: <?= (int)($v['tipo_vehiculo_id'] ?? 0) ?>,
                                     estado_taller: <?= htmlspecialchars(json_encode($v['estado_taller'] ?? 'En Diagnóstico'), ENT_QUOTES, 'UTF-8') ?>,
+                                    cliente_id: <?= (int)($v['cliente_id'] ?? 0) ?>,
                                     cliente_nombre: <?= htmlspecialchars(json_encode($v['cliente_nombre']), ENT_QUOTES, 'UTF-8') ?>,
                                     cliente_apellido: <?= htmlspecialchars(json_encode($v['cliente_apellido']), ENT_QUOTES, 'UTF-8') ?>,
                                     cliente_dni: <?= htmlspecialchars(json_encode($v['cliente_dni']), ENT_QUOTES, 'UTF-8') ?>,
@@ -149,6 +150,21 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label>Cliente asociado</label>
+                        <select name="cliente_id" id="veh-cliente-id">
+                            <option value="nuevo">＋ Crear o buscar cliente por DNI</option>
+                            <option value="">— Sin cliente —</option>
+                            <?php foreach ($data['clientes'] as $cliente): ?>
+                                <option value="<?= (int)$cliente['id'] ?>">
+                                    <?= htmlspecialchars($cliente['apellido'] . ', ' . $cliente['nombre'] . ' — DNI ' . $cliente['dni']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div id="veh-cliente-nuevo">
+                <div class="form-row">
+                    <div class="form-group">
                         <label>Nombre del Cliente</label>
                         <input type="text" name="cliente_nombre" id="veh-cliente-nombre" placeholder="Nombre">
                     </div>
@@ -167,6 +183,7 @@
                         <input type="text" name="cliente_telefono" id="veh-cliente-telefono" placeholder="Teléfono">
                     </div>
                 </div>
+                </div>
                 <button type="submit" class="btn btn-primary" id="veh-submit">Guardar</button>
             </form>
         </div>
@@ -179,6 +196,15 @@ const opcionesModelos = <?= json_encode(array_map(fn($m) => ['id' => $m['id'], '
 const opcionesTipos   = <?= json_encode(array_map(fn($t) => ['id' => $t['id'], 'label' => $t['tipo_vehiculo']], $data['tipos'])) ?>;
 crearCombo('combo-modelo', opcionesModelos);
 crearCombo('combo-tipo', opcionesTipos);
+
+function actualizarCamposClienteModal() {
+    const select = document.getElementById('veh-cliente-id');
+    const campos = document.getElementById('veh-cliente-nuevo');
+    const esNuevo = select.value === 'nuevo';
+    campos.style.display = esNuevo ? '' : 'none';
+    campos.querySelectorAll('input').forEach(input => { input.disabled = !esNuevo; });
+}
+document.getElementById('veh-cliente-id').addEventListener('change', actualizarCamposClienteModal);
 
 // Colores del desplegable de estado (vienen del PHP de arriba)
 const colorEstadoVehiculo = <?= json_encode($estadoBadge) ?>;
@@ -216,10 +242,12 @@ function abrirVehiculo(v) {
         document.getElementById('veh-estado').value  = v.estado_taller || 'En Diagnóstico';
         document.getElementById('veh-km').value      = v.kilometraje || 0;
         document.getElementById('veh-fecha').value   = v.fecha_ingreso || '';
-        document.getElementById('veh-cliente-nombre').value   = v.cliente_nombre || '';
-        document.getElementById('veh-cliente-apellido').value = v.cliente_apellido || '';
-        document.getElementById('veh-cliente-dni').value      = v.cliente_dni || '';
-        document.getElementById('veh-cliente-telefono').value = v.cliente_telefono || '';
+        document.getElementById('veh-cliente-id').value = v.cliente_id ? String(v.cliente_id) : '';
+        document.getElementById('veh-cliente-nombre').value   = '';
+        document.getElementById('veh-cliente-apellido').value = '';
+        document.getElementById('veh-cliente-dni').value      = '';
+        document.getElementById('veh-cliente-telefono').value = '';
+        actualizarCamposClienteModal();
     } else {
         form.reset();
         form.action = 'index.php?page=vehiculos&action=create';
@@ -232,6 +260,8 @@ function abrirVehiculo(v) {
         document.getElementById('veh-cliente-apellido').value = '';
         document.getElementById('veh-cliente-dni').value = '';
         document.getElementById('veh-cliente-telefono').value = '';
+        document.getElementById('veh-cliente-id').value = 'nuevo';
+        actualizarCamposClienteModal();
         document.getElementById('veh-fecha').value = new Date().toISOString().slice(0,10);
     }
     abrirModal('modal-nuevo-vehiculo');

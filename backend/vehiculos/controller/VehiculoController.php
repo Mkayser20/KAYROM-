@@ -17,6 +17,7 @@ class VehiculoController {
             'vehiculos'  => $this->model->getAll(),  //obtener todos los vehículos
             'modelos'    => $this->model->getModelos(), //para el select del modal rápido
             'tipos'      => $this->model->getTipos(),   //para el select del modal rápido
+            'clientes'   => (new ClienteModel())->getAll(),
             'activePage' => 'vehiculos' //marcar página activa
         ];
         // cargar vista con lista de vehículos
@@ -27,16 +28,14 @@ class VehiculoController {
     public function create() {
         // si es formulario POST, guardar nuevo vehículo
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Busco o creo el cliente dueño según el DNI cargado, antes de guardar el vehículo
             $clienteModel = new ClienteModel();
-            $_POST['cliente_id'] = $clienteModel->crearOEncontrar(
-                $_POST['cliente_nombre']   ?? '',
-                $_POST['cliente_apellido'] ?? '',
-                $_POST['cliente_dni']      ?? '',
-                $_POST['cliente_telefono'] ?? ''
-            );
-
-            $result = $this->model->create($_POST);
+            $clienteId = $this->resolverClienteId($_POST, $clienteModel);
+            if (isset($clienteId['error'])) {
+                $result = $clienteId;
+            } else {
+                $_POST['cliente_id'] = $clienteId;
+                $result = $this->model->create($_POST);
+            }
 
             // si hubo error, mostrar formulario con error
             if (isset($result['error'])) {
@@ -49,6 +48,7 @@ class VehiculoController {
                 $data = [
                     'modelos'    => $this->model->getModelos(),  // para llenar seleccionables del formulario
                     'tipos'      => $this->model->getTipos(),    // para llenar seleccionables del formulario
+                    'clientes'   => $clienteModel->getAll(),
                     'activePage' => 'vehiculos',
                     'error'      => $result['error'],
                     'formData'   => $_POST // retornar datos ingresados para que no se pierdan
@@ -72,6 +72,12 @@ class VehiculoController {
                 $nuevoId
             );
 
+            $clienteOrigenId = (int)($_POST['origen_cliente_id'] ?? 0);
+            if ($clienteOrigenId > 0) {
+                header('Location: index.php?page=clientes&action=verFicha&id=' . $clienteOrigenId . '&msg=created');
+                exit;
+            }
+
             // éxito: redirigir a lista con mensaje
             header('Location: index.php?page=vehiculos&msg=created');
             exit;
@@ -81,6 +87,11 @@ class VehiculoController {
         $data = [
             'modelos'    => $this->model->getModelos(),
             'tipos'      => $this->model->getTipos(),
+            'clientes'   => (new ClienteModel())->getAll(),
+            'formData'   => [
+                'cliente_id' => (int)($_GET['cliente_id'] ?? 0),
+                'origen_cliente_id' => (int)($_GET['cliente_id'] ?? 0),
+            ],
             'activePage' => 'vehiculos'
         ];
         require_once 'backend/vehiculos/views/vehiculo_form.php';
@@ -93,14 +104,13 @@ class VehiculoController {
         // si es formulario POST, actualizar vehículo
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $clienteModel = new ClienteModel();
-            $_POST['cliente_id'] = $clienteModel->crearOEncontrar(
-                $_POST['cliente_nombre']   ?? '',
-                $_POST['cliente_apellido'] ?? '',
-                $_POST['cliente_dni']      ?? '',
-                $_POST['cliente_telefono'] ?? ''
-            );
-
-            $result = $this->model->update($id, $_POST);
+            $clienteId = $this->resolverClienteId($_POST, $clienteModel);
+            if (isset($clienteId['error'])) {
+                $result = $clienteId;
+            } else {
+                $_POST['cliente_id'] = $clienteId;
+                $result = $this->model->update($id, $_POST);
+            }
 
             // si hubo error, mostrar formulario con error
             if (isset($result['error'])) {
@@ -113,6 +123,7 @@ class VehiculoController {
                     'vehiculo'   => $this->model->getById($id),  // cargar datos actuales
                     'modelos'    => $this->model->getModelos(),
                     'tipos'      => $this->model->getTipos(),
+                    'clientes'   => $clienteModel->getAll(),
                     'activePage' => 'vehiculos',
                     'error'      => $result['error'],
                     'formData'   => $_POST
@@ -142,6 +153,7 @@ class VehiculoController {
             'vehiculo'   => $this->model->getById($id),
             'modelos'    => $this->model->getModelos(),
             'tipos'      => $this->model->getTipos(),
+            'clientes'   => (new ClienteModel())->getAll(),
             'activePage' => 'vehiculos'
         ];
         require_once 'backend/vehiculos/views/vehiculo_form.php';
@@ -159,6 +171,50 @@ class VehiculoController {
             'activePage' => 'vehiculos'
         ];
         require_once 'backend/vehiculos/views/vehiculo_ficha.php';
+    }
+
+    private function resolverClienteId($datos, ClienteModel $clienteModel) {
+        $seleccion = trim((string)($datos['cliente_id'] ?? ''));
+        if ($seleccion !== '' && $seleccion !== 'nuevo') {
+            if (!ctype_digit($seleccion) || (int)$seleccion <= 0 || !$clienteModel->getById((int)$seleccion)) {
+                return ['error' => 'Seleccioná un cliente válido'];
+            }
+            return (int)$seleccion;
+        }
+
+        if ($seleccion === 'nuevo') {
+            $dni = trim((string)($datos['cliente_dni'] ?? ''));
+            if ($dni === '') {
+                return ['error' => 'Ingresá el DNI para crear o buscar el cliente'];
+            }
+
+            $existente = $clienteModel->getByDni($dni);
+            if ($existente) {
+                return (int)$existente['id'];
+            }
+            if (trim((string)($datos['cliente_nombre'] ?? '')) === ''
+                || trim((string)($datos['cliente_apellido'] ?? '')) === '') {
+                return ['error' => 'Ingresá nombre y apellido para registrar un cliente nuevo'];
+            }
+
+            return $clienteModel->crearOEncontrar(
+                $datos['cliente_nombre'] ?? '',
+                $datos['cliente_apellido'] ?? '',
+                $dni,
+                $datos['cliente_telefono'] ?? ''
+            );
+        }
+
+        if (!empty($datos['cliente_dni'])) {
+            return $clienteModel->crearOEncontrar(
+                $datos['cliente_nombre'] ?? '',
+                $datos['cliente_apellido'] ?? '',
+                $datos['cliente_dni'],
+                $datos['cliente_telefono'] ?? ''
+            );
+        }
+
+        return null;
     }
 
     // cambiar solo el estado de un vehículo (llega por AJAX desde el desplegable del listado)
