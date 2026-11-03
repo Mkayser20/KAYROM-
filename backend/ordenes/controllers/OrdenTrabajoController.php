@@ -22,6 +22,10 @@ class OrdenTrabajoModel {
         // A cada orden le sumo la lista de repuestos que usó
         foreach ($ordenes as &$orden) {
             $orden['items'] = $this->getItems($orden['id']);
+            $orden['total_repuestos'] = array_sum(array_map(
+                static fn($item) => (float)$item['precio'] * (int)$item['cantidad'],
+                $orden['items']
+            ));
         }
         return $ordenes;
     }
@@ -29,10 +33,10 @@ class OrdenTrabajoModel {
     // Repuestos usados en una orden de trabajo puntual
     public function getItems($orden_trabajo_id) {
         $orden_trabajo_id = (int)$orden_trabajo_id;
-        $sql = "SELECT otr.cantidad, r.nombre, r.id AS repuesto_id
-                FROM orden_trabajo_repuesto otr
-                JOIN repuestos r ON r.id = otr.repuesto_id
-                WHERE otr.orden_trabajo_id = $orden_trabajo_id";
+        $sql = "SELECT otr.cantidad, r.nombre, r.precio, r.id AS repuesto_id
+            FROM orden_trabajo_repuesto otr
+            JOIN repuestos r ON r.id = otr.repuesto_id
+            WHERE otr.orden_trabajo_id = $orden_trabajo_id";
         $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
@@ -83,7 +87,6 @@ class OrdenTrabajoModel {
 
                 $usar   = min($cantidad, (int)$fila['stock']); // lo que realmente hay
                 $faltan = $cantidad - $usar;                   // lo que no alcanza
-
                 // Anoto en la orden lo que pidió el mecánico (aunque falte stock)
                 $stmtOtr->bind_param('iii', $orden_id, $repuesto_id, $cantidad);
                 $stmtOtr->execute();

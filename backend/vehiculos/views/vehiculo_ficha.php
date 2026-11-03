@@ -60,10 +60,15 @@ $v = $data['vehiculo'];
 <a href="index.php?page=vehiculos&action=edit&id=<?= $v['id'] ?>" class="btn btn-primary">Editar vehículo</a>
 
 <!-- Panel de Órdenes de Trabajo: qué mecánico trabajó en este vehículo y qué repuestos usó -->
+<?php $totalGeneralOrdenes = array_sum(array_map(static fn($orden) => (float)$orden['total_repuestos'], $data['ordenes'])); ?>
 <div class="panel" style="margin-top:20px;">
     <div class="panel-header">
         <div class="panel-title"><?= icono('llave', 16) ?> Órdenes de Trabajo</div>
-        <button type="button" class="btn btn-primary" onclick="abrirModal('modal-nueva-orden')">＋ Nueva Orden</button>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <strong>Total general: <?= '$' . number_format($totalGeneralOrdenes, 2, ',', '.') ?></strong>
+            <button type="button" class="btn btn-ghost" onclick="imprimirResumenOrdenes()" <?= empty($data['ordenes']) ? 'disabled' : '' ?>>Imprimir PDF</button>
+            <button type="button" class="btn btn-primary" onclick="abrirModal('modal-nueva-orden')">＋ Nueva Orden</button>
+        </div>
     </div>
     <div class="panel-body">
         <?php if (empty($data['ordenes'])): ?>
@@ -71,7 +76,7 @@ $v = $data['vehiculo'];
         <?php else: ?>
             <table>
                 <thead>
-                    <tr><th>Fecha</th><th>Mecánico</th><th>Descripción</th><th>Repuestos usados</th><th>Estado</th><th>Acciones</th></tr>
+                    <tr><th>Fecha</th><th>Mecánico</th><th>Descripción</th><th>Repuestos usados</th><th>Total repuestos</th><th>Estado</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
                 <?php foreach ($data['ordenes'] as $orden): ?>
@@ -90,10 +95,11 @@ $v = $data['vehiculo'];
                                 <span style="color:var(--text-dim);">Sin repuestos</span>
                             <?php else: ?>
                                 <?php foreach ($orden['items'] as $it): ?>
-                                    <div style="font-size:12px;color:var(--text-muted);"><?= $it['cantidad'] ?>x <?= htmlspecialchars($it['nombre']) ?></div>
+                                    <div style="font-size:12px;color:var(--text-muted);"><?= (int)$it['cantidad'] ?>x <?= htmlspecialchars($it['nombre']) ?></div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </td>
+                        <td style="white-space:nowrap;"><?= '$' . number_format($orden['total_repuestos'], 2, ',', '.') ?></td>
                         <td>
                             <span class="badge-status <?= $orden['estado'] === 'Cerrada' ? 'disponible' : 'reparacion' ?>"><?= htmlspecialchars($orden['estado']) ?></span>
                         </td>
@@ -109,6 +115,38 @@ $v = $data['vehiculo'];
                 </tbody>
             </table>
         <?php endif; ?>
+        <section id="resumen-ordenes-imprimible" class="orden-imprimible" aria-hidden="true">
+            <h1>Resumen de Órdenes de Trabajo</h1>
+            <p>Vehículo: <?= htmlspecialchars($v['patente'] ?? '-') ?> — <?= htmlspecialchars($v['modelo_vehiculo'] ?? '-') ?></p>
+            <?php foreach ($data['ordenes'] as $orden): ?>
+                <section class="orden-resumen">
+                    <h2>Orden de Trabajo #<?= (int)$orden['id'] ?></h2>
+                    <p>Fecha: <?= date('d/m/Y', strtotime($orden['fecha'])) ?></p>
+                    <p>Mecánico: <?= htmlspecialchars(trim(($orden['mecanico_nombre'] ?? '') . ' ' . ($orden['mecanico_apellido'] ?? '')) ?: '—') ?></p>
+                    <p>Descripción: <?= htmlspecialchars($orden['descripcion'] ?: '—') ?></p>
+                    <table>
+                        <thead>
+                            <tr><th>Repuesto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($orden['items'] as $it): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($it['nombre']) ?></td>
+                                    <td><?= (int)$it['cantidad'] ?></td>
+                                    <td><?= '$' . number_format((float)$it['precio'], 2, ',', '.') ?></td>
+                                    <td><?= '$' . number_format((float)$it['precio'] * (int)$it['cantidad'], 2, ',', '.') ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <?php if (empty($orden['items'])): ?>
+                                <tr><td colspan="4">Sin repuestos usados</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                    <p class="total-orden">Total de la orden: <?= '$' . number_format($orden['total_repuestos'], 2, ',', '.') ?></p>
+                </section>
+            <?php endforeach; ?>
+            <h2 class="total-general">Total general de repuestos: <?= '$' . number_format($totalGeneralOrdenes, 2, ',', '.') ?></h2>
+        </section>
     </div>
 </div>
 
@@ -147,6 +185,7 @@ $v = $data['vehiculo'];
                     <!-- Acá se arman las filas repuesto + cantidad de forma dinámica con JS -->
                     <div id="filas-repuestos"></div>
                     <button type="button" class="btn btn-ghost" style="margin-top:8px;" onclick="agregarFilaRepuesto()">＋ Agregar repuesto</button>
+                    <div style="margin-top:12px;font-weight:600;">Total de repuestos: <span id="total-orden-repuestos">$ 0,00</span></div>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="margin-top:10px;">Guardar Orden</button>
@@ -157,7 +196,19 @@ $v = $data['vehiculo'];
 
 <script>
 // Lista de repuestos disponibles (con su stock actual) para armar el selector de cada fila
-const repuestosDisponibles = <?= json_encode(array_map(fn($r) => ['id' => $r['id'], 'nombre' => $r['nombre'], 'stock' => (int)$r['stock']], $data['repuestos'])) ?>;
+const repuestosDisponibles = <?= json_encode(array_map(fn($r) => ['id' => $r['id'], 'nombre' => $r['nombre'], 'stock' => (int)$r['stock'], 'precio' => (float)$r['precio']], $data['repuestos']), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+const formatoMoneda = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+
+function actualizarTotalOrden() {
+    let total = 0;
+    document.querySelectorAll('#filas-repuestos .form-row').forEach(fila => {
+        const select = fila.querySelector('select[name="repuesto_id[]"]');
+        const cantidad = Math.max(1, parseInt(fila.querySelector('input[name="cantidad_usada[]"]').value || '1', 10) || 1);
+        const repuesto = repuestosDisponibles.find(r => String(r.id) === select.value);
+        if (repuesto) total += Math.round(repuesto.precio * 100) * cantidad;
+    });
+    document.getElementById('total-orden-repuestos').textContent = formatoMoneda.format(total / 100);
+}
 
 // Agrega una fila nueva (repuesto + cantidad) al formulario de la orden de trabajo
 function agregarFilaRepuesto() {
@@ -166,24 +217,51 @@ function agregarFilaRepuesto() {
     fila.className = 'form-row';
     fila.style.marginTop = '8px';
 
-    let opciones = '<option value="">— Elegir repuesto —</option>';
+    const select = document.createElement('select');
+    select.name = 'repuesto_id[]';
+    const opcionVacia = document.createElement('option');
+    opcionVacia.value = '';
+    opcionVacia.textContent = '— Elegir repuesto —';
+    select.appendChild(opcionVacia);
     repuestosDisponibles.forEach(r => {
-        opciones += `<option value="${r.id}" data-stock="${r.stock}">${r.nombre} (stock: ${r.stock})</option>`;
+        const opcion = document.createElement('option');
+        opcion.value = r.id;
+        opcion.dataset.stock = r.stock;
+        opcion.textContent = `${r.nombre} (stock: ${r.stock})`;
+        select.appendChild(opcion);
     });
 
-    fila.innerHTML = `
-        <div class="form-group" style="margin-bottom:0;">
-            <select name="repuesto_id[]">${opciones}</select>
-        </div>
-        <div class="form-group" style="margin-bottom:0; display:flex; gap:6px;">
-            <input type="number" name="cantidad_usada[]" value="1" min="1" style="flex:1;">
-            <button type="button" class="btn btn-ghost" onclick="this.closest('.form-row').remove()"><?= icono('eliminar', 14) ?></button>
-        </div>`;
+    const grupoRepuesto = document.createElement('div');
+    grupoRepuesto.className = 'form-group';
+    grupoRepuesto.style.marginBottom = '0';
+    grupoRepuesto.appendChild(select);
+
+    const grupoCantidad = document.createElement('div');
+    grupoCantidad.className = 'form-group';
+    grupoCantidad.style.cssText = 'margin-bottom:0; display:flex; gap:6px;';
+    const cantidad = document.createElement('input');
+    cantidad.type = 'number';
+    cantidad.name = 'cantidad_usada[]';
+    cantidad.value = '1';
+    cantidad.min = '1';
+    cantidad.style.flex = '1';
+    const eliminar = document.createElement('button');
+    eliminar.type = 'button';
+    eliminar.className = 'btn btn-ghost';
+    eliminar.innerHTML = <?= json_encode(icono('eliminar', 14), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+    eliminar.addEventListener('click', () => fila.remove());
+    grupoCantidad.append(cantidad, eliminar);
+    fila.append(grupoRepuesto, grupoCantidad);
     cont.appendChild(fila);
 }
 
 // Arranca con una fila ya cargada, para no obligar a apretar "Agregar repuesto" la primera vez
 agregarFilaRepuesto();
+document.getElementById('filas-repuestos').addEventListener('input', actualizarTotalOrden);
+document.getElementById('filas-repuestos').addEventListener('change', actualizarTotalOrden);
+document.getElementById('filas-repuestos').addEventListener('click', event => {
+    if (event.target.closest('button')) actualizarTotalOrden();
+});
 
 // Antes de mandar, si alguna cantidad supera el stock actual, aviso que se va a generar
 // un pedido automático al proveedor por la diferencia — pero NO bloqueo el envío.
@@ -214,7 +292,51 @@ document.querySelector('#modal-nueva-orden form').addEventListener('submit', fun
         });
     }
 });
+
+function imprimirResumenOrdenes() {
+    const recibo = document.getElementById('resumen-ordenes-imprimible');
+    const ventana = window.open('', '_blank');
+    if (!ventana) {
+        alert('No se pudo abrir la ventana de impresión. Permití las ventanas emergentes para este sitio e intentá nuevamente.');
+        return;
+    }
+
+    ventana.document.open();
+    ventana.document.write(`<!doctype html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Resumen de Órdenes de Trabajo</title>
+            <style>
+                @page { size: auto; margin: 0; }
+                * { box-sizing: border-box; }
+                body { margin: 0; padding: 14mm 12mm; color: #111; background: #fff; font: 14px Arial, sans-serif; }
+                h1 { margin: 0 0 20px; font-size: 22px; }
+                h2 { margin: 0 0 12px; font-size: 17px; }
+                p { margin: 8px 0; }
+                table { width: 100%; margin-top: 24px; border-collapse: collapse; }
+                th, td { padding: 9px; border: 1px solid #999; text-align: left; }
+                th { background: #eee; }
+                .orden-resumen { margin-top: 28px; break-inside: avoid; page-break-inside: avoid; }
+                .total-orden { margin-top: 12px; text-align: right; font-weight: bold; }
+                .total-general { margin-top: 32px; padding-top: 14px; border-top: 2px solid #222; text-align: right; }
+                @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+            </style>
+        </head>
+        <body>${recibo.innerHTML}</body>
+        </html>`);
+    ventana.document.close();
+    ventana.focus();
+    ventana.setTimeout(() => {
+        ventana.print();
+        ventana.close();
+    }, 250);
+}
 </script>
+
+<style>
+.orden-imprimible { display: none; }
+</style>
 
 <?php endif; ?>
 <?php require_once 'compartidoCREO/views/pie_pagina.php'; ?>
