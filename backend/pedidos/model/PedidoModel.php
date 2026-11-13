@@ -57,6 +57,54 @@ class PedidoModel {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
+    // REMITO: junta todo lo que hace falta para armar el remito de un pedido.
+    // Trae el pedido con los datos del proveedor (y su domicilio, que está en persona),
+    // la patente del vehículo si tiene, y los renglones con SKU y categoría del repuesto.
+    // Devuelve null si el pedido no existe.
+    public function getRemito($id) {
+        $id = (int)$id;
+
+        // 1) Cabecera: el pedido + proveedor + vehículo
+        $stmt = $this->db->prepare(
+            "SELECT p.*, dp.detalle_pedido,
+                    pr.nombre_proveedor, pr.cuit, pr.telefono, pr.email,
+                    pe.domicilio AS domicilio_proveedor,
+                    v.patente
+             FROM pedidos p
+             LEFT JOIN detalle_pedido dp ON dp.id = p.detalle_pedido_id
+             LEFT JOIN proveedor pr      ON pr.id = p.proveedor_id
+             LEFT JOIN persona pe        ON pe.id = pr.persona_id
+             LEFT JOIN vehiculo v        ON v.id  = p.vehiculo_id
+             WHERE p.id = ?"
+        );
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $pedido = $stmt->get_result()->fetch_assoc();
+        if (!$pedido) return null;
+
+        // 2) Renglones: qué repuestos, cuántos y a qué precio
+        $stmt = $this->db->prepare(
+            "SELECT pi.cantidad, pi.precio_unitario, r.nombre, r.sku, r.categoria
+             FROM pedido_item pi
+             JOIN repuestos r ON r.id = pi.repuesto_id
+             WHERE pi.pedido_id = ?
+             ORDER BY pi.id"
+        );
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // 3) Calculo el subtotal de cada renglón y el total del remito
+        $total = 0;
+        foreach ($items as &$it) {
+            $it['subtotal'] = $it['cantidad'] * $it['precio_unitario'];
+            $total += $it['subtotal'];
+        }
+        unset($it);
+
+        return ['pedido' => $pedido, 'items' => $items, 'total' => $total];
+    }
+
     // Crea un pedido con sus renglones.
     // $items = lista de ['repuesto_id' => 3, 'cantidad' => 2, 'precio' => 1500 (opcional)]
     // Devuelve el ID del pedido nuevo, o false (y deja el motivo en $this->error).

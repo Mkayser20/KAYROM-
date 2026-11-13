@@ -22,6 +22,27 @@ class PedidoController {
         require_once 'backend/pedidos/views/pedidos_listado.php';
     }
 
+    // Ver el REMITO de un pedido (desde ahí también se imprime)
+    // Se entra con: index.php?page=pedidos&action=remito&id=25
+    public function remito() {
+        $id = (int)($_GET['id'] ?? 0);
+        $remito = $this->model->getRemito($id);
+
+        // si el pedido no existe, vuelvo al listado con un aviso
+        if (!$remito) {
+            header('Location: index.php?page=pedidos&msg=remito_no_existe');
+            exit;
+        }
+
+        $data = [
+            'pedido'     => $remito['pedido'],
+            'items'      => $remito['items'],
+            'total'      => $remito['total'],
+            'activePage' => 'pedidos' // para que el menú lateral siga marcando "Pedidos"
+        ];
+        require_once 'backend/pedidos/views/remito.php';
+    }
+
     // Crear un pedido nuevo (llega desde la ventanita del listado)
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

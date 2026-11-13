@@ -55,6 +55,9 @@
                     <td style="color:var(--text-muted);font-size:12px;"><?= htmlspecialchars(substr($p['detalle_pedido'] ?? '-', 0, 60)) ?></td>
                     <td>
                         <div class="action-icons">
+                            <!-- REMITO: se puede ver e imprimir siempre, en cualquier estado del pedido -->
+                            <a href="index.php?page=pedidos&action=remito&id=<?= $p['id'] ?>"
+                               class="action-edit" title="Ver / imprimir remito"><?= icono('remito', 14) ?></a>
                             <?php if(!$recibido && $estado !== 'cancelado'): ?>
                             <!-- RECIBIR: suma lo pedido al stock -->
                             <a href="index.php?page=pedidos&action=recibir&id=<?= $p['id'] ?>"
