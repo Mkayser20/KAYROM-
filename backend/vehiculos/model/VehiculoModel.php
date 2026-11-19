@@ -52,78 +52,42 @@ class VehiculoModel {
         return $result ? $result->fetch_assoc() : null;
     }
 
+    // Deja la patente en un formato único: mayúsculas y sin espacios ni guiones.
+    // Así "ab 123 cd", "AB-123-CD" y "AB123CD" se reconocen como la misma patente.
+    public static function normalizarPatente($patente) {
+        return strtoupper(preg_replace('/[\s-]+/', '', trim((string)$patente)));
+    }
+
     public function patenteExiste($patente, $excluirId = null) {
-        $patente = $this->db->real_escape_string($patente);
-        $sql = "SELECT id FROM vehiculo WHERE patente = '$patente'";
-        if ($excluirId !== null) {
-            $excluirId = (int)$excluirId;
-            $sql .= " AND id != $excluirId";
-        }
-        $result = $this->db->query($sql);
-        return $result && $result->num_rows > 0;
-    }
-
-    public function create($data) {
-        $patente          = $this->db->real_escape_string($data['patente'] ?? '');
-        
-        // Validar que la patente no esté vacía
-        if (empty($patente)) {
-            return ['error' => 'La patente es requerida'];
-        }
-        
-        // Validar que no exista otra patente igual
-        if ($this->patenteExiste($patente)) {
-            return ['error' => 'Ya existe un vehículo con la patente "' . htmlspecialchars($patente) . '"'];
-        }
-        
-        $modelo_id        = (int)($data['modelo_vehiculo_id'] ?? 0);
-        $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
-
-        // Validar que se haya elegido un modelo y un tipo reales (si no, la FK explota)
-        if ($modelo_id <= 0) {
-            return ['error' => 'Seleccioná un modelo de la lista'];
-        }
-        if ($tipo_id <= 0) {
-            return ['error' => 'Seleccioná un tipo de vehículo de la lista'];
-        }
-
-        $numero_chasis    = $this->db->real_escape_string($data['numero_chasis'] ?? '');
-        $numero_motor     = $this->db->real_escape_string($data['numero_motor'] ?? '');
-        $cantidad         = (int)($data['cantidad_vehiculo'] ?? 0);
-        $compat_id        = (int)($data['compatibilidad_repuestos_id'] ?? 0);
-        $fecha            = $this->db->real_escape_string($data['fecha_ingreso'] ?? date('Y-m-d'));
-        $estado_taller    = $this->db->real_escape_string($data['estado_taller'] ?? 'En Diagnóstico');
-        $kilometraje      = (int)($data['kilometraje'] ?? 0);
-        $anio             = !empty($data['anio']) ? (int)$data['anio'] : 'NULL';
-        $cliente_id       = !empty($data['cliente_id']) ? (int)$data['cliente_id'] : 'NULL';
-        $success = $this->db->query(
-            "INSERT INTO vehiculo (cantidad_vehiculo, patente, numero_chasis, numero_motor,
-             fecha_ingreso, compatibilidad_repuestos_id, tipo_vehiculo_id, modelo_vehiculo_id,
-             estado_taller, kilometraje, anio, cliente_id)
-             VALUES ($cantidad,'$patente','$numero_chasis','$numero_motor','$fecha',$compat_id,$tipo_id,$modelo_id,'$estado_taller',$kilometraje,$anio,$cliente_id)"
+        $patente   = self::normalizarPatente($patente);
+        $excluirId = (int)$excluirId;
+        $stmt = $this->db->prepare(
+            "SELECT id FROM vehiculo WHERE REPLACE(REPLACE(UPPER(patente), ' ', ''), '-', '') = ? AND id != ?"
         );
-        return $success ? ['success' => true] : ['error' => 'Error al crear el vehículo'];
+        $stmt->bind_param('si', $patente, $excluirId);
+        $stmt->execute();
+        return $stmt->get_result()->num_rows > 0;
     }
 
-    public function update($id, $data) {
-        $id               = (int)$id;
-        $patente          = $this->db->real_escape_string($data['patente'] ?? '');
-        
+    // Revisa los datos del formulario y los deja listos para guardar.
+    // Devuelve ['error' => '...'] si algo está mal, o el array con los datos limpios.
+    private function prepararDatos($data, $id = 0) {
+        $patente = self::normalizarPatente($data['patente'] ?? '');
+
         // Validar que la patente no esté vacía
-        if (empty($patente)) {
+        if ($patente === '') {
             return ['error' => 'La patente es requerida'];
         }
-        
-        // Validar que no exista otra patente igual (excluyendo el vehículo actual)
+        if (strlen($patente) > 20) {
+            return ['error' => 'La patente no puede superar los 20 caracteres'];
+        }
+        // Validar que no exista otra patente igual
         if ($this->patenteExiste($patente, $id)) {
             return ['error' => 'Ya existe un vehículo con la patente "' . htmlspecialchars($patente) . '"'];
         }
-        
-        $numero_chasis    = $this->db->real_escape_string($data['numero_chasis'] ?? '');
-        $numero_motor     = $this->db->real_escape_string($data['numero_motor'] ?? '');
-        $cantidad         = (int)($data['cantidad_vehiculo'] ?? 0);
-        $modelo_id        = (int)($data['modelo_vehiculo_id'] ?? 0);
-        $tipo_id          = (int)($data['tipo_vehiculo_id'] ?? 0);
+
+        $modelo_id = (int)($data['modelo_vehiculo_id'] ?? 0);
+        $tipo_id   = (int)($data['tipo_vehiculo_id'] ?? 0);
 
         // Validar que se haya elegido un modelo y un tipo reales (si no, la FK explota)
         if ($modelo_id <= 0) {
@@ -133,25 +97,85 @@ class VehiculoModel {
             return ['error' => 'Seleccioná un tipo de vehículo de la lista'];
         }
 
-        $fecha            = $this->db->real_escape_string($data['fecha_ingreso'] ?? date('Y-m-d'));
-        $estado_taller    = $this->db->real_escape_string($data['estado_taller'] ?? 'En Diagnóstico');
-        $kilometraje      = (int)($data['kilometraje'] ?? 0);
-        $anio             = !empty($data['anio']) ? (int)$data['anio'] : 'NULL';
-        $cliente_id       = !empty($data['cliente_id']) ? (int)$data['cliente_id'] : 'NULL';
-        $success = $this->db->query(
-            "UPDATE vehiculo SET cantidad_vehiculo=$cantidad, patente='$patente',
-             numero_chasis='$numero_chasis', numero_motor='$numero_motor',
-             fecha_ingreso='$fecha', tipo_vehiculo_id=$tipo_id,
-             modelo_vehiculo_id=$modelo_id, estado_taller='$estado_taller',
-             kilometraje=$kilometraje, anio=$anio, cliente_id=$cliente_id WHERE id=$id"
+        // El estado tiene que ser uno de la lista (antes solo se validaba en el desplegable del listado)
+        $estado = $data['estado_taller'] ?? 'En Diagnóstico';
+        if (!in_array($estado, self::$estadosTaller, true)) {
+            return ['error' => 'Elegí un estado de taller válido'];
+        }
+
+        // La fecha tiene que ser una fecha real (si no, MySQL da error)
+        $fecha = trim((string)($data['fecha_ingreso'] ?? ''));
+        if ($fecha === '') {
+            $fecha = date('Y-m-d');
+        }
+        $f = DateTime::createFromFormat('Y-m-d', substr($fecha, 0, 10));
+        if (!$f || $f->format('Y-m-d') !== substr($fecha, 0, 10)) {
+            return ['error' => 'La fecha de ingreso no es válida'];
+        }
+
+        $anio = !empty($data['anio']) ? (int)$data['anio'] : null;
+        if ($anio !== null && ($anio < 1900 || $anio > (int)date('Y') + 1)) {
+            return ['error' => 'El año del vehículo no es válido'];
+        }
+
+        $km = (int)($data['kilometraje'] ?? 0);
+        if ($km < 0) {
+            return ['error' => 'El kilometraje no puede ser negativo'];
+        }
+
+        return [
+            'patente'   => $patente,
+            'chasis'    => mb_substr(trim((string)($data['numero_chasis'] ?? '')), 0, 20),
+            'motor'     => mb_substr(trim((string)($data['numero_motor'] ?? '')), 0, 30),
+            'cantidad'  => (int)($data['cantidad_vehiculo'] ?? 0),
+            'compat'    => (int)($data['compatibilidad_repuestos_id'] ?? 0),
+            'fecha'     => $f->format('Y-m-d'),
+            'estado'    => $estado,
+            'km'        => $km,
+            'anio'      => $anio,
+            'cliente'   => !empty($data['cliente_id']) ? (int)$data['cliente_id'] : null,
+            'modelo_id' => $modelo_id,
+            'tipo_id'   => $tipo_id,
+        ];
+    }
+
+    public function create($data) {
+        $d = $this->prepararDatos($data);
+        if (isset($d['error'])) return $d;
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO vehiculo (cantidad_vehiculo, patente, numero_chasis, numero_motor,
+             fecha_ingreso, compatibilidad_repuestos_id, tipo_vehiculo_id, modelo_vehiculo_id,
+             estado_taller, kilometraje, anio, cliente_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
-        return $success ? ['success' => true] : ['error' => 'Error al actualizar el vehículo'];
+        $stmt->bind_param('issssiiisiii', $d['cantidad'], $d['patente'], $d['chasis'], $d['motor'], $d['fecha'],
+                          $d['compat'], $d['tipo_id'], $d['modelo_id'], $d['estado'], $d['km'], $d['anio'], $d['cliente']);
+        return $stmt->execute() ? ['success' => true, 'id' => $this->db->insert_id] : ['error' => 'Error al crear el vehículo'];
+    }
+
+    public function update($id, $data) {
+        $id = (int)$id;
+        if (!$this->getById($id)) return ['error' => 'El vehículo no existe'];
+
+        $d = $this->prepararDatos($data, $id);
+        if (isset($d['error'])) return $d;
+
+        $stmt = $this->db->prepare(
+            "UPDATE vehiculo SET cantidad_vehiculo=?, patente=?, numero_chasis=?, numero_motor=?,
+             fecha_ingreso=?, tipo_vehiculo_id=?, modelo_vehiculo_id=?, estado_taller=?,
+             kilometraje=?, anio=?, cliente_id=? WHERE id=?"
+        );
+        $stmt->bind_param('issssiisiiii', $d['cantidad'], $d['patente'], $d['chasis'], $d['motor'], $d['fecha'],
+                          $d['tipo_id'], $d['modelo_id'], $d['estado'], $d['km'], $d['anio'], $d['cliente'], $id);
+        return $stmt->execute() ? ['success' => true] : ['error' => 'Error al actualizar el vehículo'];
     }
 
     // Cambia solo el estado del taller (lo usa el desplegable del listado)
     public function cambiarEstado($id, $estado) {
         // si el estado no está en la lista, no se guarda
         if (!in_array($estado, self::$estadosTaller, true)) return false;
+        $id = (int)$id;
 
         $stmt = $this->db->prepare("UPDATE vehiculo SET estado_taller = ? WHERE id = ?");
         $stmt->bind_param('si', $estado, $id);

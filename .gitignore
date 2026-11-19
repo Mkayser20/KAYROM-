@@ -1,2 +1,5 @@
 /vendor/
 .env
+
+# backups de la base: tienen datos reales, no se suben a git
+backup*.sql

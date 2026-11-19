@@ -10,6 +10,8 @@ $msgTexts = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Token CSRF: public/js/alertas.js lo agrega solo a cada formulario y a cada fetch -->
+    <meta name="csrf-token" content="<?= htmlspecialchars(CsrfToken::obtener(), ENT_QUOTES, 'UTF-8') ?>">
     <title>Kayrom</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="public/css/style.css">

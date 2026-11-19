@@ -4,6 +4,9 @@
 class PermisoModel {
     private $db; //conexión a la base de datos
 
+    // Módulos que se pueden asignar con los checkboxes (cualquier otro valor que llegue se ignora)
+    const MODULOS = ['vehiculos', 'clientes', 'repuestos', 'pedidos', 'proveedores', 'movimientos'];
+
     public function __construct() {
         $this->db = Database::getInstance()->getConexion();
     }
@@ -30,7 +33,8 @@ class PermisoModel {
         $stmt->bind_param('i', $usuario_id);
         $stmt->execute();
 
-        //luego, insertar los nuevos permisos (si hay alguno)
+        //luego, insertar los nuevos permisos (si hay alguno), solo los que existen de verdad
+        $modulos = is_array($modulos) ? array_unique(array_intersect($modulos, self::MODULOS)) : [];
         if (!empty($modulos)) {
             $stmt = $this->db->prepare("INSERT INTO permiso_usuario (usuario_id, modulo) VALUES (?, ?)");
             foreach ($modulos as $modulo) {

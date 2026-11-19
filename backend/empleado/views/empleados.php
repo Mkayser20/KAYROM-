@@ -2,7 +2,8 @@
 
 <div class="page-header">
     <h1>Empleados</h1>
-    <button type="button" class="btn btn-primary" onclick="abrirEmpleadoModal('create')">＋ Nuevo Empleado</button>
+    <!-- El alta se hace en Registrar usuario: un empleado necesita usuario y contraseña para entrar -->
+    <a href="index.php?page=registrar_usuario" class="btn btn-primary">＋ Nuevo Empleado</a>
 </div>
 
 <div class="panel">
@@ -25,7 +26,7 @@
         <tbody>
             <?php foreach($data['empleados'] as $e): ?>
             <tr>
-                <td style="color:var(--text-muted);"><?= $e['id'] ?></td>
+                <td style="color:var(--text-muted);"><?= (int)$e['id'] ?></td>
                 <td><?= htmlspecialchars($e['nombre'] ?? '-') ?></td>
                 <td><?= htmlspecialchars($e['apellido'] ?? '-') ?></td>
                 <td style="color:var(--text-muted);"><?= htmlspecialchars($e['rango_trabajo'] ?? '-') ?></td>

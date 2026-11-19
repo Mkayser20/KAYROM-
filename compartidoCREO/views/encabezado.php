@@ -58,6 +58,8 @@ $esAdmin = ($rolUsuario === 'admin');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Token CSRF: public/js/alertas.js lo agrega solo a cada formulario y a cada fetch -->
+    <meta name="csrf-token" content="<?= htmlspecialchars(CsrfToken::obtener(), ENT_QUOTES, 'UTF-8') ?>">
     <title>KAYROM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -154,10 +156,13 @@ $esAdmin = ($rolUsuario === 'admin');
     </a>
      <?php endif; ?>
 
+    <!-- Realizar pedido: necesita el permiso de Pedidos (porque genera pedidos) -->
+    <?php if ($esAdmin || in_array('pedidos', $permisos)): ?>
     <a href="index.php?page=carrito" class="nav-icon-btn <?= $activePage==='carrito'?'active':'' ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="tooltip">Realizar pedido</span>
     </a>
+    <?php endif; ?>
     <?php if ($esAdmin): ?>
     <a href="index.php?page=registrar_usuario&action=registrar_usuario" class="nav-icon-btn <?= $activePage==='registrar_usuario'?'active':'' ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>

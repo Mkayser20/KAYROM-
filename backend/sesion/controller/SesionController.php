@@ -19,18 +19,23 @@ class SesionController {
                 $error = 'Completá todos los campos.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Ingresá un correo electrónico válido.';
+            } elseif ($this->model->estaBloqueado($email, $_SERVER['REMOTE_ADDR'] ?? '')) {
+                // demasiados intentos fallidos seguidos: se frena un rato
+                $error = 'Demasiados intentos fallidos. Esperá ' . UsuarioModel::MINUTOS_BLOQUEO . ' minutos y probá de nuevo.';
             } else {
                 $user = $this->model->findByEmail($email);
                 if ($user && password_verify($pass, $user['contrasena_usuario'])) {
+                    $this->model->limpiarIntentos($email);
                     session_regenerate_id(true);
                     $_SESSION['usuario_id'] = $user['id'];
                     $_SESSION['nombre_usuario'] = $user['nombre_usuario'];
                     $_SESSION['nombre']     = $user['nombre'] ?? $user['nombre_usuario'];
                     $_SESSION['email']      = $user['email'];
-                    $_SESSION['rol']        = $user['rol_nombre'] ?? 'Usuario';
+                    $_SESSION['rol']        = $user['rol_nombre'] ?? 'empleado';
                     header('Location: index.php?page=inicio');
                     exit;
                 } else {
+                    $this->model->registrarIntentoFallido($email, $_SERVER['REMOTE_ADDR'] ?? '');
                     $error = 'Correo o contraseña incorrectos.';
                 }
             }
@@ -53,7 +58,7 @@ class SesionController {
             $telefono = trim($_POST['telefono_persona'] ?? '');
             $usuario = trim($_POST['nombre_usuario']  ?? '');
             $email   = trim($_POST['email']           ?? '');
-            $rol     = trim($_POST['rol']             ?? 'empleado');
+            $rol     = UsuarioModel::normalizarRol($_POST['rol'] ?? 'empleado'); // "Admin" o "ADMIN" quedan como "admin"
             $activo  = (int)($_POST['activo'] ?? 1);
             $modulos = $_POST['modulos'] ?? [];
             $pass    = $_POST['contrasena_usuario']   ?? '';
@@ -85,7 +90,7 @@ class SesionController {
                         'nombre_usuario'     => $usuario,
                         'email'              => $email,
                         'contrasena_usuario' => $pass,
-                        'rol'                => $rol ?: 'empleado',
+                        'rol'                => $rol,
                         'activo'             => $activo,
                     ];
                 // create() ahora devuelve el id del usuario nuevo (o false si falló)
@@ -113,6 +118,10 @@ class SesionController {
     }
 
      public function cerrarSesion() {
+        // se vacían los datos y se borra la cookie de la sesión, no solo se destruye
+        $_SESSION = [];
+        $p = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 3600, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
         session_destroy();
         header('Location: index.php?page=iniciar_sesion');
         exit;
@@ -135,14 +144,14 @@ class SesionController {
 
                 if ($resultado) {
                     $enviado = $this->enviarEmailRecuperacion($email, $resultado['nombre'], $resultado['token']);
-                    if ($enviado) {
-                        $success = 'Te enviamos un enlace a <strong>' . htmlspecialchars($email) . '</strong>. Revisá tu bandeja (y spam).';
-                    } else {
-                        $error = 'No se pudo enviar el email. Intentá más tarde.';
+                    if (!$enviado && APP_ENV !== 'production') {
+                        // en desarrollo se muestra el problema para poder arreglar la configuración del mail
+                        $error = 'No se pudo enviar el email. Revisá MAIL_USER y MAIL_PASS en el archivo .env (el detalle quedó en el log de PHP).';
                     }
-                } else {
-                    //no revelar si el email existe o no
-                    $success = 'Si ese correo está registrado, recibirás un enlace para restablecer tu contraseña.';
+                }
+                // Siempre el mismo mensaje, exista o no el correo: así nadie puede averiguar qué emails están registrados
+                if ($error === '') {
+                    $success = 'Si ese correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisá tu bandeja (y spam).';
                 }
             }
         }
@@ -153,6 +162,7 @@ class SesionController {
 
     public function restablecerClave() {
         $token  = $_GET['token'] ?? '';
+        if (!is_string($token)) $token = ''; // si mandan un array en vez de texto, se toma como vacío
         $error  = '';
         $usuario = null;
 
@@ -187,24 +197,49 @@ class SesionController {
     private function enviarEmailRecuperacion(string $email, string $nombre, string $token): bool {
         require_once 'vendor/autoload.php';
 
+        // Sin usuario o contraseña de mail no hay nada que probar: se avisa en el log con un mensaje claro
+        if (MAIL_USER === '' || MAIL_PASS === '') {
+            error_log('[KAYROM Mail] Faltan MAIL_USER o MAIL_PASS en el archivo .env');
+            return false;
+        }
+
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
+            // Los datos del mail salen del archivo .env (config.php los carga en estas constantes).
+            // Antes estaban vacíos acá ('') y por eso el email de recuperación nunca se enviaba.
+            $mail->Host       = MAIL_HOST ?: 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = '';
-            $mail->Password   = '';     
-            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
+            $mail->Username   = MAIL_USER;
+            $mail->Password   = MAIL_PASS;
+            // tls = STARTTLS (587), ssl = SMTPS (465), none = sin cifrado (solo pruebas locales)
+            if (MAIL_SECURE === 'ssl') {
+                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            } elseif (MAIL_SECURE === 'none') {
+                $mail->SMTPSecure  = '';
+                $mail->SMTPAutoTLS = false;
+            } else {
+                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            }
+            $mail->Port       = (int)MAIL_PORT;
+            $mail->Timeout    = 15;            // si Gmail no responde, no se cuelga la página
             $mail->CharSet    = 'UTF-8';
+            // En desarrollo la conversación completa con el servidor SMTP queda en el log de PHP
+            if (APP_ENV !== 'production') {
+                $mail->SMTPDebug   = \PHPMailer\PHPMailer\SMTP::DEBUG_SERVER;
+                $mail->Debugoutput = 'error_log';
+            }
 
-            $mail->setFrom('', 'Kayrom — Sistema');
+            $mail->setFrom(MAIL_USER, 'Kayrom — Sistema');
             $mail->addAddress($email, $nombre);
 
-            $link = (isset($_SERVER['HTTPS']) ? 'https' : 'http')
-                  . '://' . $_SERVER['HTTP_HOST']
-                  . dirname($_SERVER['PHP_SELF'])
-                  . '/index.php?page=restablecer_clave&token=' . $token;
+            // El link usa APP_URL del .env si está configurado. Si no, se arma con el servidor actual.
+            // (Usar siempre HTTP_HOST permitiría que alguien manipule el dominio del link.)
+            $base = APP_URL !== ''
+                ? rtrim(APP_URL, '/')
+                : (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+            $link = $base . '/index.php?page=restablecer_clave&token=' . urlencode($token);
+            $nombre = htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); // el nombre va dentro del HTML del mail
 
             $mail->isHTML(true);
             $mail->Subject = 'Restablecer contraseña — Kayrom';
@@ -218,11 +253,13 @@ class SesionController {
                     <p style='color:#4b5563;font-size:12px;margin-top:8px;'>Si no solicitaste este cambio, ignorá este email.</p>
                 </div>
             ";
-            $mail->AltBody = "Restablecer contraseña Kayrom: {$link} (expira en 1 hora)";
+            $mail->AltBody = "Restablecer contraseña SISTEMA-KAYROM: {$link} (expira en 1 hora)";
 
             $mail->send();
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // ErrorInfo trae el motivo que dio el servidor (usuario/clave rechazados, no conecta, etc.)
+            error_log('[KAYROM Mail] No se pudo enviar el email de recuperación: ' . $mail->ErrorInfo . ' | ' . $e->getMessage());
             return false;
         }
     }

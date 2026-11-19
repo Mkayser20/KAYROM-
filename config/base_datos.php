@@ -7,11 +7,18 @@ class Database {
     public $conexion;
 
     private function __construct() {
-        $this->conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-        $this->conexion->set_charset(DB_CHARSET);
+        // Que mysqli tire excepciones cuando algo falla (así los try/catch de las transacciones funcionan)
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-        if ($this->conexion->connect_error) {
-            die("Error de conexión: " . $this->conexion->connect_error);
+        try {
+            $this->conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+            // el charset se configura recién cuando ya sabemos que la conexión anduvo
+            $this->conexion->set_charset(DB_CHARSET);
+        } catch (mysqli_sql_exception $e) {
+            // el detalle va al log; al usuario no se le muestran datos del servidor
+            error_log('[KAYROM BD] ' . $e->getMessage());
+            http_response_code(500);
+            die('No se pudo conectar a la base de datos. Revisá que MySQL esté encendido y los datos del archivo .env.');
         }
     }
 

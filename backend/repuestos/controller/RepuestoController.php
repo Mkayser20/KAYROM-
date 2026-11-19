@@ -59,19 +59,29 @@ class RepuestoController {
             // suma el stock inicial, así queda el movimiento anotado de forma real.
             $stockInicial   = max(0, (int)($_POST['stock'] ?? 0));
             $_POST['stock'] = 0;
-            $nuevoId = $this->model->create($_POST);
-
             $nombreRepuesto = trim($_POST['nombre'] ?? '');
 
-            // Si subió una imagen, se guarda su nombre en el repuesto (si no se pudo crear, se descarta el archivo)
-            if ($nuevoId && $img['archivo']) {
-                $this->model->setImagen($nuevoId, $img['archivo']);
-            } elseif ($img['archivo']) {
-                SubidaImagen::borrar($img['archivo'], self::CARPETA_IMAGENES);
-            }
+            // Alta + imagen + stock inicial, todo junto: si algo falla no queda un repuesto a medias
+            $db = Database::getInstance()->getConexion();
+            Tx::iniciar($db);
+            try {
+                $nuevoId = $this->model->create($_POST);
+                if (!$nuevoId) throw new Exception('No se pudo crear el repuesto.');
 
-            if ($nuevoId && $stockInicial > 0) {
-                $this->stock->entrada($nuevoId, $stockInicial, 'Alta', null, 'Alta de repuesto: ' . $nombreRepuesto);
+                if ($img['archivo']) {
+                    $this->model->setImagen($nuevoId, $img['archivo']);
+                }
+                if ($stockInicial > 0) {
+                    $res = $this->stock->entrada($nuevoId, $stockInicial, 'Alta', null, 'Alta de repuesto: ' . $nombreRepuesto);
+                    if (!$res['ok']) throw new Exception($res['error']);
+                }
+                if (!Tx::terminar($db, true)) throw new Exception('No se pudo crear el repuesto.');
+            } catch (Throwable $e) {
+                Tx::terminar($db, false);
+                // si no se pudo crear, se descarta la imagen que ya se había guardado
+                SubidaImagen::borrar($img['archivo'], self::CARPETA_IMAGENES);
+                error_log('[KAYROM Repuesto] ' . $e->getMessage());
+                $this->responderError('No se pudo crear el repuesto. Revisá los datos e intentá de nuevo.');
             }
 
             // AUDITORÍA: Registro de creación
@@ -96,7 +106,7 @@ class RepuestoController {
 
     // editar un repuesto existente
     public function edit() {
-        $id = $_GET['id'] ?? 0;
+        $id = (int)($_GET['id'] ?? 0); // siempre número
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->prepararCategoria();
@@ -122,6 +132,9 @@ class RepuestoController {
             // El stock tampoco se cambia directo: si el usuario cambió el número,
             // el StockService lo registra como "Ajuste manual" en Movimientos.
             $anterior   = $this->model->getById($id);
+            if (!$anterior) {
+                $this->responderError('El repuesto no existe.');
+            }
 
             // Primero reviso la imagen nueva (si mandó una): si no sirve, no se cambia nada
             $img = $this->recibirImagen();
@@ -130,8 +143,20 @@ class RepuestoController {
             $nuevoStock = max(0, (int)($_POST['stock'] ?? 0));
             $_POST['stock'] = $anterior['stock'] ?? 0; // el update de datos no toca el stock
 
-            $this->model->update($id, $_POST);
-            $this->stock->ajustarA($id, $nuevoStock, 'Ajuste manual', null, 'Ajuste manual desde la edición del repuesto');
+            // Datos + ajuste de stock juntos: antes eran dos pasos separados y uno podía fallar sin el otro
+            $db = Database::getInstance()->getConexion();
+            Tx::iniciar($db);
+            try {
+                if (!$this->model->update($id, $_POST)) throw new Exception('No se pudo actualizar el repuesto.');
+                $res = $this->stock->ajustarA($id, $nuevoStock, 'Ajuste manual', null, 'Ajuste manual desde la edición del repuesto');
+                if (!$res['ok']) throw new Exception($res['error']);
+                if (!Tx::terminar($db, true)) throw new Exception('No se pudo actualizar el repuesto.');
+            } catch (Throwable $e) {
+                Tx::terminar($db, false);
+                SubidaImagen::borrar($img['archivo'], self::CARPETA_IMAGENES);
+                error_log('[KAYROM Repuesto] ' . $e->getMessage());
+                $this->responderError('No se pudo guardar el repuesto. Revisá los datos e intentá de nuevo.');
+            }
 
             // Imagen: una nueva reemplaza a la anterior; "quitar" la borra
             $cambioImagen = false;
@@ -300,6 +325,17 @@ class RepuestoController {
             'activePage'  => 'repuestos'
         ];
         require_once 'backend/repuestos/views/repuesto_form.php';
+        exit;
+    }
+
+    // Error al guardar: desde el modal devuelvo el motivo en texto; si no, vuelvo al listado con aviso
+    private function responderError($mensaje) {
+        if (!empty($_POST['ajax'])) {
+            http_response_code(422);
+            echo $mensaje;
+            exit;
+        }
+        header('Location: index.php?page=repuestos&msg=error');
         exit;
     }
 

@@ -91,7 +91,6 @@
             <form method="POST" action="index.php?page=pedidos&action=create" onsubmit="return enviarModalForm(this, event, 'toast-error-pedido')">
                 <input type="hidden" name="ajax" value="1">
                 <div id="toast-error-pedido" class="toast-error"></div>
-                <input type="hidden" name="numero_unico" value="<?= rand(1000,9999) ?>">
 
                 <div class="form-group">
                     <label>Proveedor</label>

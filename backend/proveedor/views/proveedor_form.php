@@ -20,14 +20,14 @@ $isEdit = !empty($p);
             </div>
             <div class="form-group">
                 <label>CUIT</label>
-                <input type="number" name="cuit" value="<?= $p['cuit'] ?? '' ?>">
+                <input type="number" name="cuit" value="<?= htmlspecialchars((string)($p['cuit'] ?? '')) ?>">
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label>Teléfono</label>
-                <input type="number" name="telefono" value="<?= $p['telefono'] ?? '' ?>">
+                <input type="text" name="telefono" value="<?= htmlspecialchars((string)($p['telefono'] ?? '')) ?>">
             </div>
             <div class="form-group">
                 <label>Email</label>

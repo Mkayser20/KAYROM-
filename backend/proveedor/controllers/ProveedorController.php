@@ -25,18 +25,20 @@ class ProveedorController {
         $error = '';
         //si es POST, guardar nuevo proveedor
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if ($this->model->create($_POST)) {
+            $nuevoId = $this->model->create($_POST);
+            if ($nuevoId) {
                 $nombreProveedor = trim($_POST['nombre_proveedor'] ?? '');
                 $this->auditoria->registrar(
                     'CREAR',
                     'Proveedores',
-                    "Alta de proveedor: $nombreProveedor"
+                    "Alta de proveedor: $nombreProveedor",
+                    $nuevoId
                 );
                 //éxito: redirigir a lista con mensaje
                 header('Location: index.php?page=proveedores&msg=created');
                 exit;
             } else {
-                $error = 'Error al guardar el proveedor.';
+                $error = $this->model->error ?: 'Error al guardar el proveedor.';
                 if (!empty($_POST['ajax'])) {
                     http_response_code(422);
                     echo $error;
@@ -51,7 +53,7 @@ class ProveedorController {
 
     //editar un proveedor existente
     public function edit() {
-        $id = $_GET['id'] ?? 0;
+        $id = (int)($_GET['id'] ?? 0); // siempre número: así no se puede meter texto en la consulta
         $error = '';
         //si es POST, actualizar proveedor
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -67,7 +69,7 @@ class ProveedorController {
                 header('Location: index.php?page=proveedores&msg=updated');
                 exit;
             } else {
-                $error = 'Error al actualizar.';
+                $error = $this->model->error ?: 'Error al actualizar.';
                 if (!empty($_POST['ajax'])) {
                     http_response_code(422);
                     echo $error;

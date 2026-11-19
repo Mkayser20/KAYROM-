@@ -26,10 +26,10 @@ class CarritoController {
         $cantidad    = (int)($_POST['cantidad'] ?? 1);
         if ($cantidad < 1) $cantidad = 1;
 
-        $this->model->agregar($usuario_id, $repuesto_id, $cantidad);
+        $ok = $this->model->agregar($usuario_id, $repuesto_id, $cantidad);
 
         // Vuelve al listado de repuestos para seguir agregando
-        header('Location: index.php?page=repuestos&msg=agregado');
+        header('Location: index.php?page=repuestos&msg=' . ($ok ? 'agregado' : 'error'));
         exit;
     }
 
@@ -95,7 +95,6 @@ class CarritoController {
 
             $pedidoId = $pedidoModel->create([
                 'responsable_pedido' => $responsable,
-                'numero_unico'       => rand(1000, 9999),
                 'proveedor_id'       => $grupo['proveedor_id'],
             ], $renglones);
 
@@ -108,7 +107,11 @@ class CarritoController {
         }
 
         $this->model->vaciar($usuario_id);
-        Tx::terminar($db, true);
+        // Tx::terminar devuelve false si algún paso de adentro falló (en ese caso se deshizo todo)
+        if (!Tx::terminar($db, true)) {
+            header('Location: index.php?page=carrito&msg=error');
+            exit;
+        }
 
         // Auditoría: queda registrado quién generó qué pedidos
         foreach ($creados as $pid) {

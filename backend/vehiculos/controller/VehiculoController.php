@@ -166,7 +166,7 @@ class VehiculoController {
         $data = [
             'vehiculo'   => $this->model->getById($id),
             'ordenes'    => $ordenModel->getByVehiculo($id),
-            'mecanicos'  => (new EmpleadoModel())->getAll(),
+            'mecanicos'  => (new EmpleadoModel())->getActivos(), // solo los activos se pueden asignar
             'repuestos'  => (new RepuestoModel())->getAll(),
             'activePage' => 'vehiculos'
         ];

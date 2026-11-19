@@ -95,19 +95,39 @@ $v = $data['vehiculo'];
                                 <span style="color:var(--text-dim);">Sin repuestos</span>
                             <?php else: ?>
                                 <?php foreach ($orden['items'] as $it): ?>
-                                    <div style="font-size:12px;color:var(--text-muted);"><?= (int)$it['cantidad'] ?>x <?= htmlspecialchars($it['nombre']) ?></div>
+                                    <div style="font-size:12px;color:var(--text-muted);">
+                                        <?= (int)$it['cantidad'] ?>x <?= htmlspecialchars($it['nombre']) ?>
+                                        <?php if ((int)$it['cantidad_pendiente'] > 0): ?>
+                                            <!-- lo que faltaba en stock y todavía no llegó -->
+                                            <span style="color:var(--accent-orange);font-weight:600;">(faltan <?= (int)$it['cantidad_pendiente'] ?>)</span>
+                                        <?php endif; ?>
+                                    </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </td>
                         <td style="white-space:nowrap;"><?= '$' . number_format($orden['total_repuestos'], 2, ',', '.') ?></td>
                         <td>
-                            <span class="badge-status <?= $orden['estado'] === 'Cerrada' ? 'disponible' : 'reparacion' ?>"><?= htmlspecialchars($orden['estado']) ?></span>
+                            <?php $claseEstado = ['Cerrada' => 'disponible', 'Anulada' => 'vendido'][$orden['estado']] ?? 'reparacion'; ?>
+                            <span class="badge-status <?= $claseEstado ?>"><?= htmlspecialchars($orden['estado']) ?></span>
                         </td>
                         <td>
-                            <?php if ($orden['estado'] !== 'Cerrada'): ?>
-                            <a href="index.php?page=ordenes&action=cerrar&id=<?= $orden['id'] ?>&vehiculo_id=<?= $v['id'] ?>"
-                               class="btn btn-ghost" style="font-size:11px;padding:4px 10px;"
-                               onclick="return confirmarAccion(this.href, '¿Marcar esta orden como cerrada?')">Cerrar</a>
+                            <?php if ($orden['estado'] === 'Abierta'): ?>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <?php if ($orden['pendientes'] > 0): ?>
+                                <!-- descuenta del stock actual lo que le faltaba a la orden (si ya hay) -->
+                                <a href="index.php?page=ordenes&action=descontarPendientes&id=<?= (int)$orden['id'] ?>"
+                                   class="btn btn-ghost" style="font-size:11px;padding:4px 10px;"
+                                   onclick="return confirmarAccion(this.href, '¿Descontar del stock los repuestos que le faltaban a esta orden?', {titulo: 'Descontar pendientes', confirmar: 'Sí, descontar'})">Descontar pendientes</a>
+                                <?php else: ?>
+                                <a href="index.php?page=ordenes&action=cerrar&id=<?= (int)$orden['id'] ?>"
+                                   class="btn btn-ghost" style="font-size:11px;padding:4px 10px;"
+                                   onclick="return confirmarAccion(this.href, '¿Marcar esta orden como cerrada?')">Cerrar</a>
+                                <?php endif; ?>
+                                <!-- anular: devuelve al stock lo usado y cancela los pedidos automáticos pendientes -->
+                                <a href="index.php?page=ordenes&action=anular&id=<?= (int)$orden['id'] ?>"
+                                   class="btn btn-ghost" style="font-size:11px;padding:4px 10px;color:var(--accent-red);"
+                                   onclick="return confirmarAccion(this.href, 'Los repuestos usados vuelven al stock y se cancelan los pedidos automáticos que no llegaron. ¿Confirmás?', {titulo: 'Anular orden', confirmar: 'Sí, anular'})">Anular</a>
+                            </div>
                             <?php endif; ?>
                         </td>
                     </tr>

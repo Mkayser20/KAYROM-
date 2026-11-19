@@ -16,24 +16,44 @@ require_once 'compartidoCREO/models/CsrfToken.php';
 //lee que pagina y accion se piden por url, por defecto muestra el inicio
 $page   = $_GET['page']   ?? 'iniciar_sesion';
 $action = $_GET['action'] ?? 'index';
+if (!is_string($page)) {
+    $page = '';
+}
 if (!is_string($action)) {
     $action = '';
 }
 
-if (preg_match('/^(?:delete|eliminar)/i', $action)) {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        http_response_code(405);
-        header('Allow: POST');
-        exit('Esta acción requiere una solicitud POST.');
-    }
-    if (!CsrfToken::validar($_POST['csrf_token'] ?? null)) {
+// Acciones que CAMBIAN datos y por eso solo se aceptan por POST.
+// Antes algunas (recibir un pedido, cerrar una orden, el carrito...) se hacían con un link GET:
+// cualquier página de afuera podía disparar esas acciones con una imagen o un link.
+$accionesSoloPost = ['recibir', 'cerrar', 'anular', 'descontarPendientes', 'agregar', 'quitar', 'cambiar',
+                     'solicitar', 'favorito', 'cambiarEstado', 'cambiarActivo'];
+$esSoloPost = preg_match('/^(?:delete|eliminar|crear|editar)/i', $action)
+           || in_array($action, $accionesSoloPost, true)
+           || $page === 'logout';
+
+if ($esSoloPost && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Esta acción requiere una solicitud POST.');
+}
+
+// CSRF: TODO lo que llega por POST tiene que traer el token de la sesión
+// (en un campo oculto csrf_token, o en el encabezado X-CSRF-Token cuando es por fetch/AJAX).
+// El token lo agrega solo public/js/alertas.js a cada formulario y a cada fetch.
+// Las pantallas públicas (login y recuperar clave) quedan afuera porque todavía no hay sesión.
+$paginasSinCsrf = ['iniciar_sesion', 'recuperar_clave', 'restablecer_clave'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !in_array($page, $paginasSinCsrf, true)) {
+    $tokenRecibido = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null);
+    if (!CsrfToken::validar($tokenRecibido)) {
         http_response_code(403);
         exit('La solicitud no es válida o expiró. Recargá la página e intentá de nuevo.');
     }
 }
 
 function despacharAccion($controlador, $accion) {
-    if (!is_callable([$controlador, $accion])) {
+    // no se permite llamar a métodos "mágicos" de PHP (__construct, etc.) desde la URL
+    if ($accion === '' || str_starts_with($accion, '_') || !is_callable([$controlador, $accion])) {
         http_response_code(404);
         header('Content-Type: text/plain; charset=UTF-8');
         exit('La acción solicitada no existe.');
@@ -47,7 +67,6 @@ require_once 'config/base_datos.php';
 require_once 'compartidoCREO/models/StockService.php';
 require_once 'compartidoCREO/models/UsuarioModel.php';
 require_once 'backend/vehiculos/model/VehiculoModel.php';
-require_once 'backend/producto/model/ProductoModel.php';
 require_once 'backend/pedidos/model/PedidoModel.php';
 require_once 'backend/empleado/models/EmpleadoModel.php';
 require_once 'backend/proveedor/models/ProveedorModel.php';
@@ -62,7 +81,6 @@ require_once 'backend/auditoria/controllers/AuditoriaController.php';
 require_once 'backend/sesion/controller/SesionController.php';
 require_once 'backend/inicio/controllers/InicioController.php';
 require_once 'backend/vehiculos/controller/VehiculoController.php';
-require_once 'backend/producto/controller/ProductoController.php';
 require_once 'backend/ordenes/controllers/OrdenTrabajoController.php';
 require_once 'backend/complementos/controllers/ComplementoController.php';
 require_once 'backend/clientes/controllers/ClienteController.php';
@@ -74,6 +92,21 @@ require_once 'backend/ayuda/controllers/AyudaController.php';
 
 //paginas que se pueden ver sin estar logueado
 $paginasPublicas = ['iniciar_sesion', 'logout', 'recuperar_clave', 'restablecer_clave'];
+
+// Si hay sesión, vuelvo a leer el usuario de la base en cada pedido.
+// Antes el rol y el estado quedaban guardados en la sesión: si el admin desactivaba a alguien,
+// esa persona seguía entrando hasta que cerrara sesión.
+if (!empty($_SESSION['usuario_id'])) {
+    $usuarioActual = (new UsuarioModel())->getEstadoSesion((int)$_SESSION['usuario_id']);
+    if (!$usuarioActual || (int)$usuarioActual['activo'] !== 1) {
+        // lo desactivaron o lo borraron: se cierra la sesión
+        $_SESSION = [];
+        session_destroy();
+        header('Location: index.php?page=iniciar_sesion');
+        exit;
+    }
+    $_SESSION['rol'] = $usuarioActual['rol']; // si le cambiaron el rol, se aplica enseguida
+}
 
 //si la pagina no es publica y no hay sesion activa, redirige al login
 if (!in_array($page, $paginasPublicas) && empty($_SESSION['usuario_id'])) {
@@ -94,19 +127,30 @@ if (in_array($page, $paginasAdmin) && ($_SESSION['rol'] ?? '') !== 'admin') {
 // Si el usuario no es admin, verifica si tiene permiso para acceder al módulo
 if (!empty($_SESSION['usuario_id']) && ($_SESSION['rol'] ?? '') !== 'admin') {
 
-    // Páginas que cualquier usuario logueado puede ver (sin importar permisos)
-    $paginasLibres = ['inicio', 'logout', 'iniciar_sesion', 'ayuda'];
+    // Qué permiso hace falta para cada página.
+    // Antes "ordenes" y "carrito" no estaban acá: cualquier empleado podía crear órdenes de trabajo
+    // (que descuentan stock) o generar pedidos aunque no tuviera esos módulos.
+    $permisoRequerido = [
+        'vehiculos'   => 'vehiculos',
+        'ordenes'     => 'vehiculos',   // las órdenes se manejan desde la ficha del vehículo
+        'clientes'    => 'clientes',
+        'repuestos'   => 'repuestos',
+        'pedidos'     => 'pedidos',
+        'carrito'     => 'pedidos',     // "Realizar pedido" genera pedidos
+        'proveedores' => 'proveedores',
+        'movimientos' => 'movimientos',
+    ];
 
-    // Módulos asignables por checkbox: si el page coincide, hay que chequear
-    $modulosAsignables = ['vehiculos', 'repuestos', 'pedidos', 'proveedores', 'productos', 'movimientos', 'clientes'];
-
-    //si la pagina pedida es un modulo asignable, verifica si el usuario tiene permiso
-    if (in_array($page, $modulosAsignables)) {
-        require_once 'compartidoCREO/models/PermisoModel.php';
+    //si la pagina pedida necesita un permiso, verifica que el usuario lo tenga
+    if (isset($permisoRequerido[$page])) {
         $permisoModel = new PermisoModel();
 
-        //si no tiene permiso, redirige al inicio
-        if (!$permisoModel->tienePermiso($_SESSION['usuario_id'], $page)) {
+        //si no tiene permiso, redirige al inicio (o avisa, si era un pedido por AJAX)
+        if (!$permisoModel->tienePermiso($_SESSION['usuario_id'], $permisoRequerido[$page])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                http_response_code(403);
+                exit('No tenés permiso para usar este módulo.');
+            }
             header('Location: index.php?page=inicio');
             exit;
         }
@@ -145,11 +189,6 @@ switch ($page) {
 
     case 'vehiculos':
         $c = new VehiculoController();
-        despacharAccion($c, $action);
-        break;
-
-    case 'productos':
-        $c = new ProductoController();
         despacharAccion($c, $action);
         break;
 

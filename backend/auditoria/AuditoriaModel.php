@@ -5,15 +5,15 @@ class AuditoriaModel
 
     public function __construct()
     {
-       require_once __DIR__ . '/../../config/base_datos.php';
-        
-        $this->db = Database::getInstance()->getConexion();
+        require_once __DIR__ . '/../../config/base_datos.php';
 
-         if (session_status() === PHP_SESSION_NONE) {
-             session_start();
-        }
+        $this->db = Database::getInstance()->getConexion();
+        // la sesión ya la abre index.php: un modelo no debería abrirla
     }
 
+    // Anota una acción en la auditoría.
+    // Si por algún motivo no se puede anotar, NO corta la operación que el usuario ya hizo:
+    // antes hacía die("DIAGNÓSTICO...") y mostraba errores internos en pantalla.
     public function registrar(
         $accion,
         $modulo,
@@ -22,37 +22,25 @@ class AuditoriaModel
         $usuario_id = null
     ) {
         if ($usuario_id === null) {
-            $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
+            $usuario_id = isset($_SESSION['usuario_id']) ? (int)$_SESSION['usuario_id'] : null;
         }
 
         $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+        $descripcion = mb_substr((string)$descripcion, 0, 255); // la columna admite 255 caracteres
+        $registro_id = $registro_id !== null && $registro_id !== false ? (int)$registro_id : null;
 
-        $sql = "INSERT INTO auditorias (usuario_id, accion, modulo, descripcion, registro_id, ip) VALUES (?, ?, ?, ?, ?, ?)";
-
-        $stmt = $this->db->prepare($sql);
-
-        // 2. Verificar si la consulta se prepara bien
-        if (!$stmt) {
-            die("DIAGNÓSTICO ERROR PREPARE: " . $this->db->error);
+        try {
+            $stmt = $this->db->prepare(
+                "INSERT INTO auditorias (usuario_id, accion, modulo, descripcion, registro_id, ip) VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            $stmt->bind_param("isssis", $usuario_id, $accion, $modulo, $descripcion, $registro_id, $ip);
+            $stmt->execute();
+            $stmt->close();
+            return true;
+        } catch (Throwable $e) {
+            error_log('[KAYROM Auditoría] ' . $e->getMessage());
+            return false;
         }
-
-        $stmt->bind_param(
-            "isssis",
-            $usuario_id,
-            $accion,
-            $modulo,
-            $descripcion,
-            $registro_id,
-            $ip
-        );
-
-        // 3. Verificar si falla la ejecución
-        if (!$stmt->execute()) {
-            die("DIAGNÓSTICO ERROR EXECUTE: " . $stmt->error);
-        }
-
-        $stmt->close();
-         return true;
     }
 
     public function getAll() {

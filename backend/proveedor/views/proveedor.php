@@ -29,8 +29,8 @@
                 <tr>
                     <td><?= $p['id'] ?></td>
                     <td><strong><?= htmlspecialchars($p['nombre_proveedor']) ?></strong></td>
-                    <td><?= $p['cuit'] ?></td>
-                    <td><?= $p['telefono'] ?></td>
+                    <td><?= htmlspecialchars((string)$p['cuit']) ?></td>
+                    <td><?= htmlspecialchars((string)$p['telefono']) ?></td>
                     <td><?= htmlspecialchars($p['email']) ?></td>
                     <td>
                         <div class="action-icons">
@@ -78,7 +78,7 @@
                     </div>
                     <div class="form-group">
                         <label>Teléfono</label>
-                        <input type="number" name="telefono" id="pv-telefono">
+                        <input type="text" name="telefono" id="pv-telefono">
                     </div>
                 </div>
                 <div class="form-group">

@@ -34,9 +34,9 @@
                         <td style="color:var(--text-muted);">$<?= number_format($item['precio'], 2, ',', '.') ?></td>
                         <td>
                             <div class="action-icons">
-                                <a href="index.php?page=carrito&action=cambiar&id=<?= $item['id'] ?>&delta=-1" class="action-edit" title="Quitar uno"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
+                                <a href="index.php?page=carrito&action=cambiar&id=<?= (int)$item['id'] ?>&delta=-1" onclick="return enviarPost(this.href)" class="action-edit" title="Quitar uno"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
                                 <strong style="margin: 0 8px;"><?= $item['cantidad'] ?></strong>
-                                <a href="index.php?page=carrito&action=cambiar&id=<?= $item['id'] ?>&delta=1" class="action-edit" title="Agregar uno"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
+                                <a href="index.php?page=carrito&action=cambiar&id=<?= (int)$item['id'] ?>&delta=1" onclick="return enviarPost(this.href)" class="action-edit" title="Agregar uno"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
                             </div>
                         </td>
                         <td><strong>$<?= number_format($subtotal, 2, ',', '.') ?></strong></td>

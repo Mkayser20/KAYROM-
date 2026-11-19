@@ -25,7 +25,7 @@ class PedidoModel {
 
     // Los últimos X pedidos (por defecto 5)
     public function getRecent($limit = 5) {
-        $limit = (int)$limit;
+        $limit = max(1, (int)$limit);
         $sql = "SELECT p.*, dp.detalle_pedido
                 FROM pedidos p
                 LEFT JOIN detalle_pedido dp ON dp.id = p.detalle_pedido_id
@@ -37,11 +37,14 @@ class PedidoModel {
     // Un pedido puntual
     public function getById($id) {
         $id = (int)$id;
-        $sql = "SELECT p.*, dp.detalle_pedido FROM pedidos p
-                LEFT JOIN detalle_pedido dp ON dp.id = p.detalle_pedido_id
-                WHERE p.id = $id";
-        $result = $this->db->query($sql);
-        return $result ? $result->fetch_assoc() : null;
+        $stmt = $this->db->prepare(
+            "SELECT p.*, dp.detalle_pedido FROM pedidos p
+             LEFT JOIN detalle_pedido dp ON dp.id = p.detalle_pedido_id
+             WHERE p.id = ?"
+        );
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
     // Los renglones de un pedido (qué repuestos y cuántos)
@@ -127,8 +130,9 @@ class PedidoModel {
             return false;
         }
 
-        $responsable  = $data['responsable_pedido'] ?? '';
-        $numero       = (int)($data['numero_unico'] ?? rand(1000, 9999));
+        $responsable  = mb_substr(trim((string)($data['responsable_pedido'] ?? '')), 0, 45); // la columna admite 45
+        // El número del pedido ya no es al azar (rand se podía repetir): se usa el mismo ID del pedido.
+        $numero       = 0;
         $proveedor_id = !empty($data['proveedor_id'])      ? (int)$data['proveedor_id']      : null;
         $vehiculo_id  = !empty($data['vehiculo_id'])       ? (int)$data['vehiculo_id']       : null;
         $orden_id     = !empty($data['orden_trabajo_id'])  ? (int)$data['orden_trabajo_id']  : null;
@@ -152,6 +156,7 @@ class PedidoModel {
             unset($r);
 
             $detalle = !empty($data['detalle_pedido']) ? $data['detalle_pedido'] : implode(', ', $textos);
+            $detalle = mb_substr((string)$detalle, 0, 500); // la columna admite 500
 
             // 1) El detalle (texto)
             $stmt = $this->db->prepare("INSERT INTO detalle_pedido (detalle_pedido) VALUES (?)");
@@ -169,6 +174,11 @@ class PedidoModel {
             $stmt->execute();
             $pedido_id = $this->db->insert_id;
 
+            // el número del pedido = su ID (así nunca se repite)
+            $stmt = $this->db->prepare("UPDATE pedidos SET numero_unico = id WHERE id = ?");
+            $stmt->bind_param('i', $pedido_id);
+            $stmt->execute();
+
             // 3) Los renglones
             $stmt = $this->db->prepare(
                 "INSERT INTO pedido_item (pedido_id, repuesto_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)"
@@ -179,7 +189,7 @@ class PedidoModel {
                 $stmt->execute();
             }
 
-            Tx::terminar($this->db, true);
+            if (!Tx::terminar($this->db, true)) throw new Exception('falló un paso interno');
             return $pedido_id;
 
         } catch (Throwable $e) {
@@ -191,35 +201,48 @@ class PedidoModel {
 
     // RECIBIR un pedido: llegó la mercadería.
     // Suma cada renglón al stock (con su movimiento) y marca el pedido como "Entregado".
+    // Si el pedido es de una Orden de Trabajo, lo que llegó se descuenta enseguida para esa orden
+    // (antes quedaba sumado al stock aunque ya estuviera puesto en el auto: el stock quedaba inflado).
     // Todo junto: si algo falla, no se cambia nada.
     public function recibir($id) {
         $id = (int)$id;
-        $pedido = $this->getById($id);
-
-        if (!$pedido) return ['ok' => false, 'error' => 'El pedido no existe.'];
-
-        $estado = strtolower($pedido['estado_pedido'] ?? '');
-        if ($estado === 'entregado') return ['ok' => false, 'error' => 'Ese pedido ya fue recibido.'];
-        if ($estado === 'cancelado') return ['ok' => false, 'error' => 'Ese pedido está cancelado.'];
-
-        $items = $this->getItems($id);
-        $stock = new StockService();
 
         Tx::iniciar($this->db);
         try {
-            // Por cada renglón, entra esa cantidad al stock
+            // 1) PRIMERO marco el pedido como recibido, pero solo si todavía no lo estaba.
+            // Antes se revisaba el estado y después se sumaba el stock: con un doble clic
+            // (o dos pestañas) las dos veces veían "Pendiente" y el stock se sumaba dos veces.
+            // Con este UPDATE condicional, la base deja "ganar" a uno solo.
+            $stmt = $this->db->prepare(
+                "UPDATE pedidos SET estado_pedido = 'Entregado', fecha_recepcion = NOW()
+                 WHERE id = ? AND (estado_pedido IS NULL OR estado_pedido NOT IN ('Entregado', 'Cancelado'))"
+            );
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            if ($stmt->affected_rows === 0) {
+                Tx::terminar($this->db, false);
+                return ['ok' => false, 'error' => 'El pedido no existe, ya fue recibido o está cancelado.'];
+            }
+
+            $pedido = $this->getById($id);
+            $items  = $this->getItems($id);
+            $stock  = new StockService();
+
+            // 2) Por cada renglón, entra esa cantidad al stock
+            $recibidos = [];
             foreach ($items as $it) {
                 $res = $stock->entrada($it['repuesto_id'], $it['cantidad'], 'Pedido', $id,
                                        "Recepción del pedido #$id: {$it['cantidad']} x {$it['nombre']}");
                 if (!$res['ok']) throw new Exception($res['error']);
+                $recibidos[$it['repuesto_id']] = ($recibidos[$it['repuesto_id']] ?? 0) + (int)$it['cantidad'];
             }
 
-            // Marco el pedido como recibido
-            $stmt = $this->db->prepare("UPDATE pedidos SET estado_pedido = 'Entregado', fecha_recepcion = NOW() WHERE id = ?");
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
+            // 3) Si el pedido era para una Orden de Trabajo, se descuenta lo que esa orden esperaba
+            if (!empty($pedido['orden_trabajo_id'])) {
+                (new OrdenTrabajoModel())->aplicarRecepcion($pedido['orden_trabajo_id'], $recibidos, $id);
+            }
 
-            Tx::terminar($this->db, true);
+            if (!Tx::terminar($this->db, true)) throw new Exception('falló un paso interno');
             // "sin_renglones" = es un pedido viejo (de texto libre): se marca recibido pero no hay qué sumar
             return ['ok' => true, 'sin_renglones' => empty($items)];
 
@@ -235,15 +258,13 @@ class PedidoModel {
         $id = (int)$id;
         if (!in_array($estado, ['Pendiente', 'Cancelado'], true)) return false;
 
-        $pedido = $this->getById($id);
-        if (!$pedido) return false;
-
-        // un pedido ya recibido movió stock: no se vuelve atrás
-        if (strtolower($pedido['estado_pedido'] ?? '') === 'entregado') return false;
-
-        $stmt = $this->db->prepare("UPDATE pedidos SET estado_pedido = ? WHERE id = ?");
+        // un pedido ya recibido movió stock: no se vuelve atrás (la condición va en el mismo UPDATE)
+        $stmt = $this->db->prepare(
+            "UPDATE pedidos SET estado_pedido = ? WHERE id = ? AND (estado_pedido IS NULL OR estado_pedido <> 'Entregado')"
+        );
         $stmt->bind_param('si', $estado, $id);
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->affected_rows > 0 || ($this->getById($id)['estado_pedido'] ?? null) === $estado;
     }
 
     // Eliminar un pedido. Un pedido ya recibido NO se puede eliminar
@@ -254,12 +275,22 @@ class PedidoModel {
         if (!$pedido) return false;
         if (strtolower($pedido['estado_pedido'] ?? '') === 'entregado') return false;
 
-        $ok = $this->db->query("DELETE FROM pedidos WHERE id = $id"); // los renglones se borran solos (CASCADE)
-        if ($ok && !empty($pedido['detalle_pedido_id'])) {
-            $did = (int)$pedido['detalle_pedido_id'];
-            $this->db->query("DELETE FROM detalle_pedido WHERE id = $did");
+        Tx::iniciar($this->db);
+        try {
+            $stmt = $this->db->prepare("DELETE FROM pedidos WHERE id = ?"); // los renglones se borran solos (CASCADE)
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            if (!empty($pedido['detalle_pedido_id'])) {
+                $did = (int)$pedido['detalle_pedido_id'];
+                $stmt = $this->db->prepare("DELETE FROM detalle_pedido WHERE id = ?");
+                $stmt->bind_param('i', $did);
+                $stmt->execute();
+            }
+            return Tx::terminar($this->db, true);
+        } catch (Throwable $e) {
+            Tx::terminar($this->db, false);
+            return false;
         }
-        return $ok;
     }
 
     // Total de pedidos registrados (para el dashboard)

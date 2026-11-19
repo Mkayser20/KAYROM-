@@ -18,44 +18,26 @@ class EmpleadoController {
         require_once 'backend/empleado/views/empleados.php';
     }
 
+    // El alta de empleados se hace en "Registrar usuario", porque un empleado necesita
+    // usuario y contraseña para entrar. Antes este alta guardaba solo en la tabla empleado
+    // (sin usuario) y el empleado nuevo nunca aparecía en la lista.
     public function create() {
-        $error = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if ($this->model->create($_POST)) {
-                $nuevoId  = $this->model->getLastInsertedId();
-                $nombre   = trim($_POST['nombre'] ?? '');
-                $apellido = trim($_POST['apellido'] ?? '');
-
-                // AUDITORÍA: Crear
-                $this->auditoria->registrar(
-                    'CREAR',
-                    'Empleados',
-                    "Alta de empleado: $nombre $apellido",
-                    $nuevoId
-                );
-
-                if (!empty($_POST['modal'])) {
-                    require_once 'backend/empleado/views/guardado_modal.php';
-                    exit;
-                }
-                header('Location: index.php?page=empleados&msg=created');
-                exit;
-            } else {
-                $error = 'Error al guardar el empleado.';
-            }
+        if (!empty($_GET['modal'])) {
+            // si se pidió desde el modal, saco al usuario del iframe y lo llevo a la pantalla completa
+            echo "<script>parent.location.href = 'index.php?page=registrar_usuario';</script>";
+            exit;
         }
-        $data = ['error' => $error, 'modal' => isset($_GET['modal']), 'activePage' => 'empleados'];
-        require_once 'backend/empleado/views/empleado_form.php';
+        header('Location: index.php?page=registrar_usuario');
+        exit;
     }
 
     public function edit() {
-        $id = $_GET['id'] ?? 0;
+        $id = (int)($_GET['id'] ?? 0); // siempre número
         $error = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            //  Validación de unicidad (excluyendo al propio usuario que se edita) 
-            require_once 'compartidoCREO/models/UsuarioModel.php';
+            //  Validación de unicidad (excluyendo al propio usuario que se edita)
             $usuarioModel = new UsuarioModel();
 
             $actual    = $this->model->getById($id);
@@ -65,8 +47,17 @@ class EmpleadoController {
             $usuario  = trim($_POST['nombre_usuario']   ?? '');
             $dni      = trim($_POST['dni']              ?? '');
             $telefono = trim($_POST['telefono_persona'] ?? '');
+            $rolNuevo = UsuarioModel::normalizarRol($_POST['rol'] ?? 'empleado');
+            $esUnoMismo = $id === (int)($_SESSION['usuario_id'] ?? 0);
 
-            if ($usuarioModel->existeEmail($email, $id)) {
+            if (!$actual) {
+                $error = 'El empleado no existe.';
+            }
+            // el admin no puede sacarse el rol ni desactivarse a sí mismo (se quedaría afuera del sistema)
+            elseif ($esUnoMismo && ($rolNuevo !== 'admin' || (int)($_POST['activo'] ?? 1) !== 1)) {
+                $error = 'No podés quitarte el rol de administrador ni desactivar tu propio usuario.';
+            }
+            elseif ($usuarioModel->existeEmail($email, $id)) {
                 $error = "El correo '$email' ya está en uso por otro usuario.";
             }
             elseif ($usuarioModel->existeUsuario($usuario, $id)) {
@@ -80,10 +71,11 @@ class EmpleadoController {
             }
             elseif ($this->model->update($id, $_POST)) {
 
-                // Guardar los permisos seleccionados en los checkboxes
-                $permisoModel = new PermisoModel();
-                $modulos = $_POST['modulos'] ?? [];
-                $permisoModel->setForUsuario($id, $modulos);
+                // Guardar los permisos seleccionados en los checkboxes (el admin no necesita, tiene todo)
+                if ($rolNuevo !== 'admin') {
+                    $permisoModel = new PermisoModel();
+                    $permisoModel->setForUsuario($id, $_POST['modulos'] ?? []);
+                }
 
                 $nombre   = trim($_POST['nombre'] ?? '');
                 $apellido = trim($_POST['apellido'] ?? '');
@@ -103,7 +95,7 @@ class EmpleadoController {
                 header('Location: index.php?page=empleados&msg=updated');
                 exit;
             } else {
-                $error = 'Error al actualizar.';
+                $error = $this->model->error ?: 'Error al actualizar.';
             }
         }
         $data = [
@@ -128,7 +120,7 @@ class EmpleadoController {
         }
 
         $empleado = $this->model->getById($id);
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$empleado || !$this->model->cambiarActivo($id, $activo)) {
+        if (!$empleado || !$this->model->cambiarActivo($id, $activo)) {
             http_response_code(422);
             echo 'No se pudo cambiar el estado del empleado.';
             exit;
@@ -147,21 +139,28 @@ class EmpleadoController {
         exit;
     }
 
+    // Dar de baja un empleado (se desactiva, no se borra: ver EmpleadoModel::delete)
     public function delete() {
         $id = (int)($_POST['id'] ?? 0);
 
-        $empleado = $this->model->getById($id);
-        if ($this->model->delete($id)) {
-            $nombreCompleto = isset($empleado['nombre']) ? "{$empleado['nombre']} {$empleado['apellido']}" : "ID $id";
-
-            // AUDITORÍA: Eliminar
-            $this->auditoria->registrar(
-                'ELIMINAR',
-                'Empleados',
-                "Baja de empleado: $nombreCompleto",
-                $id
-            );
+        if ($id === (int)($_SESSION['usuario_id'] ?? 0)) {
+            header('Location: index.php?page=empleados&msg=error');
+            exit;
         }
+
+        $empleado = $this->model->getById($id);
+        if (!$empleado || !$this->model->delete($id)) {
+            header('Location: index.php?page=empleados&msg=error');
+            exit;
+        }
+
+        $nombreCompleto = trim(($empleado['nombre'] ?? '') . ' ' . ($empleado['apellido'] ?? ''));
+        $this->auditoria->registrar(
+            'ELIMINAR',
+            'Empleados',
+            "Baja (desactivación) de empleado: $nombreCompleto",
+            $id
+        );
 
         header('Location: index.php?page=empleados&msg=deleted');
         exit;

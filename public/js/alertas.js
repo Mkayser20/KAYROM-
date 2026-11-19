@@ -15,6 +15,62 @@
         document.documentElement.classList.add('swal-activo');
     }
 
+    // ---------- PROTECCIÓN CSRF ----------
+    // El servidor (index.php) rechaza cualquier POST que no traiga el token de la sesión.
+    // El token está en <meta name="csrf-token"> (lo pone el encabezado) y acá se agrega solo:
+    //   1) a cada formulario POST (campo oculto csrf_token)
+    //   2) a cada fetch POST (encabezado X-CSRF-Token)
+    // Así no hubo que tocar formulario por formulario.
+    const metaCsrf  = document.querySelector('meta[name="csrf-token"]');
+    const tokenCsrf = metaCsrf ? metaCsrf.content : '';
+
+    function ponerToken(formulario) {
+        if (!tokenCsrf || !formulario || (formulario.method || '').toLowerCase() !== 'post') return;
+        let campo = formulario.querySelector('input[name="csrf_token"]');
+        if (!campo) {
+            campo = document.createElement('input');
+            campo.type = 'hidden';
+            campo.name = 'csrf_token';
+            formulario.appendChild(campo);
+        }
+        campo.value = tokenCsrf;
+    }
+
+    // 1) formularios: los que ya están en la página y los que se envían después
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('form').forEach(ponerToken);
+    });
+    document.addEventListener('submit', function (e) { ponerToken(e.target); }, true);
+
+    // 2) fetch: le sumo el encabezado a los POST que van a nuestro propio sistema
+    if (window.fetch && tokenCsrf) {
+        const fetchOriginal = window.fetch;
+        window.fetch = function (url, opciones) {
+            opciones = opciones || {};
+            const metodo = (opciones.method || 'GET').toUpperCase();
+            const mismoSitio = new URL(url, window.location.href).origin === window.location.origin;
+            if (metodo === 'POST' && mismoSitio) {
+                const encabezados = new Headers(opciones.headers || {});
+                encabezados.set('X-CSRF-Token', tokenCsrf);
+                opciones.headers = encabezados;
+            }
+            return fetchOriginal.call(this, url, opciones);
+        };
+    }
+
+    // Manda una acción por POST (con el token) en vez de abrir el link por GET.
+    // Se usa en los links que cambian datos:  onclick="return enviarPost(this.href)"
+    window.enviarPost = function (url) {
+        const formulario = document.createElement('form');
+        formulario.method = 'post';
+        formulario.action = url;
+        formulario.style.display = 'none';
+        document.body.appendChild(formulario);
+        ponerToken(formulario);
+        formulario.submit();
+        return false;
+    };
+
     // Escapa caracteres especiales para que un texto nunca se interprete como HTML
     // (los títulos de SweetAlert2 aceptan HTML, así que siempre escapamos lo que viene de afuera)
     function escapar(texto) {
@@ -91,7 +147,7 @@
         }).then(function (resultado) { return resultado.isConfirmed; });
     };
 
-    // Reemplaza al modal viejo. Se usa igual que antes en los links:
+    // Reemplaza al modal viejo. Se usa igual que antes en los links (ahora la acción se manda por POST):
     //   onclick="return confirmarAccion(this.href, '¿Eliminar este vehículo?')"
     // Mira el texto del mensaje para decidir cómo mostrarse (rojo si es una baja, etc.)
     // opciones (todas opcionales): { titulo: '...', detalle: '...', confirmar: 'texto del botón' }
@@ -112,9 +168,10 @@
             (esBaja ? (sinVuelta ? 'Sí, eliminar' : 'Sí, quitar') : (esSesion ? 'Cerrar sesión' : 'Confirmar'));
 
         preguntar(titulo, detalle, { peligroso: esBaja, confirmar: textoBoton }).then(function (ok) {
-            if (ok) { window.location.href = url; }
+            // las acciones que cambian datos van por POST (con el token CSRF), no como un link común
+            if (ok) { enviarPost(url); }
         });
-        return false; // evita que el link navegue solo; navegamos recién si se confirmó
+        return false; // evita que el link navegue solo; recién se manda si se confirmó
     };
 
     window.confirmarFormulario = function (formulario, mensaje) {
